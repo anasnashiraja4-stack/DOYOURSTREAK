@@ -5046,3 +5046,268 @@ body::before {
         min-height: 180px;
     }
 }
+
+/* =========================
+   TURN BASED FIGHTING
+========================= */
+
+.battle-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.battle-header h2 {
+    margin: 0;
+}
+
+.game-back-btn {
+    border: none;
+    background: #111;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#battleTurn {
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: white;
+    color: black;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+
+/* ARENA */
+
+.battle-arena {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+}
+
+.fighter {
+    width: 230px;
+    text-align: center;
+}
+
+.fighter-name {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.fighter-image {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    image-rendering: auto;
+}
+
+.enemy-image {
+    transform: scaleX(-1);
+}
+
+
+/* HP */
+
+.hp-container {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.hp-label,
+.stamina-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.hp-bar,
+.stamina-bar {
+    width: 100%;
+    height: 13px;
+    background: #ddd;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.hp-fill {
+    width: 100%;
+    height: 100%;
+    background: #111;
+    transition: width 0.3s ease;
+}
+
+.stamina-container {
+    margin-top: 10px;
+}
+
+.stamina-bar {
+    height: 9px;
+}
+
+#playerStaminaBar {
+    width: 100%;
+    height: 100%;
+    background: #555;
+    transition: width 0.3s ease;
+}
+
+
+/* VS */
+
+.battle-vs {
+    font-size: 28px;
+    font-weight: 900;
+}
+
+
+/* ENEMY STATUS */
+
+.enemy-status {
+    margin-top: 10px;
+    font-size: 13px;
+    min-height: 20px;
+}
+
+
+/* LOG */
+
+.battle-log {
+    margin: 20px auto;
+    max-width: 650px;
+    min-height: 45px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #111;
+    color: white;
+    text-align: center;
+    font-size: 14px;
+}
+
+
+/* ACTIONS */
+
+.battle-actions {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    max-width: 800px;
+    margin: auto;
+}
+
+.battle-action {
+    border: 2px solid #111;
+    background: white;
+    color: #111;
+    border-radius: 14px;
+    padding: 12px 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.15s;
+}
+
+.battle-action:hover {
+    transform: translateY(-3px);
+}
+
+.battle-action span {
+    display: block;
+    font-size: 12px;
+}
+
+.battle-action small {
+    display: block;
+    margin-top: 4px;
+    font-size: 9px;
+    opacity: 0.7;
+}
+
+.battle-action:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* RESULT */
+
+.battle-result {
+    display: none;
+    text-align: center;
+    margin-top: 25px;
+}
+
+.battle-result button {
+    border: none;
+    background: #111;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+@media (max-width: 700px) {
+
+    .battle-arena {
+        gap: 8px;
+    }
+
+    .fighter {
+        width: 42%;
+    }
+
+    .fighter-image {
+        width: 110px;
+        height: 110px;
+    }
+
+    .battle-vs {
+        font-size: 20px;
+    }
+
+    .battle-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+/* =====================================================
+   FIGHTING V2
+===================================================== */
+
+.fight-controls {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.game-action-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.game-action-button {
+    min-height: 50px;
+    font-weight: 800;
+}
+
+@media (max-width: 700px) {
+
+    .fight-controls {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}

@@ -1170,6 +1170,7 @@ function showCharacterPage() {
     shopPage?.classList.remove("active");
     exercisePage?.classList.remove("active");
     infoPage?.classList.remove("active");
+    gamePage?.classList.remove("active");
 
     setActiveNav(characterNav);
 
@@ -2112,12 +2113,31 @@ backFromDino?.addEventListener(
    FIGHTING GAME
 ===================================================== */
 
+/* =====================================================
+   FIGHTING GAME V2
+===================================================== */
+
 let fightPlayerHP = 100;
 let fightEnemyHP = 100;
 
+let fightPlayerStamina = 100;
 let fightEnemyNumber = 1;
 
-let specialReady = true;
+let fightPlayerTurn = true;
+let fightFinished = false;
+
+let fightPlayerDefending = false;
+let fightEnemyDefending = false;
+
+let fightSpecialCooldown = 0;
+
+let fightLastAction = "";
+let fightAttackStreak = 0;
+
+
+/* =====================================================
+   FIGHTING ELEMENTS
+===================================================== */
 
 const fightPlayerImage =
     document.getElementById("fightPlayerImage");
@@ -2149,250 +2169,1107 @@ const fightAttack =
 const fightSpecial =
     document.getElementById("fightSpecial");
 
+const fightHeavy =
+    document.getElementById("fightHeavy");
+
+const fightDefend =
+    document.getElementById("fightDefend");
+
+const fightRecover =
+    document.getElementById("fightRecover");
+
 const fightRestart =
     document.getElementById("fightRestart");
 
 
+/* =====================================================
+   BUTTON LIST
+===================================================== */
+
+function getFightButtons() {
+
+    return [
+        fightAttack,
+        fightSpecial,
+        fightHeavy,
+        fightDefend,
+        fightRecover
+    ].filter(Boolean);
+
+}
+
+
+/* =====================================================
+   ENABLE / DISABLE BUTTONS
+===================================================== */
+
+function setFightButtons(enabled) {
+
+    getFightButtons().forEach(button => {
+
+        button.disabled = !enabled;
+
+    });
+
+}
+
+
+/* =====================================================
+   RANDOM NUMBER
+===================================================== */
+
+function randomDamage(min, max) {
+
+    return Math.floor(
+        Math.random() * (max - min + 1)
+    ) + min;
+
+}
+
+
+/* =====================================================
+   UPDATE FIGHT UI
+===================================================== */
+
 function updateFightUI() {
 
-    const character = getGameCharacter();
+    const character =
+        getGameCharacter();
+
+
+    /* PLAYER IMAGE */
 
     if (fightPlayerImage) {
-        fightPlayerImage.src = character.image;
-        fightPlayerImage.alt = character.name;
+
+        fightPlayerImage.src =
+            character.image;
+
+        fightPlayerImage.alt =
+            character.name;
+
     }
+
+
+    /* PLAYER NAME */
 
     if (fightPlayerName) {
-        fightPlayerName.textContent = character.name;
+
+        fightPlayerName.textContent =
+            character.name;
+
     }
 
+
+    /* ENEMY IMAGE */
+
     if (fightEnemyImage) {
+
         fightEnemyImage.src =
             fightEnemyNumber === 1
                 ? "Monster1.png"
                 : "Monster2.png";
+
     }
+
+
+    /* PLAYER HP */
 
     if (fightPlayerHPBar) {
+
         fightPlayerHPBar.style.width =
             `${Math.max(0, fightPlayerHP)}%`;
+
     }
+
+
+    /* ENEMY HP */
 
     if (fightEnemyHPBar) {
+
         fightEnemyHPBar.style.width =
             `${Math.max(0, fightEnemyHP)}%`;
+
     }
+
+
+    /* PLAYER HP TEXT */
 
     if (fightPlayerHPText) {
+
         fightPlayerHPText.textContent =
             `${Math.max(0, fightPlayerHP)} HP`;
+
     }
 
+
+    /* ENEMY HP TEXT */
+
     if (fightEnemyHPText) {
+
         fightEnemyHPText.textContent =
             `${Math.max(0, fightEnemyHP)} HP`;
+
+    }
+
+
+    /* SPECIAL BUTTON */
+
+    if (fightSpecial) {
+
+        if (fightSpecialCooldown > 0) {
+
+            fightSpecial.disabled = true;
+
+            fightSpecial.textContent =
+                `⚡ SPECIAL (${fightSpecialCooldown})`;
+
+        } else {
+
+            fightSpecial.textContent =
+                "⚡ SPECIAL";
+
+        }
+
     }
 
 }
 
+
+/* =====================================================
+   FIGHT STATUS
+===================================================== */
+
+function setFightStatus(message) {
+
+    if (!fightStatus) return;
+
+    fightStatus.textContent =
+        message;
+
+}
+
+
+/* =====================================================
+   STAMINA TEXT
+===================================================== */
+
+function getStaminaText() {
+
+    return `⚡ Stamina: ${fightPlayerStamina}/100`;
+
+}
+
+
+/* =====================================================
+   START FIGHT
+===================================================== */
 
 function startFight() {
 
     fightPlayerHP = 100;
-
     fightEnemyHP = 100;
 
-    specialReady = true;
+    fightPlayerStamina = 100;
 
     fightEnemyNumber =
-        Math.random() < 0.5 ? 1 : 2;
+        Math.random() < 0.5
+            ? 1
+            : 2;
 
-    if (fightAttack) {
-        fightAttack.disabled = false;
-    }
+    fightPlayerTurn = true;
+    fightFinished = false;
 
-    if (fightSpecial) {
-        fightSpecial.disabled = false;
-        fightSpecial.textContent = "⚡ SPECIAL";
-    }
+    fightPlayerDefending = false;
+    fightEnemyDefending = false;
+
+    fightSpecialCooldown = 0;
+
+    fightLastAction = "";
+    fightAttackStreak = 0;
+
 
     if (fightRestart) {
+
         fightRestart.classList.add("hidden");
+
     }
 
-    if (fightStatus) {
-        fightStatus.textContent =
-            "Battle dimulai! Pilih serangan.";
-    }
+
+    setFightButtons(true);
+
 
     updateFightUI();
+
+
+    if (fightEnemyNumber === 1) {
+
+        setFightStatus(
+            "👹 AGGRESSIVE MONSTER\n" +
+            "Your turn! " +
+            getStaminaText()
+        );
+
+    } else {
+
+        setFightStatus(
+            "🛡️ DEFENSIVE MONSTER\n" +
+            "Your turn! " +
+            getStaminaText()
+        );
+
+    }
 
 }
 
 
-/* PLAYER ATTACK */
+/* =====================================================
+   CHECK STAMINA
+===================================================== */
+
+function hasStamina(cost) {
+
+    if (fightPlayerStamina < cost) {
+
+        setFightStatus(
+            `❌ Stamina tidak cukup! ` +
+            getStaminaText()
+        );
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+
+/* =====================================================
+   PLAYER ACTION
+===================================================== */
+
+function beginPlayerAction() {
+
+    if (fightFinished) {
+
+        return false;
+
+    }
+
+
+    if (!fightPlayerTurn) {
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =====================================================
+   PLAYER DAMAGE TO ENEMY
+===================================================== */
+
+function damageEnemy(amount) {
+
+    let finalDamage =
+        amount;
+
+
+    /* ENEMY DEFEND */
+
+    if (fightEnemyDefending) {
+
+        finalDamage =
+            Math.floor(amount * 0.5);
+
+        fightEnemyDefending = false;
+
+    }
+
+
+    fightEnemyHP =
+        Math.max(
+            0,
+            fightEnemyHP - finalDamage
+        );
+
+
+    return finalDamage;
+
+}
+
+
+/* =====================================================
+   PLAYER ATTACK
+===================================================== */
 
 fightAttack?.addEventListener(
     "click",
     () => {
 
-        if (
-            fightPlayerHP <= 0 ||
-            fightEnemyHP <= 0
-        ) {
-            return;
-        }
+        if (!beginPlayerAction()) return;
+
+
+        const cost = 10;
+
+
+        if (!hasStamina(cost)) return;
+
+
+        fightPlayerStamina -= cost;
+
 
         const damage =
-            Math.floor(Math.random() * 6) + 10;
-
-        fightEnemyHP =
-            Math.max(
-                0,
-                fightEnemyHP - damage
+            damageEnemy(
+                randomDamage(9, 14)
             );
 
+
+        fightLastAction =
+            "attack";
+
+        fightAttackStreak++;
+
+
         updateFightUI();
+
 
         if (fightEnemyHP <= 0) {
 
             winFight();
 
             return;
+
         }
 
-        enemyTurn();
+
+        setFightStatus(
+            `👊 Attack! -${damage} HP\n` +
+            getStaminaText()
+        );
+
+
+        endPlayerTurn();
 
     }
 );
 
 
-/* SPECIAL ATTACK */
+/* =====================================================
+   HEAVY ATTACK
+===================================================== */
+
+fightHeavy?.addEventListener(
+    "click",
+    () => {
+
+        if (!beginPlayerAction()) return;
+
+
+        const cost = 25;
+
+
+        if (!hasStamina(cost)) return;
+
+
+        fightPlayerStamina -= cost;
+
+
+        /* 30% MISS */
+
+        const hit =
+            Math.random() >= 0.30;
+
+
+        fightLastAction =
+            "heavy";
+
+        fightAttackStreak = 0;
+
+
+        if (!hit) {
+
+            updateFightUI();
+
+
+            setFightStatus(
+                "💨 HEAVY ATTACK MISS!\n" +
+                getStaminaText()
+            );
+
+
+            endPlayerTurn();
+
+            return;
+
+        }
+
+
+        const damage =
+            damageEnemy(
+                randomDamage(20, 30)
+            );
+
+
+        updateFightUI();
+
+
+        if (fightEnemyHP <= 0) {
+
+            winFight();
+
+            return;
+
+        }
+
+
+        setFightStatus(
+            `💥 Heavy Attack! -${damage} HP\n` +
+            getStaminaText()
+        );
+
+
+        endPlayerTurn();
+
+    }
+);
+
+
+/* =====================================================
+   DEFEND
+===================================================== */
+
+fightDefend?.addEventListener(
+    "click",
+    () => {
+
+        if (!beginPlayerAction()) return;
+
+
+        const cost = 5;
+
+
+        if (!hasStamina(cost)) return;
+
+
+        fightPlayerStamina -= cost;
+
+
+        fightPlayerDefending =
+            true;
+
+
+        fightLastAction =
+            "defend";
+
+        fightAttackStreak = 0;
+
+
+        setFightStatus(
+            "🛡️ Kamu bersiap bertahan!\n" +
+            getStaminaText()
+        );
+
+
+        updateFightUI();
+
+
+        endPlayerTurn();
+
+    }
+);
+
+
+/* =====================================================
+   RECOVER
+===================================================== */
+
+fightRecover?.addEventListener(
+    "click",
+    () => {
+
+        if (!beginPlayerAction()) return;
+
+
+        const cost = 20;
+
+
+        if (!hasStamina(cost)) return;
+
+
+        fightPlayerStamina -= cost;
+
+
+        const heal =
+            randomDamage(12, 20);
+
+
+        fightPlayerHP =
+            Math.min(
+                100,
+                fightPlayerHP + heal
+            );
+
+
+        fightLastAction =
+            "recover";
+
+        fightAttackStreak = 0;
+
+
+        updateFightUI();
+
+
+        setFightStatus(
+            `❤️ Recover +${heal} HP\n` +
+            getStaminaText()
+        );
+
+
+        endPlayerTurn();
+
+    }
+);
+
+
+/* =====================================================
+   SPECIAL
+===================================================== */
 
 fightSpecial?.addEventListener(
     "click",
     () => {
 
-        if (!specialReady) return;
+        if (!beginPlayerAction()) return;
 
-        if (
-            fightPlayerHP <= 0 ||
-            fightEnemyHP <= 0
-        ) {
-            return;
-        }
 
-        specialReady = false;
+        const cost = 40;
 
-        const damage = 25;
 
-        fightEnemyHP =
-            Math.max(
-                0,
-                fightEnemyHP - damage
+        if (fightSpecialCooldown > 0) {
+
+            setFightStatus(
+                `⏳ Special masih cooldown ${fightSpecialCooldown} turn.`
             );
 
-        if (fightSpecial) {
-            fightSpecial.disabled = true;
-            fightSpecial.textContent =
-                "⚡ USED";
+            return;
+
         }
 
+
+        if (!hasStamina(cost)) return;
+
+
+        fightPlayerStamina -= cost;
+
+
+        const damage =
+            damageEnemy(
+                randomDamage(28, 38)
+            );
+
+
+        fightSpecialCooldown =
+            3;
+
+
+        fightLastAction =
+            "special";
+
+        fightAttackStreak = 0;
+
+
         updateFightUI();
+
 
         if (fightEnemyHP <= 0) {
 
             winFight();
 
             return;
+
         }
 
-        enemyTurn();
+
+        setFightStatus(
+            `⚡ SPECIAL! -${damage} HP\n` +
+            getStaminaText()
+        );
+
+
+        endPlayerTurn();
 
     }
 );
 
 
-/* ENEMY TURN */
+/* =====================================================
+   END PLAYER TURN
+===================================================== */
+
+function endPlayerTurn() {
+
+    if (fightFinished) return;
+
+
+    fightPlayerTurn =
+        false;
+
+
+    /*
+       STAMINA RECOVERY
+    */
+
+    fightPlayerStamina =
+        Math.min(
+            100,
+            fightPlayerStamina + 8
+        );
+
+
+    updateFightUI();
+
+
+    setFightButtons(false);
+
+
+    setTimeout(
+        enemyTurn,
+        650
+    );
+
+}
+
+
+/* =====================================================
+   MONSTER AI
+===================================================== */
+
+function chooseEnemyAction() {
+
+    /*
+       MONSTER 1
+       AGGRESSIVE
+    */
+
+    if (fightEnemyNumber === 1) {
+
+        /* Player spam attack */
+
+        if (
+            fightAttackStreak >= 2 &&
+            Math.random() < 0.55
+        ) {
+
+            return "heavy";
+
+        }
+
+
+        /* Player HP low */
+
+        if (
+            fightPlayerHP <= 35 &&
+            Math.random() < 0.45
+        ) {
+
+            return "heavy";
+
+        }
+
+
+        if (Math.random() < 0.25) {
+
+            return "heavy";
+
+        }
+
+
+        return "attack";
+
+    }
+
+
+    /*
+       MONSTER 2
+       DEFENSIVE
+    */
+
+    if (
+        fightEnemyHP <= 45 &&
+        Math.random() < 0.45
+    ) {
+
+        return "defend";
+
+    }
+
+
+    /*
+       Player menggunakan Heavy / Special
+       → monster kadang bertahan
+    */
+
+    if (
+        (
+            fightLastAction === "heavy" ||
+            fightLastAction === "special"
+        ) &&
+        Math.random() < 0.45
+    ) {
+
+        return "defend";
+
+    }
+
+
+    /*
+       Player HP rendah
+       → monster menyerang
+    */
+
+    if (
+        fightPlayerHP <= 35 &&
+        Math.random() < 0.50
+    ) {
+
+        return "heavy";
+
+    }
+
+
+    /*
+       Default
+    */
+
+    if (Math.random() < 0.30) {
+
+        return "heavy";
+
+    }
+
+
+    return "attack";
+
+}
+
+
+/* =====================================================
+   ENEMY TURN
+===================================================== */
 
 function enemyTurn() {
 
-    setTimeout(() => {
+    if (fightFinished) return;
 
-        if (fightEnemyHP <= 0) {
-            return;
-        }
 
-        const damage =
-            Math.floor(Math.random() * 5) + 5;
+    const action =
+        chooseEnemyAction();
 
-        fightPlayerHP =
-            Math.max(
-                0,
-                fightPlayerHP - damage
-            );
 
-        updateFightUI();
+    setFightStatus(
+        "🤖 Monster sedang berpikir..."
+    );
 
-        if (fightPlayerHP <= 0) {
 
-            loseFight();
+    setTimeout(
+        () => {
 
-        } else {
+            if (fightFinished) return;
 
-            fightStatus.textContent =
-                "Giliran kamu!";
 
-        }
+            /*
+               MONSTER DEFEND
+            */
 
-    }, 450);
+            if (action === "defend") {
+
+                fightEnemyDefending =
+                    true;
+
+
+                fightPlayerTurn =
+                    true;
+
+
+                /*
+                   Cooldown berkurang
+                */
+
+                if (
+                    fightSpecialCooldown > 0
+                ) {
+
+                    fightSpecialCooldown--;
+
+                }
+
+
+                updateFightUI();
+
+
+                setFightStatus(
+                    "🛡️ Monster bertahan!\n" +
+                    "Giliran kamu — " +
+                    getStaminaText()
+                );
+
+
+                setFightButtons(true);
+
+
+                return;
+
+            }
+
+
+            /*
+               MONSTER ATTACK
+            */
+
+            let damage = 0;
+
+
+            if (action === "heavy") {
+
+                /*
+                   Monster Heavy punya
+                   25% kemungkinan miss
+                */
+
+                const hit =
+                    Math.random() >= 0.25;
+
+
+                if (hit) {
+
+                    damage =
+                        randomDamage(16, 25);
+
+                } else {
+
+                    damage = 0;
+
+                }
+
+            } else {
+
+                damage =
+                    randomDamage(8, 14);
+
+            }
+
+
+            /*
+               PLAYER DEFEND
+            */
+
+            if (fightPlayerDefending) {
+
+                damage =
+                    Math.floor(
+                        damage * 0.35
+                    );
+
+                fightPlayerDefending =
+                    false;
+
+            }
+
+
+            fightPlayerHP =
+                Math.max(
+                    0,
+                    fightPlayerHP - damage
+                );
+
+
+            /*
+               COOLDOWN
+            */
+
+            if (
+                fightSpecialCooldown > 0
+            ) {
+
+                fightSpecialCooldown--;
+
+            }
+
+
+            updateFightUI();
+
+
+            /*
+               PLAYER KALAH
+            */
+
+            if (fightPlayerHP <= 0) {
+
+                loseFight();
+
+                return;
+
+            }
+
+
+            fightPlayerTurn =
+                true;
+
+
+            setFightButtons(true);
+
+
+            if (action === "heavy") {
+
+                if (damage === 0) {
+
+                    setFightStatus(
+                        "💨 Monster Heavy Attack miss!\n" +
+                        getStaminaText()
+                    );
+
+                } else {
+
+                    setFightStatus(
+                        `💥 Monster Heavy Attack -${damage} HP\n` +
+                        "Giliran kamu!\n" +
+                        getStaminaText()
+                    );
+
+                }
+
+            } else {
+
+                setFightStatus(
+                    `👹 Monster menyerang -${damage} HP\n` +
+                    "Giliran kamu!\n" +
+                    getStaminaText()
+                );
+
+            }
+
+
+        },
+        700
+    );
 
 }
 
 
-/* WIN */
+/* =====================================================
+   WIN
+===================================================== */
 
 function winFight() {
 
-    fightStatus.textContent =
-        "🏆 YOU WIN! +20 Coins +30 XP";
+    if (fightFinished) return;
 
-    fightAttack.disabled = true;
-    fightSpecial.disabled = true;
 
-    coins += 3;
+    fightFinished =
+        true;
 
-    stats.xp += 20;
+
+    setFightButtons(false);
+
+
+    /*
+       RANDOM REWARD
+       1 - 3 COINS
+    */
+
+    const reward =
+        Math.floor(
+            Math.random() * 3
+        ) + 1;
+
+
+    const xpReward = 20;
+
+
+    coins += reward;
+
+
+    stats.xp += xpReward;
+
 
     updateCoins();
+
     saveStats();
+
     updateStats();
 
-    fightRestart.classList.remove("hidden");
+
+    if (fightStatus) {
+
+        fightStatus.textContent =
+            `🏆 YOU WIN!\n` +
+            `🪙 +${reward} Coins\n` +
+            `⭐ +${xpReward} XP`;
+
+    }
+
+
+    if (fightRestart) {
+
+        fightRestart.classList.remove(
+            "hidden"
+        );
+
+    }
 
 }
 
 
-/* LOSE */
+/* =====================================================
+   LOSE
+===================================================== */
 
 function loseFight() {
 
-    fightStatus.textContent =
-        "Battle selesai. Coba lagi!";
+    if (fightFinished) return;
 
-    fightAttack.disabled = true;
-    fightSpecial.disabled = true;
 
-    fightRestart.classList.remove("hidden");
+    fightFinished =
+        true;
+
+
+    setFightButtons(false);
+
+
+    if (fightStatus) {
+
+        fightStatus.textContent =
+            "💀 YOU LOSE!\n" +
+            "🪙 +0 Coins\n" +
+            "Coba strategi lain!";
+
+    }
+
+
+    if (fightRestart) {
+
+        fightRestart.classList.remove(
+            "hidden"
+        );
+
+    }
 
 }
 
+
+/* =====================================================
+   RESTART
+===================================================== */
 
 fightRestart?.addEventListener(
     "click",
     startFight
 );
-
 
 /* =====================================================
    DINO RUN
