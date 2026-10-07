@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DOYOURSTREAK</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+
+    <!-- ================= LANDING PAGE ================= -->
+    <section id="loginScreen" class="landing-page">
+
+        <!-- NAVBAR -->
+        <nav class="landing-navbar">
+
+            <div class="landing-logo">
+                <span>DO</span>YOUR<span>STREAK</span>
+            </div>
+
+            <button id="loginButton" class="login-button">
+                LOGIN
+            </button>
+
+        </nav>
+
+
+        <!-- HERO -->
+        <main class="landing-hero">
+
+            <!-- Background Image -->
+            <div class="hero-background">
+                <img src="backgroundatas.jpe" alt="DOYOURSTREAK Background">
+            </div>
+
+
+            <!-- Hero Text -->
+            <div class="landing-content">
+
+                <div class="landing-badge">
+                    BUILD YOUR STREAK
+                </div>
+
+                <h1>
+                    MAKE YOUR<br>
+                    HABITS A <span>GAME.</span>
+                </h1>
+
+                <p>
+                    Build better habits, keep your streak,
+                    earn XP and become the best version of yourself.
+                </p>
+
+
+                <!-- DOWNLOAD BUTTONS -->
+                <div class="download-buttons">
+
+                    <a href="#" class="download-button windows" id="windowsDownload">
+                        <span class="download-icon">▣</span>
+
+                        <div>
+                            <small>DOWNLOAD FOR</small>
+                            <strong>WINDOWS</strong>
+                        </div>
+                    </a>
+
+
+                    <a href="#" class="download-button android" id="androidDownload">
+                        <span class="download-icon">◆</span>
+
+                        <div>
+                            <small>DOWNLOAD FOR</small>
+                            <strong>ANDROID</strong>
+                        </div>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </main>
+
+
+        <!-- LOGIN MODAL -->
+        <div id="loginModal" class="landing-login-modal hidden">
+
+            <div class="landing-login-card">
+
+                <!-- ================= STEP 1 : EMAIL ================= -->
+                <div class="login-step active" id="loginStep1">
+
+                    <button id="closeLogin" class="close-login">
+                        ×
+                    </button>
+
+                    <div class="login-logo">
+                        DOYOURSTREAK
+                    </div>
+
+                    <div class="login-step-number">
+                        01 / 03
+                    </div>
+
+                    <h2>
+                        Welcome!
+                    </h2>
+
+                    <p>
+                        Enter your email to start your journey.
+                    </p>
+
+                    <div class="input-group">
+
+                        <label for="emailInput">
+                            YOUR EMAIL
+                        </label>
+
+                        <input type="email" id="emailInput" placeholder="Enter your email..." autocomplete="email">
+
+                    </div>
+
+                    <p id="emailError" class="login-error"></p>
+
+                    <button id="emailNext" class="main-button">
+                        CONTINUE →
+                    </button>
+
+                </div>
+
+
+                <!-- ================= STEP 2 : CHARACTER ================= -->
+                <div class="login-step" id="loginStep2">
+
+                    <div class="login-step-number">
+                        02 / 03
+                    </div>
+
+                    <h2>
+                        Choose Your<br>
+                        Character
+                    </h2>
+
+                    <p>
+                        This character will accompany you
+                        on your streak journey.
+                    </p>
+
+
+                    <div class="character-selection">
+
+                        <div id="characterPlayer" class="character-card selected">
+
+                            <div class="character-check">
+                                ✓
+                            </div>
+
+                            <div class="character-image">
+                                <img src="player.png" alt="Player">
+                            </div>
+
+                            <strong>
+                                PLAYER
+                            </strong>
+
+                            <small>
+                                SELECTED
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <button id="characterNext" class="main-button">
+                        CONTINUE →
+                    </button>
+
+                </div>
+
+
+                <!-- ================= STEP 3 : CHARACTER NAME ================= -->
+                <div class="login-step" id="loginStep3">
+
+                    <div class="login-step-number">
+                        03 / 03
+                    </div>
+
+                    <h2>
+                        Name Your<br>
+                        Character
+                    </h2>
+
+                    <p>
+                        Give your character a name
+                        before starting your journey.
+                    </p>
+
+
+                    <div class="input-group">
+
+                        <label for="characterNameInput">
+                            CHARACTER NAME
+                        </label>
+
+                        <input type="text" id="characterNameInput" placeholder="Enter character name..." maxlength="20"
+                            autocomplete="off">
+
+                    </div>
+
+                    <p id="nameError" class="login-error"></p>
+
+
+                    <button id="startJourneyButton" class="main-button">
+                        START JOURNEY 🚀
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= APP ================= -->
+    <section id="appScreen" class="screen hidden">
+
+        <!-- HEADER -->
+        <header class="topbar">
+
+            <div class="brand">
+                <span>DO</span>YOUR<span>STREAK</span>
+            </div>
+
+            <div class="user-info">
+                <div>
+                    <small>PLAYER</small>
+                    <strong id="headerName">Player</strong>
+                </div>
+
+                <div class="level-badge">
+                    LVL <span id="level">1</span>
+                </div>
+            </div>
+
+        </header>
+
+
+
+
+
+        <!-- ================= CHARACTER PAGE ================= -->
+
+        <!-- CHARACTER PAGE -->
+        <div id="characterPage" class="app-page active">
+
+            <div class="character-top-actions">
+
+                <div class="coin-display">
+                    <img src="koinngawi.png" alt="Coins">
+                    <strong id="coinAmount">0</strong>
+                </div>
+
+            </div>
+
+            <!-- SMALL STATS -->
+            <section class="character-stats">
+                <div>
+                    <small>STREAK</small>
+                    <strong id="streak">0</strong>
+                </div>
+
+                <div>
+                    <small>TOTAL XP</small>
+                    <strong id="totalXP">0</strong>
+                </div>
+
+                <div>
+                    <small>TODAY</small>
+                    <strong id="completedToday">0 / 0</strong>
+                </div>
+            </section>
+
+            <!-- CHARACTER -->
+            <section class="character-display">
+
+                <button class="character-arrow" id="prevCharacter" type="button">
+                    &lt;
+                </button>
+
+                <div class="character-main">
+                    <img id="playerImage" src="player.png" alt="Player">
+
+                    <h2 id="playerName">Player</h2>
+                </div>
+
+                <button class="character-arrow" id="nextCharacter" type="button">
+                    &gt;
+                </button>
+
+            </section>
+
+            <!-- XP -->
+            <section class="character-xp">
+                <div class="xp-label">
+                    <span>XP</span>
+                    <strong><span id="xpText">0</span> / 100</strong>
+                </div>
+
+                <div class="xp-bar">
+                    <div id="xpBar"></div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ================= SHOP PAGE ================= -->
+
+        <div id="shopPage" class="app-page">
+
+            <section class="shop-page">
+
+                <div class="shop-page-header">
+
+                    <div>
+                        <small>CHARACTER STORE</small>
+                        <h1>CHARACTER SHOP</h1>
+                    </div>
+
+                    <div class="shop-coins">
+
+                        <img src="koinngawi.png" alt="Coins">
+
+                        <strong id="shopCoinAmount">0</strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="shop-items">
+
+                    <!-- OYENOMALI -->
+                    <div class="shop-item">
+
+                        <img src="oyenomali.png" alt="Oyenomali">
+
+                        <h3>OYENOMALI</h3>
+
+                        <div class="item-price">
+
+                            <img src="koinngawi.png" alt="Coins">
+
+                            <span>100</span>
+
+                        </div>
+
+                        <button class="buy-character" data-character="oyenomali.png" data-price="100">
+                            BUY
+                        </button>
+
+                    </div>
+
+
+                    <!-- PLAYERSKIN -->
+                    <div class="shop-item">
+
+
+                    </div>
+
+
+                    <!-- COPET -->
+                    <div class="shop-item">
+
+                        <img src="copet.png" alt="Copet">
+
+                        <h3>COPET</h3>
+
+                        <div class="item-price">
+
+                            <img src="koinngawi.png" alt="Coins">
+
+                            <span>200</span>
+
+                        </div>
+
+                        <button class="buy-character" data-character="copet.png" data-price="200">
+                            BUY
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+        <!-- ================= EXERCISE PAGE ================= -->
+
+        <div id="exercisePage" class="app-page">
+
+            <div class="daily-task-card">
+                <div class="daily-task-header">
+                    <span>🎯 DAILY TASK</span>
+                    <span id="dailyTaskReward">
+                        🪙 +20
+                    </span>
+                </div>
+
+                <h3 id="dailyTaskTitle">Loading daily task...</h3>
+                <p id="dailyTaskDescription"></p>
+
+                <div class="daily-task-progress">
+                    <div id="dailyTaskProgressBar"></div>
+                </div>
+
+                <div class="daily-task-bottom">
+                    <span id="dailyTaskProgressText">0 / 1</span>
+                    <button id="claimDailyTask" disabled>CLAIM</button>
+                </div>
+            </div>
+            <section class="habits-section">
+
+                <div class="section-header">
+
+                    <div>
+                        <small>YOUR ROUTINE</small>
+                        <h2>Today's Habits</h2>
+                    </div>
+
+                    <button id="addHabitButton" class="main-button">
+                        + ADD HABIT
+                    </button>
+
+                </div>
+
+
+                <div id="habitList" class="habit-list"></div>
+
+
+                <div id="emptyState" class="empty-state">
+
+                    <div class="empty-icon">
+                        🏋️
+                    </div>
+
+                    <h3>No habits yet</h3>
+
+                    <p>
+                        Add your first habit and start your streak.
+                    </p>
+
+                    <button id="emptyAddButton" class="main-button">
+                        CREATE HABIT
+                    </button>
+
+                </div>
+
+            </section>
+
+        </div>
+
+        <!-- ================= ADD HABIT MODAL ================= -->
+        <div id="habitModal" class="habit-modal hidden">
+
+            <div class="habit-modal-card">
+
+                <button id="closeModal" class="close-modal">×</button>
+
+                <div class="modal-title">ADD NEW HABIT</div>
+
+                <!-- STEP 1 -->
+                <div class="habit-step active" id="habitStep1">
+
+                    <div class="step-number">01</div>
+
+                    <h2>What is your habit?</h2>
+
+                    <p>Give your habit a name.</p>
+
+                    <div class="input-group">
+
+                        <label for="habitName">
+                            HABIT NAME
+                        </label>
+
+                        <input type="text" id="habitName" placeholder="Example: Read a book" maxlength="40">
+
+                    </div>
+
+                    <button type="button" id="habitNext1" class="main-button">
+                        NEXT →
+                    </button>
+
+                </div>
+
+
+                <!-- STEP 2 -->
+                <div class="habit-step" id="habitStep2">
+
+                    <div class="step-number">02</div>
+
+                    <h2>When will you do it?</h2>
+
+                    <p>Choose your habit time.</p>
+
+                    <div class="input-group">
+
+                        <label for="habitTime">
+                            TIME
+                        </label>
+
+                        <input type="time" id="habitTime">
+
+                    </div>
+
+                    <div class="step-buttons">
+
+                        <button type="button" id="habitBack2" class="secondary-button">
+                            ← BACK
+                        </button>
+
+                        <button type="button" id="habitNext2" class="main-button">
+                            NEXT →
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 3 -->
+                <div class="habit-step" id="habitStep3">
+
+                    <div class="step-number">03</div>
+
+                    <h2>How important is it?</h2>
+
+                    <p>Choose your priority.</p>
+
+                    <div class="priority-options">
+
+                        <button type="button" class="priority-option" data-priority="High">
+                            🔴 High
+                        </button>
+
+                        <button type="button" class="priority-option selected" data-priority="Normal">
+                            🟡 Normal
+                        </button>
+
+                        <button type="button" class="priority-option" data-priority="Low">
+                            🟢 Low
+                        </button>
+
+                    </div>
+
+                    <div class="step-buttons">
+
+                        <button type="button" id="habitBack3" class="secondary-button">
+                            ← BACK
+                        </button>
+
+                        <button type="button" id="habitNext3" class="main-button">
+                            NEXT →
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 4 -->
+                <div class="habit-step" id="habitStep4">
+
+                    <div class="step-number">04</div>
+
+                    <h2>Choose your type</h2>
+
+                    <p>Pick an icon for your habit.</p>
+
+
+                    <div class="emoji-options">
+
+                        <button type="button" class="emoji-option selected" data-icon="belajaricon.png">
+                            <img src="belajaricon.png" alt="Belajar">
+                        </button>
+
+                        <button type="button" class="emoji-option" data-icon="sport.png">
+                            <img src="sport.png" alt="Sport">
+                        </button>
+
+                        <button type="button" class="emoji-option" data-icon="latihanicon.png">
+                            <img src="latihanicon.png" alt="Latihan">
+                        </button>
+
+                        <button type="button" class="emoji-option" data-icon="ngemilicon.png">
+                            <img src="ngemilicon.png" alt="Ngemil">
+                        </button>
+
+                    </div>
+
+
+                    <div class="step-buttons">
+
+                        <button type="button" id="habitBack4" class="secondary-button">
+                            ← BACK
+                        </button>
+
+                        <button type="button" id="saveHabitButton" class="main-button">
+                            ADD HABIT ✓
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= INFO / CALENDAR PAGE ================= -->
+        <div id="infoPage" class="app-page">
+
+            <section class="info-page">
+
+                <!-- HEADER -->
+                <div class="info-header">
+                    <small>DOYOURSTREAK</small>
+                    <h1>CALENDAR & EVENTS</h1>
+                    <p>Check your schedule and the latest admin updates.</p>
+                </div>
+
+                <!-- CALENDAR -->
+                <div class="calendar-card">
+
+                    <div class="calendar-top">
+                        <button id="prevMonth" type="button">&lt;</button>
+
+                        <h2 id="calendarMonth">October 2026</h2>
+
+                        <button id="nextMonth" type="button">&gt;</button>
+                    </div>
+
+                    <div class="calendar-weekdays">
+                        <span>MON</span>
+                        <span>TUE</span>
+                        <span>WED</span>
+                        <span>THU</span>
+                        <span>FRI</span>
+                        <span>SAT</span>
+                        <span>SUN</span>
+                    </div>
+
+                    <div id="calendarDays" class="calendar-days"></div>
+
+                </div>
+
+
+                <!-- ADMIN EVENTS -->
+                <div class="events-section">
+
+                    <div class="events-title">
+                        <small>ADMIN UPDATE</small>
+                        <h2>EVENTS</h2>
+                    </div>
+
+                    <div id="adminEvents" class="admin-events">
+
+                        <!-- EVENT 1 -->
+                        <div class="event-card">
+                            <div class="event-date">
+                                <strong>10</strong>
+                                <span>OCT</span>
+                            </div>
+
+                            <div class="event-content">
+                                <h3>STREAK WEEK</h3>
+                                <p>
+                                    Keep your streak alive this week and complete
+                                    your exercises every day!
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <!-- EVENT 2 -->
+                        <div class="event-card">
+                            <div class="event-date">
+                                <strong>15</strong>
+                                <span>OCT</span>
+                            </div>
+
+                            <div class="event-content">
+                                <h3>NEW CHARACTER UPDATE</h3>
+                                <p>
+                                    A new character might be coming to the shop.
+                                    Stay tuned!
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <!-- EVENT 3 -->
+                        <div class="event-card">
+                            <div class="event-date">
+                                <strong>25</strong>
+                                <span>OCT</span>
+                            </div>
+
+                            <div class="event-content">
+                                <h3>COMMUNITY EVENT</h3>
+                                <p>
+                                    Complete your exercises and earn extra XP
+                                    during the event.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <nav class="bottom-navbar">
+
+            <button class="bottom-nav-image" id="characterNav" type="button">
+                <img src="buttonkarakter.png" alt="Character">
+            </button>
+
+            <button class="bottom-nav-image" id="shopNav" type="button">
+                <img src="shopbutton.png" alt="Shop">
+            </button>
+
+            <button class="bottom-nav-image" id="exerciseNav" type="button">
+                <img src="buku.png" alt="Exercise">
+            </button>
+
+            <button class="bottom-nav-image" id="infoNav" type="button">
+                <img src="infobutton.png" alt="Info">
+            </button>
+
+        </nav>
+
+    </section>
+
+    <!-- JAVASCRIPT -->
+    <script src="app.js"></script>
+
+</body>
+
+</html>
