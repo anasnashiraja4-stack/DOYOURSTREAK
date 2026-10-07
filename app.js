@@ -1198,6 +1198,7 @@ function showExercisePage() {
     shopPage?.classList.remove("active");
     exercisePage?.classList.add("active");
     infoPage?.classList.remove("active");
+    gamePage?.classList.remove("active");
 
     setActiveNav(exerciseNav);
 
