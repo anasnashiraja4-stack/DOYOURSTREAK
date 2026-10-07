@@ -2360,9 +2360,9 @@ function winFight() {
     fightAttack.disabled = true;
     fightSpecial.disabled = true;
 
-    coins += 20;
+    coins += 3;
 
-    stats.xp += 30;
+    stats.xp += 20;
 
     updateCoins();
     saveStats();
