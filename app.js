@@ -2264,10 +2264,9 @@ function updateFightUI() {
 
     if (fightEnemyImage) {
 
-        fightEnemyImage.src =
-            fightEnemyNumber === 1
-                ? "Monster1.png"
-                : "Monster2.png";
+        fightEnemyImage.src = fightEnemyNumber === 1
+            ? "Monster1.png"
+            : "Monster2.png";
 
     }
 
