@@ -1128,11 +1128,13 @@ function startJourney() {
 
 const characterNav = document.getElementById("characterNav");
 const shopNav = document.getElementById("shopNav");
+const gameNav = document.getElementById("gameNav");
 const exerciseNav = document.getElementById("exerciseNav");
 const infoNav = document.getElementById("infoNav");
 
 const characterPage = document.getElementById("characterPage");
 const shopPage = document.getElementById("shopPage");
+const gamePage = document.getElementById("gamePage");
 const exercisePage = document.getElementById("exercisePage");
 const infoPage = document.getElementById("infoPage");
 
@@ -1141,12 +1143,26 @@ function setActiveNav(activeButton) {
 
     characterNav?.classList.remove("active");
     shopNav?.classList.remove("active");
+    gameNav?.classList.remove("active");
     exerciseNav?.classList.remove("active");
     infoNav?.classList.remove("active");
 
     activeButton?.classList.add("active");
 }
 
+function showGamePage() {
+
+    characterPage?.classList.remove("active");
+    shopPage?.classList.remove("active");
+    gamePage?.classList.add("active");
+    exercisePage?.classList.remove("active");
+    infoPage?.classList.remove("active");
+
+    setActiveNav(gameNav);
+
+    window.scrollTo(0, 0);
+
+}
 
 function showCharacterPage() {
 
@@ -1195,6 +1211,7 @@ function showInfoPage() {
     shopPage?.classList.remove("active");
     exercisePage?.classList.remove("active");
     infoPage?.classList.add("active");
+    gamePage?.classList.remove("active");
 
     setActiveNav(infoNav);
 
@@ -1206,6 +1223,7 @@ function showInfoPage() {
 
 characterNav?.addEventListener("click", showCharacterPage);
 shopNav?.addEventListener("click", showShopPage);
+gameNav?.addEventListener("click", showGamePage);
 exerciseNav?.addEventListener("click", showExercisePage);
 infoNav?.addEventListener("click", showInfoPage);
 
@@ -1966,6 +1984,1002 @@ function claimDailyTask() {
         `🎉 Daily Task completed!\n\n+${task.reward} coins!`
     );
 }
+
+/* =====================================================
+   NAVGAME
+   FIGHTING + DINO RUN
+===================================================== */
+
+
+/* =====================================================
+   CURRENT PLAYER
+===================================================== */
+
+function getGameCharacter() {
+
+    if (
+        typeof characters !== "undefined" &&
+        characters[currentCharacter]
+    ) {
+        return characters[currentCharacter];
+    }
+
+    return {
+        name: "PLAYER",
+        image: "player.png"
+    };
+}
+
+
+/* =====================================================
+   GAME ELEMENTS
+===================================================== */
+
+const openFightingGame =
+    document.getElementById("openFightingGame");
+
+const openDinoGame =
+    document.getElementById("openDinoGame");
+
+const gameMenu =
+    document.getElementById("gameMenu");
+
+const fightingGame =
+    document.getElementById("fightingGame");
+
+const dinoGame =
+    document.getElementById("dinoGame");
+
+const backFromFight =
+    document.getElementById("backFromFight");
+
+const backFromDino =
+    document.getElementById("backFromDino");
+
+
+function showGameMenu() {
+
+    gameMenu?.classList.remove("hidden");
+
+    fightingGame?.classList.add("hidden");
+
+    dinoGame?.classList.add("hidden");
+
+    stopDinoGame();
+
+}
+
+
+/* =====================================================
+   OPEN FIGHTING
+===================================================== */
+
+openFightingGame?.addEventListener(
+    "click",
+    () => {
+
+        gameMenu?.classList.add("hidden");
+
+        fightingGame?.classList.remove("hidden");
+
+        dinoGame?.classList.add("hidden");
+
+        stopDinoGame();
+
+        startFight();
+
+    }
+);
+
+
+/* =====================================================
+   OPEN DINO
+===================================================== */
+
+openDinoGame?.addEventListener(
+    "click",
+    () => {
+
+        gameMenu?.classList.add("hidden");
+
+        fightingGame?.classList.add("hidden");
+
+        dinoGame?.classList.remove("hidden");
+
+        startDinoScreen();
+
+    }
+);
+
+
+/* =====================================================
+   BACK
+===================================================== */
+
+backFromFight?.addEventListener(
+    "click",
+    showGameMenu
+);
+
+backFromDino?.addEventListener(
+    "click",
+    showGameMenu
+);
+
+
+/* =====================================================
+   FIGHTING GAME
+===================================================== */
+
+let fightPlayerHP = 100;
+let fightEnemyHP = 100;
+
+let fightEnemyNumber = 1;
+
+let specialReady = true;
+
+const fightPlayerImage =
+    document.getElementById("fightPlayerImage");
+
+const fightPlayerName =
+    document.getElementById("fightPlayerName");
+
+const fightPlayerHPBar =
+    document.getElementById("fightPlayerHP");
+
+const fightEnemyHPBar =
+    document.getElementById("fightEnemyHP");
+
+const fightPlayerHPText =
+    document.getElementById("fightPlayerHPText");
+
+const fightEnemyHPText =
+    document.getElementById("fightEnemyHPText");
+
+const fightEnemyImage =
+    document.getElementById("fightEnemyImage");
+
+const fightStatus =
+    document.getElementById("fightStatus");
+
+const fightAttack =
+    document.getElementById("fightAttack");
+
+const fightSpecial =
+    document.getElementById("fightSpecial");
+
+const fightRestart =
+    document.getElementById("fightRestart");
+
+
+function updateFightUI() {
+
+    const character = getGameCharacter();
+
+    if (fightPlayerImage) {
+        fightPlayerImage.src = character.image;
+        fightPlayerImage.alt = character.name;
+    }
+
+    if (fightPlayerName) {
+        fightPlayerName.textContent = character.name;
+    }
+
+    if (fightEnemyImage) {
+        fightEnemyImage.src =
+            fightEnemyNumber === 1
+                ? "Monster1.png"
+                : "Monster2.png";
+    }
+
+    if (fightPlayerHPBar) {
+        fightPlayerHPBar.style.width =
+            `${Math.max(0, fightPlayerHP)}%`;
+    }
+
+    if (fightEnemyHPBar) {
+        fightEnemyHPBar.style.width =
+            `${Math.max(0, fightEnemyHP)}%`;
+    }
+
+    if (fightPlayerHPText) {
+        fightPlayerHPText.textContent =
+            `${Math.max(0, fightPlayerHP)} HP`;
+    }
+
+    if (fightEnemyHPText) {
+        fightEnemyHPText.textContent =
+            `${Math.max(0, fightEnemyHP)} HP`;
+    }
+
+}
+
+
+function startFight() {
+
+    fightPlayerHP = 100;
+
+    fightEnemyHP = 100;
+
+    specialReady = true;
+
+    fightEnemyNumber =
+        Math.random() < 0.5 ? 1 : 2;
+
+    if (fightAttack) {
+        fightAttack.disabled = false;
+    }
+
+    if (fightSpecial) {
+        fightSpecial.disabled = false;
+        fightSpecial.textContent = "⚡ SPECIAL";
+    }
+
+    if (fightRestart) {
+        fightRestart.classList.add("hidden");
+    }
+
+    if (fightStatus) {
+        fightStatus.textContent =
+            "Battle dimulai! Pilih serangan.";
+    }
+
+    updateFightUI();
+
+}
+
+
+/* PLAYER ATTACK */
+
+fightAttack?.addEventListener(
+    "click",
+    () => {
+
+        if (
+            fightPlayerHP <= 0 ||
+            fightEnemyHP <= 0
+        ) {
+            return;
+        }
+
+        const damage =
+            Math.floor(Math.random() * 6) + 10;
+
+        fightEnemyHP =
+            Math.max(
+                0,
+                fightEnemyHP - damage
+            );
+
+        updateFightUI();
+
+        if (fightEnemyHP <= 0) {
+
+            winFight();
+
+            return;
+        }
+
+        enemyTurn();
+
+    }
+);
+
+
+/* SPECIAL ATTACK */
+
+fightSpecial?.addEventListener(
+    "click",
+    () => {
+
+        if (!specialReady) return;
+
+        if (
+            fightPlayerHP <= 0 ||
+            fightEnemyHP <= 0
+        ) {
+            return;
+        }
+
+        specialReady = false;
+
+        const damage = 25;
+
+        fightEnemyHP =
+            Math.max(
+                0,
+                fightEnemyHP - damage
+            );
+
+        if (fightSpecial) {
+            fightSpecial.disabled = true;
+            fightSpecial.textContent =
+                "⚡ USED";
+        }
+
+        updateFightUI();
+
+        if (fightEnemyHP <= 0) {
+
+            winFight();
+
+            return;
+        }
+
+        enemyTurn();
+
+    }
+);
+
+
+/* ENEMY TURN */
+
+function enemyTurn() {
+
+    setTimeout(() => {
+
+        if (fightEnemyHP <= 0) {
+            return;
+        }
+
+        const damage =
+            Math.floor(Math.random() * 5) + 5;
+
+        fightPlayerHP =
+            Math.max(
+                0,
+                fightPlayerHP - damage
+            );
+
+        updateFightUI();
+
+        if (fightPlayerHP <= 0) {
+
+            loseFight();
+
+        } else {
+
+            fightStatus.textContent =
+                "Giliran kamu!";
+
+        }
+
+    }, 450);
+
+}
+
+
+/* WIN */
+
+function winFight() {
+
+    fightStatus.textContent =
+        "🏆 YOU WIN! +20 Coins +30 XP";
+
+    fightAttack.disabled = true;
+    fightSpecial.disabled = true;
+
+    coins += 20;
+
+    stats.xp += 30;
+
+    updateCoins();
+    saveStats();
+    updateStats();
+
+    fightRestart.classList.remove("hidden");
+
+}
+
+
+/* LOSE */
+
+function loseFight() {
+
+    fightStatus.textContent =
+        "Battle selesai. Coba lagi!";
+
+    fightAttack.disabled = true;
+    fightSpecial.disabled = true;
+
+    fightRestart.classList.remove("hidden");
+
+}
+
+
+fightRestart?.addEventListener(
+    "click",
+    startFight
+);
+
+
+/* =====================================================
+   DINO RUN
+===================================================== */
+
+const dinoCanvas =
+    document.getElementById("dinoCanvas");
+
+const dinoCtx =
+    dinoCanvas?.getContext("2d");
+
+const dinoScoreElement =
+    document.getElementById("dinoScore");
+
+const dinoBestElement =
+    document.getElementById("dinoBest");
+
+const dinoStatus =
+    document.getElementById("dinoStatus");
+
+const startDinoButton =
+    document.getElementById("startDino");
+
+const jumpDinoButton =
+    document.getElementById("jumpDino");
+
+
+let dinoRunning = false;
+let dinoAnimation = null;
+
+let dinoScore = 0;
+
+let dinoSpeed = 5;
+
+let dinoLastTime = 0;
+
+let dinoSpawnTimer = 0;
+
+let dinoObstacles = [];
+
+let dinoPlayer = {
+    x: 90,
+    y: 215,
+    width: 60,
+    height: 60,
+    velocityY: 0,
+    grounded: true
+};
+
+
+let dinoBest =
+    Number(
+        localStorage.getItem(
+            "doyourstreak-dino-best"
+        )
+    ) || 0;
+
+
+const dinoObstacleImages = [
+    "obstacel1.png",
+    "obstacel2.png"
+];
+
+
+const dinoPlayerImage =
+    new Image();
+
+const dinoObstacleImage1 =
+    new Image();
+
+const dinoObstacleImage2 =
+    new Image();
+
+
+function loadDinoImages() {
+
+    const character =
+        getGameCharacter();
+
+    dinoPlayerImage.src =
+        character.image;
+
+    dinoObstacleImage1.src =
+        "obstacel1.png";
+
+    dinoObstacleImage2.src =
+        "obstacel2.png";
+
+}
+
+
+function startDinoScreen() {
+
+    loadDinoImages();
+
+    if (dinoBestElement) {
+        dinoBestElement.textContent =
+            dinoBest;
+    }
+
+    resetDino();
+
+}
+
+
+function resetDino() {
+
+    stopDinoGame();
+
+    dinoScore = 0;
+
+    dinoSpeed = 5;
+
+    dinoSpawnTimer = 0;
+
+    dinoObstacles = [];
+
+    dinoPlayer = {
+        x: 90,
+        y: 215,
+        width: 60,
+        height: 60,
+        velocityY: 0,
+        grounded: true
+    };
+
+    drawDino();
+
+    if (dinoScoreElement) {
+        dinoScoreElement.textContent = "0";
+    }
+
+    if (dinoStatus) {
+        dinoStatus.textContent =
+            "Press SPACE or click to jump!";
+    }
+
+}
+
+
+function startDinoGame() {
+
+    if (dinoRunning) return;
+
+    loadDinoImages();
+
+    dinoRunning = true;
+
+    dinoScore = 0;
+
+    dinoSpeed = 5;
+
+    dinoSpawnTimer = 0;
+
+    dinoObstacles = [];
+
+    dinoPlayer.y = 215;
+    dinoPlayer.velocityY = 0;
+    dinoPlayer.grounded = true;
+
+    dinoLastTime = performance.now();
+
+    if (dinoStatus) {
+        dinoStatus.textContent =
+            "RUN!";
+    }
+
+    dinoAnimation =
+        requestAnimationFrame(
+            dinoLoop
+        );
+
+}
+
+
+function stopDinoGame() {
+
+    dinoRunning = false;
+
+    if (dinoAnimation) {
+
+        cancelAnimationFrame(
+            dinoAnimation
+        );
+
+        dinoAnimation = null;
+
+    }
+
+}
+
+
+function jumpDino() {
+
+    if (!dinoRunning) {
+
+        startDinoGame();
+
+        return;
+
+    }
+
+    if (!dinoPlayer.grounded) {
+        return;
+    }
+
+    dinoPlayer.velocityY = -13;
+
+    dinoPlayer.grounded = false;
+
+}
+
+
+function dinoLoop(time) {
+
+    if (!dinoRunning) return;
+
+    const delta =
+        Math.min(
+            (time - dinoLastTime) / 16.67,
+            2
+        );
+
+    dinoLastTime = time;
+
+    updateDino(delta);
+
+    drawDino();
+
+    dinoAnimation =
+        requestAnimationFrame(
+            dinoLoop
+        );
+
+}
+
+
+function updateDino(delta) {
+
+    /* GRAVITY */
+
+    dinoPlayer.velocityY +=
+        0.65 * delta;
+
+    dinoPlayer.y +=
+        dinoPlayer.velocityY * delta;
+
+
+    if (dinoPlayer.y >= 215) {
+
+        dinoPlayer.y = 215;
+
+        dinoPlayer.velocityY = 0;
+
+        dinoPlayer.grounded = true;
+
+    }
+
+
+    /* SCORE */
+
+    dinoScore +=
+        0.08 * delta;
+
+    dinoSpeed +=
+        0.001 * delta;
+
+
+    if (dinoScoreElement) {
+
+        dinoScoreElement.textContent =
+            Math.floor(dinoScore);
+
+    }
+
+
+    /* SPAWN */
+
+    dinoSpawnTimer += delta;
+
+    if (dinoSpawnTimer > 85) {
+
+        spawnDinoObstacle();
+
+        dinoSpawnTimer = 0;
+
+    }
+
+
+    /* MOVE OBSTACLES */
+
+    dinoObstacles.forEach(
+        obstacle => {
+
+            obstacle.x -=
+                dinoSpeed * delta;
+
+        }
+    );
+
+
+    dinoObstacles =
+        dinoObstacles.filter(
+            obstacle =>
+                obstacle.x +
+                obstacle.width > 0
+        );
+
+
+    /* COLLISION */
+
+    for (const obstacle of dinoObstacles) {
+
+        if (
+            checkDinoCollision(
+                dinoPlayer,
+                obstacle
+            )
+        ) {
+
+            endDinoGame();
+
+            return;
+
+        }
+
+    }
+
+}
+
+
+function spawnDinoObstacle() {
+
+    const imageIndex =
+        Math.random() < 0.5 ? 0 : 1;
+
+    dinoObstacles.push({
+
+        x: dinoCanvas.width + 20,
+
+        y: 235,
+
+        width: 45,
+
+        height: 45,
+
+        imageIndex
+
+    });
+
+}
+
+
+function checkDinoCollision(
+    player,
+    obstacle
+) {
+
+    const padding = 10;
+
+    return (
+        player.x + padding <
+        obstacle.x + obstacle.width - padding &&
+
+        player.x + player.width - padding >
+        obstacle.x + padding &&
+
+        player.y + padding <
+        obstacle.y + obstacle.height &&
+
+        player.y + player.height >
+        obstacle.y + padding
+    );
+
+}
+
+
+function drawDino() {
+
+    if (!dinoCtx || !dinoCanvas) {
+        return;
+    }
+
+    dinoCtx.clearRect(
+        0,
+        0,
+        dinoCanvas.width,
+        dinoCanvas.height
+    );
+
+
+    /* SKY */
+
+    dinoCtx.fillStyle = "#ffffff";
+
+    dinoCtx.fillRect(
+        0,
+        0,
+        dinoCanvas.width,
+        dinoCanvas.height
+    );
+
+
+    /* GROUND */
+
+    dinoCtx.fillStyle = "#111111";
+
+    dinoCtx.fillRect(
+        0,
+        275,
+        dinoCanvas.width,
+        5
+    );
+
+
+    /* PLAYER */
+
+    if (dinoPlayerImage.complete) {
+
+        dinoCtx.drawImage(
+            dinoPlayerImage,
+            dinoPlayer.x,
+            dinoPlayer.y,
+            dinoPlayer.width,
+            dinoPlayer.height
+        );
+
+    } else {
+
+        dinoCtx.fillStyle = "#111111";
+
+        dinoCtx.fillRect(
+            dinoPlayer.x,
+            dinoPlayer.y,
+            dinoPlayer.width,
+            dinoPlayer.height
+        );
+
+    }
+
+
+    /* OBSTACLES */
+
+    dinoObstacles.forEach(
+        obstacle => {
+
+            const image =
+                obstacle.imageIndex === 0
+                    ? dinoObstacleImage1
+                    : dinoObstacleImage2;
+
+            if (image.complete) {
+
+                dinoCtx.drawImage(
+                    image,
+                    obstacle.x,
+                    obstacle.y,
+                    obstacle.width,
+                    obstacle.height
+                );
+
+            } else {
+
+                dinoCtx.fillStyle =
+                    "#111111";
+
+                dinoCtx.fillRect(
+                    obstacle.x,
+                    obstacle.y,
+                    obstacle.width,
+                    obstacle.height
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+function endDinoGame() {
+
+    stopDinoGame();
+
+    const finalScore =
+        Math.floor(dinoScore);
+
+    if (finalScore > dinoBest) {
+
+        dinoBest = finalScore;
+
+        localStorage.setItem(
+            "doyourstreak-dino-best",
+            dinoBest
+        );
+
+    }
+
+    if (dinoBestElement) {
+
+        dinoBestElement.textContent =
+            dinoBest;
+
+    }
+
+
+    /* REWARD */
+
+    const reward =
+        Math.floor(finalScore / 50);
+
+    if (reward > 0) {
+
+        coins += reward;
+
+        updateCoins();
+
+    }
+
+
+    if (dinoStatus) {
+
+        dinoStatus.textContent =
+            `GAME OVER — Score ${finalScore}` +
+            (reward > 0
+                ? ` • +${reward} Coins`
+                : "");
+
+    }
+
+}
+
+
+startDinoButton?.addEventListener(
+    "click",
+    startDinoGame
+);
+
+
+jumpDinoButton?.addEventListener(
+    "click",
+    jumpDino
+);
+
+
+/* KEYBOARD */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.code === "Space" ||
+            event.code === "ArrowUp"
+        ) {
+
+            if (
+                !dinoGame?.classList.contains(
+                    "hidden"
+                )
+            ) {
+
+                event.preventDefault();
+
+                jumpDino();
+
+            }
+
+        }
+
+    }
+);
+
+
+/* CLICK CANVAS */
+
+dinoCanvas?.addEventListener(
+    "click",
+    jumpDino
+);
+
+
+/* INITIAL DRAW */
+
+loadDinoImages();
+
+drawDino();
 
 /* =====================================================
    INITIAL SHOP

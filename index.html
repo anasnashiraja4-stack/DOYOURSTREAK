@@ -403,6 +403,222 @@
 
         </div>
 
+        <!-- ================= GAME PAGE ================= -->
+
+        <div id="gamePage" class="app-page">
+
+            <section class="game-page">
+
+                <div class="game-header">
+                    <small>NAVGAME</small>
+                    <h1>PLAY & EARN</h1>
+                    <p>
+                        Main game menggunakan character kamu sendiri.
+                    </p>
+                </div>
+
+
+                <!-- GAME MENU -->
+
+                <div id="gameMenu" class="game-menu">
+
+                    <button id="openFightingGame" class="game-card">
+
+                        <div class="game-card-icon">
+                            🥊
+                        </div>
+
+                        <div>
+                            <small>BATTLE</small>
+                            <h2>FIGHTING</h2>
+                            <p>
+                                Lawan Monster dan menangkan battle.
+                            </p>
+                        </div>
+
+                    </button>
+
+
+                    <button id="openDinoGame" class="game-card">
+
+                        <div class="game-card-icon">
+                            🦖
+                        </div>
+
+                        <div>
+                            <small>RUN</small>
+                            <h2>DINO RUN</h2>
+                            <p>
+                                Lompat dan hindari obstacle.
+                            </p>
+                        </div>
+
+                    </button>
+
+                </div>
+
+
+                <!-- ================= FIGHTING GAME ================= -->
+
+                <div id="fightingGame" class="game-screen hidden">
+
+                    <div class="game-screen-header">
+
+                        <button id="backFromFight" class="secondary-button">
+                            ← BACK
+                        </button>
+
+                        <h2>🥊 FIGHTING</h2>
+
+                    </div>
+
+
+                    <div class="fight-arena">
+
+                        <!-- PLAYER -->
+
+                        <div class="fighter player-fighter">
+
+                            <div class="fighter-name">
+                                <span id="fightPlayerName">
+                                    PLAYER
+                                </span>
+
+                                <span id="fightPlayerHPText">
+                                    100 HP
+                                </span>
+                            </div>
+
+                            <div class="hp-bar">
+                                <div id="fightPlayerHP"></div>
+                            </div>
+
+                            <img id="fightPlayerImage" src="player.png" alt="Player">
+
+                        </div>
+
+
+                        <div class="fight-vs">
+                            VS
+                        </div>
+
+
+                        <!-- ENEMY -->
+
+                        <div class="fighter enemy-fighter">
+
+                            <div class="fighter-name">
+
+                                <span>
+                                    MONSTER
+                                </span>
+
+                                <span id="fightEnemyHPText">
+                                    100 HP
+                                </span>
+
+                            </div>
+
+                            <div class="hp-bar enemy-hp">
+                                <div id="fightEnemyHP"></div>
+                            </div>
+
+                            <img id="fightEnemyImage" src="Monster1.png" alt="Monster">
+
+                        </div>
+
+                    </div>
+
+
+                    <p id="fightStatus" class="game-status">
+                        Ready to fight!
+                    </p>
+
+
+                    <div class="fight-controls">
+
+                        <button id="fightAttack" class="game-action-button">
+                            👊 ATTACK
+                        </button>
+
+                        <button id="fightSpecial" class="game-action-button special">
+                            ⚡ SPECIAL
+                        </button>
+
+                    </div>
+
+
+                    <button id="fightRestart" class="main-button hidden">
+                        PLAY AGAIN
+                    </button>
+
+                </div>
+
+
+                <!-- ================= DINO GAME ================= -->
+
+                <div id="dinoGame" class="game-screen hidden">
+
+                    <div class="game-screen-header">
+
+                        <button id="backFromDino" class="secondary-button">
+                            ← BACK
+                        </button>
+
+                        <h2>🏃 DINO RUN</h2>
+
+                    </div>
+
+
+                    <div class="dino-score">
+
+                        <span>
+                            SCORE:
+                            <strong id="dinoScore">
+                                0
+                            </strong>
+                        </span>
+
+                        <span>
+                            BEST:
+                            <strong id="dinoBest">
+                                0
+                            </strong>
+                        </span>
+
+                    </div>
+
+
+                    <div class="dino-wrapper">
+
+                        <canvas id="dinoCanvas" width="800" height="300"></canvas>
+
+                    </div>
+
+
+                    <p id="dinoStatus" class="game-status">
+                        Press SPACE or click to jump!
+                    </p>
+
+
+                    <div class="dino-controls">
+
+                        <button id="startDino" class="main-button">
+                            START RUN
+                        </button>
+
+                        <button id="jumpDino" class="game-action-button">
+                            ↑ JUMP
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
         <!-- ================= EXERCISE PAGE ================= -->
 
         <div id="exercisePage" class="app-page">
@@ -750,6 +966,10 @@
 
             <button class="bottom-nav-image" id="infoNav" type="button">
                 <img src="infobutton.png" alt="Info">
+            </button>
+
+            <button class="bottom-nav-image" id="gameNav" type="button">
+                <img src="gameicon.png" alt="Game">
             </button>
 
         </nav>
