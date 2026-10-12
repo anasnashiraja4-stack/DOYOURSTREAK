@@ -5313,3 +5313,56 @@ body::before {
     }
 
 }
+
+
+/* APP SWITCHER — tidak mengubah navigasi lama */
+.app-switcher {
+  position: fixed;
+  right: 14px;
+  bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 10px;
+  border: 1px solid #b8b8b8;
+  border-radius: 999px;
+
+  background: #ffffff;
+  color: #171717;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+
+  font-family: inherit;
+  font-size: 11px;
+}
+
+.app-switcher span {
+  color: #666666;
+  font-weight: 600;
+}
+
+.app-switcher a {
+  color: #171717;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.app-switcher a:hover {
+  opacity: 0.65;
+}
+
+.app-switcher a:focus-visible {
+  outline: 2px solid #171717;
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .app-switcher {
+    right: 10px;
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    font-size: 10px;
+  }
+}
