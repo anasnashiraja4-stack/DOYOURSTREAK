@@ -1493,7 +1493,8 @@ const LAST_CHARACTER_CARE_KEY =
 
 const DIRTY_CHARACTER_IMAGES = {
     "player.png": "playerJorok.png",
-    "catty.png": "cattyJorok.png"
+    "catty.png": "cattyJorok.png",
+    "copet.png": "copetJorok.png"
 };
 
 function getDaysSinceCharacterCare() {
