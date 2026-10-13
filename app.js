@@ -637,7 +637,7 @@ function toggleHabit(id) {
     stats.xp += 10;
 
     updateDailyStreak();
-
+    careForCharacterToday();
 
     const newLevel =
         Math.floor(stats.xp / 100) + 1;
@@ -1392,6 +1392,12 @@ const characters = [
         image: "player.png",
         price: 0
     },
+    {
+        id: "catty",
+        name: "CATTY",
+        image: "catty.png",
+        price: 0
+    },
 
     {
         id: "oyenomali",
@@ -1479,6 +1485,90 @@ let currentCharacter = 0;
 
 
 /* =========================================
+   CHARACTER CARE / NEGLECT SYSTEM
+========================================= */
+
+const LAST_CHARACTER_CARE_KEY =
+    "doyourstreak-last-care-date";
+
+const DIRTY_CHARACTER_IMAGES = {
+    "player.png": "playerJorok.png",
+    "catty.png": "cattyJorok.png"
+};
+
+function getDaysSinceCharacterCare() {
+    let lastCareDate = localStorage.getItem(
+        LAST_CHARACTER_CARE_KEY
+    );
+
+    const today = getTodayDate();
+
+    // Pemakaian pertama: mulai menghitung dari hari ini
+    if (!lastCareDate) {
+        localStorage.setItem(
+            LAST_CHARACTER_CARE_KEY,
+            today
+        );
+
+        return 0;
+    }
+
+    const [lastYear, lastMonth, lastDay] =
+        lastCareDate.split("-").map(Number);
+
+    const [todayYear, todayMonth, todayDay] =
+        today.split("-").map(Number);
+
+    const lastDate = new Date(
+        lastYear,
+        lastMonth - 1,
+        lastDay
+    );
+
+    const todayDate = new Date(
+        todayYear,
+        todayMonth - 1,
+        todayDay
+    );
+
+    const difference =
+        todayDate.getTime() - lastDate.getTime();
+
+    // Tanggal masa depan tidak boleh membuat hitungan negatif
+    if (difference < 0) return 0;
+
+    return Math.floor(
+        difference / (1000 * 60 * 60 * 24)
+    );
+}
+
+function getCharacterDisplayImage(character) {
+    if (!character) return "player.png";
+
+    const daysWithoutCare =
+        getDaysSinceCharacterCare();
+
+    if (daysWithoutCare >= 3) {
+        return (
+            DIRTY_CHARACTER_IMAGES[character.image] ||
+            character.image
+        );
+    }
+
+    return character.image;
+}
+
+function careForCharacterToday() {
+    localStorage.setItem(
+        LAST_CHARACTER_CARE_KEY,
+        getTodayDate()
+    );
+
+    updateCharacter();
+}
+
+
+/* =========================================
    CHECK OWNERSHIP
 ========================================= */
 
@@ -1548,15 +1638,14 @@ function updateCharacter() {
     if (!character) return;
 
 
+
     if (playerImage) {
-
         playerImage.src =
-            character.image;
+            getCharacterDisplayImage(character);
 
-        playerImage.alt =
-            character.name;
-
+        playerImage.alt = character.name;
     }
+
 
 
     if (playerName) {
