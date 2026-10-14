@@ -268,6 +268,10 @@
                     <strong id="coinAmount">0</strong>
                 </div>
 
+                <button id="premiumOpenButton" class="premium-open-button" type="button" aria-label="Open Premium">
+                    <img src="iconpremium.png" alt="Premium">
+                </button>
+
             </div>
 
             <!-- SMALL STATS -->
@@ -965,6 +969,64 @@
 
         </div>
 
+        <!-- ================= PREMIUM MODAL ================= -->
+        <div id="premiumModal" class="premium-modal hidden">
+            <div class="premium-card">
+
+                <button id="premiumCloseButton" class="premium-close" type="button"
+                    aria-label="Close Premium">×</button>
+
+                <div class="premium-heading">
+                    <img src="iconpremium.png" alt="">
+                    <div>
+                        <small>DOYOURSTREAK EXCLUSIVE</small>
+                        <h2>PREMIUM</h2>
+                        <p>Upgrade your streak experience.</p>
+                    </div>
+                </div>
+
+                <div class="premium-tabs">
+                    <button type="button" class="premium-tab active" data-premium-tab="characters">
+                        CHARACTERS
+                    </button>
+
+                    <button type="button" class="premium-tab" data-premium-tab="statistics">
+                        STATISTICS
+                    </button>
+                </div>
+
+                <div id="premiumCharactersPanel" class="premium-panel">
+                    <div class="premium-section-heading">
+                        <h3>Character Collection</h3>
+                        <p>Unlock exclusive characters and skins.</p>
+                    </div>
+
+                    <div id="premiumCharacterGrid" class="premium-character-grid"></div>
+                </div>
+
+                <div id="premiumStatisticsPanel" class="premium-panel hidden">
+                    <div class="premium-section-heading">
+                        <h3>Priority Statistics</h3>
+                        <p>Understand your habits and completion progress.</p>
+                    </div>
+
+                    <div id="premiumStatisticsContent"></div>
+                </div>
+
+                <div class="premium-demo-area">
+                    <p id="premiumStatusText">Premium Demo is currently locked.</p>
+
+                    <button id="premiumDemoButton" class="premium-demo-button" type="button">
+                        ACTIVATE PREMIUM DEMO
+                    </button>
+
+                    <small>
+                        Demo only — no real payment is made.
+                    </small>
+                </div>
+
+            </div>
+        </div>
 
         <nav class="bottom-navbar">
 
@@ -994,7 +1056,7 @@
 
     <!-- JAVASCRIPT -->
     <script src="app.js"></script>
-
+    <script src="premium.js"></script>
 
     <!-- APP SWITCHER: DOYOURSTREAK -> VITA -->
     <div class="app-switcher">

@@ -1475,6 +1475,71 @@ const characters = [
         name: "CARET",
         image: "caret.png",
         price: 400
+    },
+
+    // PREMIUM CHARACTERS
+    {
+        id: "chinescat",
+        name: "CHINESCAT",
+        image: "chinescat.png",
+        price: 0,
+        premium: true
+    },
+    {
+        id: "eggcat",
+        name: "EGGCAT",
+        image: "eggcat.png",
+        price: 0,
+        premium: true
+    },
+    {
+        id: "fighterpilot",
+        name: "FIGHTERPILOT",
+        image: "fighterpilot.png",
+        price: 0,
+        premium: true
+    },
+    {
+        id: "greycat",
+        name: "GREYCAT",
+        image: "greycat.png",
+        price: 0,
+        premium: true
+    },
+    {
+        id: "hamster",
+        name: "HAMSTER",
+        image: "hamster.png",
+        price: 0,
+        premium: true
+    },
+    {
+        id: "hamsterskin",
+        name: "HAMSTER SKIN",
+        image: "hamsterskin.png",
+        price: 0,
+        premium: true
+    },
+    {
+        id: "catowl",
+        name: "CATOWL",
+        image: "catowl.png",
+        price: 0,
+        premium: true
+    },
+    {
+        id: "catmine",
+        name: "CATMINE",
+        image: "catmine.png",
+        price: 0,
+        premium: true
+    },
+    {
+        id: "wdonal",
+        name: "WDONAL",
+        image: "Wdonal.png",
+        price: 0,
+        premium: true
     }
     // NANTI TAMBAH CHARACTER DI SINI
 
@@ -1574,17 +1639,21 @@ function careForCharacterToday() {
 ========================================= */
 
 function isCharacterOwned(character) {
+    // Premium characters need Premium access.
+    if (character.premium) {
+        return localStorage.getItem(
+            "doyourstreak-premium-demo"
+        ) === "true";
+    }
 
-    // PLAYER selalu unlocked
+    // Existing free characters remain unlocked.
     if (character.price === 0) {
         return true;
     }
 
-    return (
-        localStorage.getItem(
-            `doyourstreak-owned-${character.image}`
-        ) === "true"
-    );
+    return localStorage.getItem(
+        `doyourstreak-owned-${character.image}`
+    ) === "true";
 }
 
 
