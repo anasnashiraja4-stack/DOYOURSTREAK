@@ -92,6 +92,91 @@ const completedToday = document.getElementById("completedToday");
 
 
 /* =====================================================
+   ESP32 COMPANION (Web Bluetooth)
+===================================================== */
+const ESP32_SERVICE_UUID = "12345678-1234-1234-1234-123456789001";
+const ESP32_CHARACTERISTIC_UUID = "12345678-1234-1234-1234-123456789002";
+let espDevice = null;
+let espCharacteristic = null;
+let espWriteQueue = Promise.resolve();
+
+const espConnectButton = document.getElementById("espConnectButton");
+const espConnectionStatus = document.getElementById("espConnectionStatus");
+
+function setESPStatus(message, connected = false) {
+    if (!espConnectionStatus) return;
+    espConnectionStatus.textContent = message;
+    espConnectionStatus.classList.toggle("connected", connected);
+}
+
+async function connectESP32() {
+    if (!navigator.bluetooth) {
+        setESPStatus("BLE needs Chrome/Edge on HTTPS or localhost");
+        alert("Web Bluetooth belum tersedia. Buka DOYOURSTREAK di Chrome/Edge melalui localhost atau HTTPS, lalu coba lagi.");
+        return;
+    }
+    try {
+        espConnectButton.disabled = true;
+        setESPStatus("Searching for Vita ESP32…");
+        espDevice = await navigator.bluetooth.requestDevice({
+            filters: [{ services: [ESP32_SERVICE_UUID] }],
+            optionalServices: [ESP32_SERVICE_UUID]
+        });
+        espDevice.addEventListener("gattserverdisconnected", () => {
+            espCharacteristic = null;
+            setESPStatus("ESP32: Disconnected");
+            if (espConnectButton) espConnectButton.disabled = false;
+        });
+        const server = await espDevice.gatt.connect();
+        const service = await server.getPrimaryService(ESP32_SERVICE_UUID);
+        espCharacteristic = await service.getCharacteristic(ESP32_CHARACTERISTIC_UUID);
+        setESPStatus("ESP32: Connected ✓", true);
+        espConnectButton.textContent = "✓ ESP32 CONNECTED";
+        await syncESPStats();
+    } catch (error) {
+        console.error("ESP32 BLE connection failed:", error);
+        setESPStatus(error.name === "NotFoundError" ? "Device not selected" : "Connection failed");
+    } finally {
+        if (espConnectButton) espConnectButton.disabled = false;
+    }
+}
+
+function sendESPCommand(command) {
+    if (!espCharacteristic) return Promise.resolve(false);
+    // Serialise writes so a habit event and its XP sync cannot overtake each other.
+    espWriteQueue = espWriteQueue.then(async () => {
+        if (!espCharacteristic) return false;
+        const data = new TextEncoder().encode(command);
+        if (espCharacteristic.properties.writeWithoutResponse && !espCharacteristic.properties.write) {
+            await espCharacteristic.writeValueWithoutResponse(data);
+        } else {
+            await espCharacteristic.writeValue(data);
+        }
+        return true;
+    }).catch(error => {
+        console.error("ESP32 BLE write failed:", error);
+        setESPStatus("ESP32 write failed — reconnect", false);
+        return false;
+    });
+    return espWriteQueue;
+}
+
+async function syncESPStats() {
+    const level = Math.floor((Number(stats.xp) || 0) / 100) + 1;
+    const progress = (Number(stats.xp) || 0) % 100;
+    return sendESPCommand(`SYNC:${Number(stats.xp) || 0}:${level}:${progress}`);
+}
+
+function notifyESP32HabitCompleted(levelUp = false) {
+    // These are non-blocking: local habit tracking still works when BLE is disconnected.
+    sendESPCommand("HABIT_DONE");
+    syncESPStats();
+    if (levelUp) sendESPCommand("LEVEL_UP");
+}
+
+if (espConnectButton) espConnectButton.addEventListener("click", connectESP32);
+
+/* =====================================================
    INITIALIZATION
 ===================================================== */
 
@@ -651,6 +736,7 @@ function toggleHabit(id) {
 
     updateStats();
 
+    notifyESP32HabitCompleted(newLevel > oldLevel);
 
     /* ==============================================
        ANIMATIONS
@@ -772,6 +858,9 @@ function updateStats() {
 
     xpBar.style.width =
         `${currentXP}%`;
+
+    // Keep the ESP32 companion display synced to the app's authoritative XP/level.
+    if (espCharacteristic) syncESPStats();
 
 }
 

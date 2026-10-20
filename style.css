@@ -6200,3 +6200,28 @@ body::before {
         transition: none !important;
     }
 }
+
+/* ESP32 companion connection controls */
+.esp-connect-button {
+    border: 2px solid #111;
+    border-radius: 12px;
+    background: #fff;
+    color: #111;
+    padding: 7px 11px;
+    font-weight: 800;
+    box-shadow: 3px 3px 0 #111;
+    white-space: nowrap;
+}
+.esp-connect-button:disabled { opacity: .65; cursor: wait; }
+.esp-connection-status {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.15;
+    max-width: 150px;
+}
+.esp-connection-status.connected { color: #16803c; }
+@media (max-width: 680px) {
+    .topbar { flex-wrap: wrap; gap: 10px; }
+    .esp-connection-status { max-width: 125px; }
+    .esp-connect-button { font-size: 11px; padding: 6px 8px; }
+}
