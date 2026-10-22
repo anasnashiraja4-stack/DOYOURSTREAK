@@ -161,10 +161,27 @@ function sendESPCommand(command) {
     return espWriteQueue;
 }
 
+function getESPDailyProgress() {
+    const total = Array.isArray(habits) ? habits.length : 0;
+    const completed = total
+        ? habits.filter(habit => habit && habit.completed).length
+        : 0;
+    const percent = total ? Math.round((completed / total) * 100) : 0;
+    return { completed, total, percent };
+}
+
 async function syncESPStats() {
-    const level = Math.floor((Number(stats.xp) || 0) / 100) + 1;
-    const progress = (Number(stats.xp) || 0) % 100;
-    return sendESPCommand(`SYNC:${Number(stats.xp) || 0}:${level}:${progress}`);
+    const xp = Math.max(0, Number(stats.xp) || 0);
+    const level = Math.floor(xp / 100) + 1;
+    const xpProgress = xp % 100;
+    const daily = getESPDailyProgress();
+
+    // Protocol: SYNC:xp:level:xpProgress:dailyPercent:completedHabits:totalHabits
+    // Older firmware safely ignores the additional fields; updated firmware uses
+    // dailyPercent to select the companion's underlying mood.
+    return sendESPCommand(
+        `SYNC:${xp}:${level}:${xpProgress}:${daily.percent}:${daily.completed}:${daily.total}`
+    );
 }
 
 function notifyESP32HabitCompleted(levelUp = false) {
