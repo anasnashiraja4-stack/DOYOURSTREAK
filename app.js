@@ -102,11 +102,18 @@ let espWriteQueue = Promise.resolve();
 
 const espConnectButton = document.getElementById("espConnectButton");
 const espConnectionStatus = document.getElementById("espConnectionStatus");
+const espTopStatus = document.getElementById("espTopStatus");
 
 function setESPStatus(message, connected = false) {
     if (!espConnectionStatus) return;
     espConnectionStatus.textContent = message;
     espConnectionStatus.classList.toggle("connected", connected);
+    if (espTopStatus) {
+        const connecting = !connected && /search|connect|sync/i.test(message);
+        espTopStatus.textContent = connected ? "● ESP32 ONLINE" : connecting ? "● ESP32 CONNECTING" : "● ESP32 OFFLINE";
+        espTopStatus.classList.toggle("connected", connected);
+        espTopStatus.classList.toggle("connecting", connecting);
+    }
 }
 
 async function connectESP32() {
@@ -125,7 +132,10 @@ async function connectESP32() {
         espDevice.addEventListener("gattserverdisconnected", () => {
             espCharacteristic = null;
             setESPStatus("ESP32: Disconnected");
-            if (espConnectButton) espConnectButton.disabled = false;
+            if (espConnectButton) {
+                espConnectButton.disabled = false;
+                espConnectButton.textContent = "🔌 CONNECT ESP32";
+            }
         });
         const server = await espDevice.gatt.connect();
         const service = await server.getPrimaryService(ESP32_SERVICE_UUID);
@@ -200,6 +210,7 @@ if (espConnectButton) espConnectButton.addEventListener("click", connectESP32);
 document.addEventListener("DOMContentLoaded", () => {
 
     renderDailyTask();
+    setupCharacterFallback();
     setupPriorityButtons();
     setupEmojiButtons();
 
@@ -687,6 +698,52 @@ function deleteHabit(id) {
 ===================================================== */
 
 
+function setupCharacterFallback() {
+    const image = document.getElementById("playerImage");
+    const fallback = document.getElementById("characterFallback");
+    if (!image || !fallback) return;
+    image.addEventListener("error", () => {
+        image.classList.add("hidden");
+        fallback.classList.remove("hidden");
+    });
+    image.addEventListener("load", () => {
+        image.classList.remove("hidden");
+        fallback.classList.add("hidden");
+    });
+    if (image.complete && image.naturalWidth === 0) {
+        image.classList.add("hidden");
+        fallback.classList.remove("hidden");
+    }
+}
+
+function triggerCharacterReaction(reaction) {
+    const image = document.getElementById("playerImage");
+    const fallback = document.getElementById("characterFallback");
+    const target = image && !image.classList.contains("hidden") ? image : fallback;
+    const bubble = document.getElementById("characterReactionBubble");
+    if (!target) return;
+
+    const messages = {
+        "happy": "Mantap! +10 XP",
+        "level-up": "LEVEL UP! 🎉",
+        "streak": "STREAK 7 HARI! 🔥"
+    };
+    if (bubble) {
+        bubble.textContent = messages[reaction] || messages.happy;
+        bubble.classList.remove("hidden");
+        window.clearTimeout(bubble.hideTimer);
+        bubble.hideTimer = window.setTimeout(() => bubble.classList.add("hidden"), 2200);
+    }
+
+    const classes = ["react-happy", "react-level-up", "react-streak"];
+    target.classList.remove(...classes);
+    void target.offsetWidth;
+    const className = reaction === "level-up" ? "react-level-up" : reaction === "streak" ? "react-streak" : "react-happy";
+    target.classList.add(className);
+    window.setTimeout(() => target.classList.remove(className), 1400);
+}
+
+
 function toggleHabit(id) {
 
     const habit =
@@ -758,6 +815,10 @@ function toggleHabit(id) {
     /* ==============================================
        ANIMATIONS
     ============================================== */
+
+    triggerCharacterReaction(
+        newLevel > oldLevel ? "level-up" : (habit.streak > 0 && habit.streak % 7 === 0 ? "streak" : "happy")
+    );
 
     if (typeof celebratePlayer === "function") {
         celebratePlayer();
@@ -1816,10 +1877,9 @@ function updateCharacter() {
 
 
     if (playerImage) {
-        playerImage.src =
-            getCharacterDisplayImage(character);
-
+        playerImage.src = getCharacterDisplayImage(character);
         playerImage.alt = character.name;
+        playerImage.classList.remove("hidden");
     }
 
 

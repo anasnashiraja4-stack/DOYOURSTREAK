@@ -248,6 +248,7 @@
                 <div class="level-badge">
                     LVL <span id="level">1</span>
                 </div>
+                <span id="espTopStatus" class="esp-top-status" role="status" aria-live="polite">● ESP32 OFFLINE</span>
             </div>
 
 
@@ -301,7 +302,9 @@
                 </button>
 
                 <div class="character-main">
+                    <div id="characterReactionBubble" class="character-reaction-bubble hidden" aria-live="polite"></div>
                     <img id="playerImage" src="player.png" alt="Player">
+                    <div id="characterFallback" class="character-fallback hidden" role="img" aria-label="Karakter anjing">🐶</div>
 
                     <h2 id="playerName">Player</h2>
                 </div>
@@ -464,21 +467,13 @@
 
                     </button>
 
-                    <!-- ESP32 CONNECT -->
-                    <div id="espControls" class="esp-controls">
-                        <button id="espConnectButton" class="esp-connect-button" type="button">
-                            🔌 CONNECT ESP32
-                        </button>
-
-                        <span id="espConnectionStatus" class="esp-connection-status" role="status">
-                            ESP32: Disconnected
-                        </span>
-                    </div>
-
-
                 </div>
 
-
+                <!-- Tombol kecil ESP32 -->
+                <div class="user-info">
+                <button id="espConnectButton" class="esp-connect-button" type="button">🔌 CONNECT ESP32</button>
+                <span id="espConnectionStatus" class="esp-connection-status" role="status">ESP32: Disconnected</span>
+                <div>
 
                 <!-- ================= FIGHTING GAME ================= -->
 
