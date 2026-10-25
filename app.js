@@ -1319,6 +1319,8 @@ function setActiveNav(activeButton) {
 
 function showGamePage() {
 
+    showGameMenu();
+
     characterPage?.classList.remove("active");
     shopPage?.classList.remove("active");
     gamePage?.classList.add("active");
@@ -2362,6 +2364,9 @@ const backFromFight =
 
 const backFromDino =
     document.getElementById("backFromDino");
+const openFlappyGame = document.getElementById("openFlappyGame");
+const flappyGame = document.getElementById("flappyGame");
+const backFromFlappy = document.getElementById("backFromFlappy");
 
 
 function showGameMenu() {
@@ -2372,7 +2377,10 @@ function showGameMenu() {
 
     dinoGame?.classList.add("hidden");
 
+    flappyGame?.classList.add("hidden");
+
     stopDinoGame();
+    stopFlappyGame();
 
 }
 
@@ -2434,6 +2442,16 @@ backFromDino?.addEventListener(
 );
 
 
+openFlappyGame?.addEventListener("click", () => {
+    gameMenu?.classList.add("hidden");
+    fightingGame?.classList.add("hidden");
+    dinoGame?.classList.add("hidden");
+    flappyGame?.classList.remove("hidden");
+    stopDinoGame();
+    startFlappyScreen();
+});
+
+backFromFlappy?.addEventListener("click", showGameMenu);
 /* =====================================================
    FIGHTING GAME
 ===================================================== */
@@ -4194,31 +4212,7 @@ renderCharacterShop();
 
 /* INITIAL COINS */
 
-updateCoins();    showGameMenu();
-    stopFlappyGame();
-    stopFlappyGame();
-    gamePage?.classList.remove("active");
-    stopFlappyGame();
-    stopFlappyGame();
-const openFlappyGame = document.getElementById("openFlappyGame");
-const flappyGame = document.getElementById("flappyGame");
-const backFromFlappy = document.getElementById("backFromFlappy");
-    flappyGame?.classList.add("hidden");
-    stopFlappyGame();
-        flappyGame?.classList.add("hidden");
-        stopFlappyGame();
-        flappyGame?.classList.add("hidden");
-        stopFlappyGame();
-openFlappyGame?.addEventListener("click", () => {
-    gameMenu?.classList.add("hidden");
-    fightingGame?.classList.add("hidden");
-    dinoGame?.classList.add("hidden");
-    flappyGame?.classList.remove("hidden");
-    stopDinoGame();
-    startFlappyScreen();
-});
-
-backFromFlappy?.addEventListener("click", showGameMenu);
+updateCoins();
 
 
 /* =====================================================
