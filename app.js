@@ -4194,4 +4194,194 @@ renderCharacterShop();
 
 /* INITIAL COINS */
 
-updateCoins();
+updateCoins();    showGameMenu();
+    stopFlappyGame();
+    stopFlappyGame();
+    gamePage?.classList.remove("active");
+    stopFlappyGame();
+    stopFlappyGame();
+const openFlappyGame = document.getElementById("openFlappyGame");
+const flappyGame = document.getElementById("flappyGame");
+const backFromFlappy = document.getElementById("backFromFlappy");
+    flappyGame?.classList.add("hidden");
+    stopFlappyGame();
+        flappyGame?.classList.add("hidden");
+        stopFlappyGame();
+        flappyGame?.classList.add("hidden");
+        stopFlappyGame();
+openFlappyGame?.addEventListener("click", () => {
+    gameMenu?.classList.add("hidden");
+    fightingGame?.classList.add("hidden");
+    dinoGame?.classList.add("hidden");
+    flappyGame?.classList.remove("hidden");
+    stopDinoGame();
+    startFlappyScreen();
+});
+
+backFromFlappy?.addEventListener("click", showGameMenu);
+
+
+/* =====================================================
+   FLAPPY BIRD MINI GAME
+===================================================== */
+const flappyCanvas = document.getElementById("flappyCanvas");
+const flappyCtx = flappyCanvas?.getContext("2d");
+const flappyScoreLabel = document.getElementById("flappyScore");
+const flappyBestLabel = document.getElementById("flappyBest");
+const flappyStatus = document.getElementById("flappyStatus");
+const startFlappyButton = document.getElementById("startFlappy");
+const flapFlappyButton = document.getElementById("flapFlappy");
+let flappyRunning = false;
+let flappyFrameId = null;
+let flappyLastTime = 0;
+let flappySpawnTimer = 0;
+let flappyScore = 0;
+let flappyBird = { y: 220, velocity: 0 };
+let flappyPipes = [];
+let flappyBest = Number(localStorage.getItem("doyourstreak-flappy-best")) || 0;
+const FLAPPY_WIDTH = 360;
+const FLAPPY_HEIGHT = 480;
+const FLAPPY_GROUND = 438;
+
+function startFlappyScreen() {
+    if (flappyBestLabel) flappyBestLabel.textContent = flappyBest;
+    resetFlappyGame();
+}
+
+function resetFlappyGame() {
+    stopFlappyGame();
+    flappyBird = { y: 220, velocity: 0 };
+    flappyPipes = [];
+    flappyScore = 0;
+    flappySpawnTimer = 0;
+    if (flappyScoreLabel) flappyScoreLabel.textContent = "0";
+    if (flappyStatus) flappyStatus.textContent = "Tekan MULAI, lalu klik atau tekan spasi untuk terbang.";
+    if (startFlappyButton) startFlappyButton.textContent = "MULAI";
+    drawFlappyScene();
+}
+
+function startFlappyGame() {
+    if (!flappyCanvas || !flappyCtx || flappyRunning) return;
+    flappyBird = { y: 220, velocity: -350 };
+    flappyPipes = [];
+    flappyScore = 0;
+    flappySpawnTimer = 0;
+    flappyLastTime = performance.now();
+    flappyRunning = true;
+    if (flappyScoreLabel) flappyScoreLabel.textContent = "0";
+    if (flappyStatus) flappyStatus.textContent = "Terbang! Hindari pipa.";
+    if (startFlappyButton) startFlappyButton.textContent = "ULANGI";
+    flappyFrameId = requestAnimationFrame(flappyLoop);
+}
+
+function stopFlappyGame() {
+    flappyRunning = false;
+    if (flappyFrameId !== null) cancelAnimationFrame(flappyFrameId);
+    flappyFrameId = null;
+}
+
+function flapBird() {
+    if (!flappyRunning) {
+        startFlappyGame();
+        return;
+    }
+    flappyBird.velocity = -350;
+}
+
+function drawFlappyScene() {
+    if (!flappyCtx) return;
+    const ctx = flappyCtx;
+    ctx.clearRect(0, 0, FLAPPY_WIDTH, FLAPPY_HEIGHT);
+    ctx.fillStyle = "#9bdcff";
+    ctx.fillRect(0, 0, FLAPPY_WIDTH, FLAPPY_HEIGHT);
+    ctx.fillStyle = "rgba(255,255,255,.8)";
+    [[55, 85], [245, 130], [155, 45]].forEach(([x, y]) => {
+        ctx.fillRect(x, y, 46, 12);
+        ctx.fillRect(x + 10, y - 8, 20, 10);
+    });
+    flappyPipes.forEach(pipe => {
+        ctx.fillStyle = "#28a745";
+        ctx.fillRect(pipe.x, 0, 54, pipe.top);
+        ctx.fillRect(pipe.x - 5, pipe.top - 18, 64, 18);
+        const bottomY = pipe.top + pipe.gap;
+        ctx.fillRect(pipe.x, bottomY, 54, FLAPPY_GROUND - bottomY);
+        ctx.fillRect(pipe.x - 5, bottomY, 64, 18);
+        ctx.fillStyle = "#16752e";
+        ctx.fillRect(pipe.x + 7, 0, 5, Math.max(0, pipe.top - 18));
+        ctx.fillRect(pipe.x + 7, bottomY + 18, 5, Math.max(0, FLAPPY_GROUND - bottomY - 18));
+    });
+    ctx.fillStyle = "#78c850";
+    ctx.fillRect(0, FLAPPY_GROUND, FLAPPY_WIDTH, 12);
+    ctx.fillStyle = "#d7b56d";
+    ctx.fillRect(0, FLAPPY_GROUND + 12, FLAPPY_WIDTH, FLAPPY_HEIGHT - FLAPPY_GROUND - 12);
+    ctx.fillStyle = "#ffd43b";
+    ctx.fillRect(70, flappyBird.y, 30, 24);
+    ctx.fillStyle = "#f29d24";
+    ctx.fillRect(95, flappyBird.y + 9, 12, 8);
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(88, flappyBird.y + 4, 8, 8);
+    ctx.fillStyle = "#111";
+    ctx.fillRect(92, flappyBird.y + 6, 3, 3);
+    ctx.fillStyle = "#f2a900";
+    ctx.fillRect(74, flappyBird.y + 22, 8, 4);
+    if (!flappyRunning) {
+        ctx.fillStyle = "rgba(0,0,0,.45)";
+        ctx.fillRect(28, 185, 304, 86);
+        ctx.fillStyle = "#fff";
+        ctx.textAlign = "center";
+        ctx.font = "bold 22px sans-serif";
+        ctx.fillText("FLAPPY STREAK", 180, 220);
+        ctx.font = "14px sans-serif";
+        ctx.fillText("Klik / spasi untuk terbang", 180, 246);
+    }
+}
+
+function flappyLoop(timestamp) {
+    if (!flappyRunning) return;
+    const dt = Math.min((timestamp - flappyLastTime) / 1000, 0.035);
+    flappyLastTime = timestamp;
+    flappyBird.velocity += 1050 * dt;
+    flappyBird.y += flappyBird.velocity * dt;
+    flappySpawnTimer += dt;
+    if (flappySpawnTimer >= 1.45) {
+        flappySpawnTimer = 0;
+        flappyPipes.push({ x: FLAPPY_WIDTH, top: 55 + Math.random() * 215, gap: 148, passed: false });
+    }
+    flappyPipes.forEach(pipe => { pipe.x -= 155 * dt; });
+    flappyPipes = flappyPipes.filter(pipe => pipe.x > -65);
+    const birdBox = { left: 72, right: 98, top: flappyBird.y + 2, bottom: flappyBird.y + 22 };
+    let collided = flappyBird.y < 0 || flappyBird.y + 24 >= FLAPPY_GROUND;
+    flappyPipes.forEach(pipe => {
+        const overlapsX = birdBox.right > pipe.x && birdBox.left < pipe.x + 54;
+        if (overlapsX && (birdBox.top < pipe.top || birdBox.bottom > pipe.top + pipe.gap)) collided = true;
+        if (!pipe.passed && pipe.x + 54 < birdBox.left) {
+            pipe.passed = true;
+            flappyScore += 1;
+            if (flappyScoreLabel) flappyScoreLabel.textContent = flappyScore;
+        }
+    });
+    drawFlappyScene();
+    if (collided) {
+        stopFlappyGame();
+        if (flappyStatus) flappyStatus.textContent = `Game over! Skor kamu ${flappyScore}.`;
+        if (flappyScore > flappyBest) {
+            flappyBest = flappyScore;
+            localStorage.setItem("doyourstreak-flappy-best", String(flappyBest));
+            if (flappyBestLabel) flappyBestLabel.textContent = flappyBest;
+        }
+        if (startFlappyButton) startFlappyButton.textContent = "MAIN LAGI";
+        return;
+    }
+    flappyFrameId = requestAnimationFrame(flappyLoop);
+}
+
+startFlappyButton?.addEventListener("click", startFlappyGame);
+flapFlappyButton?.addEventListener("click", flapBird);
+flappyCanvas?.addEventListener("pointerdown", event => { event.preventDefault(); flapBird(); });
+document.addEventListener("keydown", event => {
+    if (event.code !== "Space" || flappyGame?.classList.contains("hidden")) return;
+    event.preventDefault();
+    flapBird();
+});
+
+

@@ -1081,4 +1081,31 @@
 
 </body>
 
-</html>
+</html>                    <button id="openFlappyGame" class="game-card" type="button">
+                        <div class="game-card-icon">🐤</div>
+                        <div>
+                            <small>ARCADE</small>
+                            <h2>FLAPPY BIRD</h2>
+                            <p>Terbang melewati pipa dan pecahkan skor terbaik.</p>
+                        </div>
+                    </button>
+
+                <div id="flappyGame" class="game-screen hidden">
+                    <div class="game-screen-header">
+                        <button id="backFromFlappy" class="secondary-button" type="button">← MENU GAME</button>
+                        <h2>🐤 FLAPPY BIRD</h2>
+                    </div>
+                    <div class="flappy-scoreboard">
+                        <span>SKOR <strong id="flappyScore">0</strong></span>
+                        <span>TERBAIK <strong id="flappyBest">0</strong></span>
+                    </div>
+                    <div class="flappy-stage">
+                        <canvas id="flappyCanvas" width="360" height="480" aria-label="Game Flappy Bird"></canvas>
+                    </div>
+                    <p id="flappyStatus" class="game-status">Tekan MULAI, lalu klik atau tekan spasi untuk terbang.</p>
+                    <div class="flappy-controls">
+                        <button id="startFlappy" class="main-button" type="button">MULAI</button>
+                        <button id="flapFlappy" class="game-action-button" type="button">🐤 TERBANG</button>
+                    </div>
+                </div>
+
