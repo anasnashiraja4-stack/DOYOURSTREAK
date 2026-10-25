@@ -4238,6 +4238,8 @@ let flappySpawnTimer = 0;
 let flappyScore = 0;
 let flappyBird = { y: 220, velocity: 0 };
 let flappyPipes = [];
+const flappyCharacterImage = new Image();
+let flappyCharacterSource = "";
 let flappyBest = Number(localStorage.getItem("doyourstreak-flappy-best")) || 0;
 const FLAPPY_WIDTH = 360;
 const FLAPPY_HEIGHT = 480;
@@ -4245,7 +4247,17 @@ const FLAPPY_GROUND = 438;
 
 function startFlappyScreen() {
     if (flappyBestLabel) flappyBestLabel.textContent = flappyBest;
+    loadFlappyCharacter();
     resetFlappyGame();
+}
+
+function loadFlappyCharacter() {
+    const character = getGameCharacter();
+    const source = character?.image || "player.png";
+    if (source === flappyCharacterSource) return;
+    flappyCharacterSource = source;
+    flappyCharacterImage.onload = drawFlappyScene;
+    flappyCharacterImage.src = source;
 }
 
 function resetFlappyGame() {
@@ -4314,16 +4326,30 @@ function drawFlappyScene() {
     ctx.fillRect(0, FLAPPY_GROUND, FLAPPY_WIDTH, 12);
     ctx.fillStyle = "#d7b56d";
     ctx.fillRect(0, FLAPPY_GROUND + 12, FLAPPY_WIDTH, FLAPPY_HEIGHT - FLAPPY_GROUND - 12);
-    ctx.fillStyle = "#ffd43b";
-    ctx.fillRect(70, flappyBird.y, 30, 24);
-    ctx.fillStyle = "#f29d24";
-    ctx.fillRect(95, flappyBird.y + 9, 12, 8);
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(88, flappyBird.y + 4, 8, 8);
-    ctx.fillStyle = "#111";
-    ctx.fillRect(92, flappyBird.y + 6, 3, 3);
-    ctx.fillStyle = "#f2a900";
-    ctx.fillRect(74, flappyBird.y + 22, 8, 4);
+    if (flappyCharacterImage.complete && flappyCharacterImage.naturalWidth > 0) {
+        const maxSize = 38;
+        const scale = Math.min(
+            maxSize / flappyCharacterImage.naturalWidth,
+            maxSize / flappyCharacterImage.naturalHeight
+        );
+        const width = flappyCharacterImage.naturalWidth * scale;
+        const height = flappyCharacterImage.naturalHeight * scale;
+        ctx.save();
+        ctx.translate(85, flappyBird.y + 18);
+        ctx.rotate(Math.max(-0.35, Math.min(0.65, flappyBird.velocity / 700)));
+        ctx.drawImage(flappyCharacterImage, -width / 2, -height / 2, width, height);
+        ctx.restore();
+    } else {
+        // Keep a visible fallback if the selected character image cannot load.
+        ctx.fillStyle = "#ffd43b";
+        ctx.fillRect(70, flappyBird.y + 6, 30, 24);
+        ctx.fillStyle = "#f29d24";
+        ctx.fillRect(95, flappyBird.y + 14, 12, 8);
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(88, flappyBird.y + 10, 8, 8);
+        ctx.fillStyle = "#111";
+        ctx.fillRect(92, flappyBird.y + 12, 3, 3);
+    }
     if (!flappyRunning) {
         ctx.fillStyle = "rgba(0,0,0,.45)";
         ctx.fillRect(28, 185, 304, 86);
@@ -4349,8 +4375,8 @@ function flappyLoop(timestamp) {
     }
     flappyPipes.forEach(pipe => { pipe.x -= 155 * dt; });
     flappyPipes = flappyPipes.filter(pipe => pipe.x > -65);
-    const birdBox = { left: 72, right: 98, top: flappyBird.y + 2, bottom: flappyBird.y + 22 };
-    let collided = flappyBird.y < 0 || flappyBird.y + 24 >= FLAPPY_GROUND;
+    const birdBox = { left: 66, right: 104, top: flappyBird.y, bottom: flappyBird.y + 36 };
+    let collided = flappyBird.y < 0 || flappyBird.y + 36 >= FLAPPY_GROUND;
     flappyPipes.forEach(pipe => {
         const overlapsX = birdBox.right > pipe.x && birdBox.left < pipe.x + 54;
         if (overlapsX && (birdBox.top < pipe.top || birdBox.bottom > pipe.top + pipe.gap)) collided = true;
