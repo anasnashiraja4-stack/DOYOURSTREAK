@@ -260,6 +260,7 @@ function showApp() {
     renderHabits();
 
     updateStats();
+    syncWindowsDesktopWidget();
 
 }
 
@@ -576,6 +577,8 @@ function createHabit() {
 function renderHabits() {
 
     habitList.innerHTML = "";
+
+    syncWindowsDesktopWidget();
 
 
     if (habits.length === 0) {
@@ -936,6 +939,8 @@ function updateStats() {
 
     xpBar.style.width =
         `${currentXP}%`;
+
+    syncWindowsDesktopWidget();
 
     // Keep the ESP32 companion display synced to the app's authoritative XP/level.
     if (espCharacteristic) syncESPStats();
@@ -4404,4 +4409,24 @@ document.addEventListener("keydown", event => {
     flapBird();
 });
 
-
+/* Sync website data to the optional native Windows companion. */
+const windowsWidgetBridge = "http://127.0.0.1:43127/state";
+function syncWindowsDesktopWidget() {
+    if (!user || appScreen?.classList.contains("hidden")) return;
+    const image = document.getElementById("playerImage");
+    const payload = {
+        characterName: user.characterName || user.name || "Player",
+        characterFile: user.character || "player.png",
+        characterImageUrl: image?.getAttribute("src") ? new URL(image.getAttribute("src"), window.location.href).href : new URL(user.character || "player.png", window.location.href).href,
+        xp: Number(stats?.xp) || 0,
+        streak: Number(stats?.streak) || 0,
+        habits: habits.map(habit => ({ name: habit.name || "Habit", completed: Boolean(habit.completed) }))
+    };
+    fetch(windowsWidgetBridge, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=UTF-8" },
+        body: JSON.stringify(payload),
+        cache: "no-store"
+    }).catch(() => {});
+}
+window.setInterval(syncWindowsDesktopWidget, 2000);
