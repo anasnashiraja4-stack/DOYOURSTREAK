@@ -49,3 +49,13 @@ The firmware also accepts the old four-field `SYNC:xp:level:xpProgress` command.
 ## Validation notes
 - The web JavaScript passes `node --check`.
 - Firmware source was reviewed for protocol and state consistency. A hardware upload/compile test was not run in this environment; verify with your exact Arduino IDE/library versions and ESP32 board. The physical D8/D9 mapping must be checked against your specific board.
+
+---
+Kembali ke Index: [[Welcome]] | Dok Utama: [[README]]
+---
+
+# ESP32 Update Log
+
+Detail firmware dan antarmuka web untuk ESP32:
+- Folder Firmware: Sub-folder `firmware`
+- Website Interface: Sub-folder `website`
