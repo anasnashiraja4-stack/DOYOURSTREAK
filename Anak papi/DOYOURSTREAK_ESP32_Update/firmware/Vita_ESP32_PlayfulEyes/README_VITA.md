@@ -49,3 +49,9 @@ Check the upstream repository for its full license terms and attribution.
 
 
 Timed emotion behavior: while idle, the face cycles Angry (2.2 s), Worried (2.2 s), Normal (5 s), then waits 9 s before repeating. During an active workout, workout moods take priority.
+
+## OLED mini games and animation
+- Press D18 once to open or close the player menu. Triple-press D18 to move through the right page's entries; after `EYE SPIN`, the next triple-press opens the left page dedicated to the game. Press D19 to activate the selected item.
+- On the right page, `EYE SPIN` animates Vita's real eyes in a smooth shared orbit for 2 seconds, with a 2-second cycle.
+- The left page contains `DINO HOP`, a pixel-art endless runner with score, clouds, terrain, and a jumping character. Press D19 to jump; after a collision press D19 to retry. D18 opens the menu to leave the game.
+- Outside the menu and game, D19 retains the existing double-press fish feeding action.

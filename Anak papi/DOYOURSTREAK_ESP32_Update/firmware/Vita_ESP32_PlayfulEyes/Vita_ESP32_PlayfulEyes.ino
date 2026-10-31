@@ -78,7 +78,8 @@ StatsOverlay statsOverlay = STATS_NONE;
 unsigned long statsOverlayUntil = 0;
 bool menuOpen = false;
 uint8_t menuSelection = 0;
-const uint8_t menuItemCount = 4;
+uint8_t menuPage = 0; // 0 = right/status page, 1 = left/mini-game page
+const uint8_t menuItemCount = 6;
 const unsigned long hungerIntervalMs =  5UL * 60UL * 1000UL;
 const unsigned long doublePressWindowMs = 650;
 unsigned long lastFedAt = 0;
@@ -86,6 +87,11 @@ unsigned long lastFeedPressAt = 0;
 unsigned long feedReactionUntil = 0;
 unsigned int fishMeals = 0;
 bool hungry = false;
+bool eyesSpinActive = false;
+bool dinoGameActive = false;
+bool dinoGameOver = false;
+int dinoScore = 0, dinoY = 0, dinoVelocity = 0, obstacleX = 128;
+unsigned long eyesSpinUntil = 0, lastGameFrameAt = 0;
 PendingMood progressMood = MOOD_NORMAL;
 bool exerciseSelected = false;
 bool armUp = false;
@@ -138,6 +144,24 @@ void registerActivity() {
   }
 }
 
+void setSpinningGaze(float x, float y) {
+  // Match LookAssistant's natural eye movement, but set a continuously moving
+  // target directly so its 200 ms easing never restarts on every display frame.
+  const float verticalScale = 1.0f - fabsf(y) * 0.4f;
+  Transformation right;
+  right.MoveX = -25.0f * x; right.MoveY = 20.0f * y;
+  right.ScaleX = 1.0f; right.ScaleY = (1.0f - x * 0.2f) * verticalScale;
+  Transformation left = right;
+  left.ScaleY = (1.0f + x * 0.2f) * verticalScale;
+  EyeTransformation *transforms[2] = {&face->RightEye.Transformation, &face->LeftEye.Transformation};
+  Transformation poses[2] = {right, left};
+  for (uint8_t i = 0; i < 2; ++i) {
+    transforms[i]->Origin = poses[i];
+    transforms[i]->Current = poses[i];
+    transforms[i]->Destin = poses[i];
+  }
+}
+
 void drawStatsOverlayAndSleepZzz() {
   if (face == nullptr) return;
   const unsigned long now = millis();
@@ -149,25 +173,65 @@ void drawStatsOverlayAndSleepZzz() {
     u8g2.drawBox(3, 3, 122, 11);
     u8g2.setDrawColor(0);
     u8g2.setFont(u8g2_font_5x8_tf);
-    u8g2.drawStr(7, 12, "VITA // PLAYER MENU");
+    u8g2.drawStr(7, 12, menuPage == 0 ? "VITA // RIGHT PAGE" : "VITA // LEFT PAGE");
     u8g2.setDrawColor(1);
-    const char *labels[menuItemCount] = {"TOTAL XP", "XP PROGRESS", "LEVEL", "DAILY QUESTS"};
+    const char *labels[menuItemCount] = {"TOTAL XP", "XP PROGRESS", "LEVEL", "DAILY QUESTS", "EYE SPIN", "DINO HOP"};
     char values[menuItemCount][24];
     snprintf(values[0], sizeof(values[0]), "%d XP", doYourXP);
     snprintf(values[1], sizeof(values[1]), "%d / 100", doYourProgress);
     snprintf(values[2], sizeof(values[2]), "LV %d", doYourLevel);
     snprintf(values[3], sizeof(values[3]), "%d / %d  %d%%", dailyCompleted, dailyTotal, dailyPercent);
+    snprintf(values[4], sizeof(values[4]), "PLAY");
+    snprintf(values[5], sizeof(values[5]), "PLAY");
     for (uint8_t i = 0; i < menuItemCount; ++i) {
-      const int y = 25 + i * 9;
-      if (i == menuSelection) { u8g2.drawBox(5, y - 7, 118, 9); u8g2.setDrawColor(0); }
+      if ((menuPage == 0 && i == 5) || (menuPage == 1 && i != 5)) continue;
+      const int y = 21 + i * 7;
+      if (i == menuSelection) { u8g2.drawBox(5, y - 6, 118, 8); u8g2.setDrawColor(0); }
       u8g2.drawStr(9, y, labels[i]);
-      u8g2.drawStr(77, y, values[i]);
+      if (menuPage == 0 && i < 4) u8g2.drawStr(77, y, values[i]);
+      else u8g2.drawStr(103, y, values[i]);
       u8g2.setDrawColor(1);
     }
-    u8g2.drawBox(6, 15 + menuSelection * 9, 2, 2);
+    if (menuPage == 1) u8g2.drawBox(6, 50, 2, 2);
+    else u8g2.drawBox(6, 15 + menuSelection * 7, 2, 2);
     u8g2.setFont(u8g2_font_4x6_tf);
-    u8g2.drawStr(8, 60, "D8/D9: SELECT     SHAKE: EYES");
+    u8g2.drawStr(8, 60, "D18 x3 PAGE  D19 PLAY");
     u8g2.sendBuffer();
+    return;
+  }
+
+  if (dinoGameActive) {
+    u8g2.clearBuffer();
+    u8g2.drawBox(0, 0, 128, 13); u8g2.setDrawColor(0); u8g2.setFont(u8g2_font_5x8_tf);
+    u8g2.drawStr(4, 9, dinoGameOver ? "RUN OVER" : "VITA RUNNER");
+    char scoreLine[20]; snprintf(scoreLine, sizeof(scoreLine), "SCORE %04d", dinoScore);
+    u8g2.drawStr(77, 9, scoreLine); u8g2.setDrawColor(1);
+    // Tiny stars and drifting clouds give the monochrome scene some depth.
+    u8g2.drawPixel(15, 21); u8g2.drawPixel(59, 18); u8g2.drawPixel(105, 25);
+    int cloudX = 96 - (int)((now / 90) % 150);
+    if (cloudX < -18) cloudX += 150;
+    u8g2.drawHLine(cloudX, 25, 13); u8g2.drawHLine(cloudX + 3, 23, 7);
+    u8g2.drawHLine(0, 55, 128); u8g2.drawHLine(0, 57, 128);
+    const int y = 55 - dinoY;
+    // Chunky pixel runner with a tail, body, head, eye, and animated feet.
+    u8g2.drawBox(13, y - 10, 4, 4); u8g2.drawBox(17, y - 14, 8, 10);
+    u8g2.drawBox(20, y - 20, 9, 8); u8g2.drawBox(27, y - 18, 4, 5);
+    u8g2.drawPixel(26, y - 17); u8g2.drawBox(18, y - 5, 3, 5);
+    if ((now / 120) % 2) { u8g2.drawBox(22, y - 5, 3, 5); u8g2.drawHLine(14, y - 1, 11); }
+    else { u8g2.drawBox(24, y - 5, 3, 5); u8g2.drawHLine(17, y - 1, 10); }
+    // Double cactus obstacle and speed streaks.
+    u8g2.drawBox(obstacleX, 43, 5, 12); u8g2.drawBox(obstacleX - 3, 47, 3, 3); u8g2.drawBox(obstacleX + 5, 45, 3, 3);
+    u8g2.drawHLine((obstacleX + 31) % 120, 39, 8); u8g2.drawHLine((obstacleX + 57) % 120, 33, 5);
+    if (dinoGameOver) { u8g2.drawFrame(26, 17, 76, 31); u8g2.setFont(u8g2_font_6x10_tf); u8g2.drawStr(37, 30, "GAME OVER"); u8g2.setFont(u8g2_font_5x8_tf); u8g2.drawStr(34, 41, "D19 TO RUN AGAIN"); }
+    u8g2.sendBuffer(); return;
+  }
+  if (eyesSpinActive) {
+    const float phase = ((now % 2000UL) / 2000.0f) * 2.0f * PI;
+    // Drive Vita's real eye geometry in a shared smooth orbit, once per 2 s.
+    face->RandomLook = false;
+    setSpinningGaze(0.72f * sinf(phase), 0.68f * cosf(phase));
+    face->Update();
+    if ((long)(now - eyesSpinUntil) >= 0) { eyesSpinActive = false; face->LookFront(); face->RandomLook = true; }
     return;
   }
 
@@ -233,6 +297,8 @@ void handleStatsButtons() {
   static int lastMenuReading = HIGH;
   static int stableMenuState = HIGH;
   static unsigned long menuChangedAt = 0;
+  static uint8_t menuTapCount = 0;
+  static unsigned long lastMenuTapAt = 0;
   static int lastFeedReading = HIGH;
   static int stableFeedState = HIGH;
   static unsigned long feedChangedAt = 0;
@@ -241,7 +307,22 @@ void handleStatsButtons() {
   if (menuReading != lastMenuReading) { menuChangedAt = now; lastMenuReading = menuReading; }
   if (now - menuChangedAt > 35 && menuReading != stableMenuState) {
     stableMenuState = menuReading;
-    if (stableMenuState == LOW) { registerActivity(); menuOpen = !menuOpen; statsOverlay = STATS_NONE; }
+    if (stableMenuState == LOW) {
+      registerActivity();
+      if (menuTapCount == 0 || now - lastMenuTapAt <= 550) ++menuTapCount;
+      else menuTapCount = 1;
+      lastMenuTapAt = now;
+    }
+  }
+  if (menuTapCount != 0 && now - lastMenuTapAt > 550) {
+    if (menuTapCount >= 3) {
+      if (!menuOpen) { menuOpen = true; menuPage = 0; menuSelection = 0; }
+      else if (menuPage == 0 && menuSelection < 4) ++menuSelection;
+      else if (menuPage == 0) { menuPage = 1; menuSelection = 5; }
+      else { menuPage = 0; menuSelection = 0; }
+    } else menuOpen = !menuOpen;
+    statsOverlay = STATS_NONE;
+    menuTapCount = 0;
   }
 
   int feedReading = digitalRead(FEED_BUTTON_PIN);
@@ -250,6 +331,18 @@ void handleStatsButtons() {
     stableFeedState = feedReading;
     if (stableFeedState == LOW) {
       registerActivity();
+      if (menuOpen) {
+        if (menuPage == 0 && menuSelection == 4) { menuOpen = false; eyesSpinActive = true; eyesSpinUntil = now + 2000; }
+        else if (menuPage == 1) { menuOpen = false; dinoGameActive = true; dinoGameOver = false; dinoScore = 0; dinoY = 0; dinoVelocity = 0; obstacleX = 128; }
+        lastFeedPressAt = 0;
+        return;
+      }
+      if (dinoGameActive) {
+        if (dinoGameOver) { dinoGameOver = false; dinoScore = 0; dinoY = 0; dinoVelocity = 0; obstacleX = 128; }
+        else if (dinoY == 0) dinoVelocity = 8;
+        lastFeedPressAt = 0;
+        return;
+      }
       if (lastFeedPressAt != 0 && now - lastFeedPressAt <= doublePressWindowMs) {
         lastFeedPressAt = 0;
         hungry = false;
@@ -275,7 +368,7 @@ void handleStatsButtons() {
     stableD8State = d8Reading;
     if (stableD8State == LOW) {
       registerActivity();
-      if (menuOpen) menuSelection = (menuSelection + menuItemCount - 1) % menuItemCount;
+      if (menuOpen && menuPage == 0) menuSelection = (menuSelection + 4) % 5;
       else { statsOverlay = STATS_XP; statsOverlayUntil = now + 3000; }
       Serial.printf("Button D8: total XP = %d\n", doYourXP);
     }
@@ -287,7 +380,7 @@ void handleStatsButtons() {
     stableD9State = d9Reading;
     if (stableD9State == LOW) {
       registerActivity();
-      if (menuOpen) menuSelection = (menuSelection + 1) % menuItemCount;
+      if (menuOpen && menuPage == 0) menuSelection = (menuSelection + 1) % 5;
       else { statsOverlay = STATS_LEVEL; statsOverlayUntil = now + 3000; }
       Serial.printf("Button D9: level = %d, XP progress = %d/100\n", doYourLevel, doYourProgress);
     }
@@ -640,6 +733,18 @@ void loop() {
 
   handleStatsButtons();
 
+  if (dinoGameActive && !dinoGameOver && now - lastGameFrameAt >= 35) {
+    lastGameFrameAt = now;
+    if (dinoY > 0 || dinoVelocity > 0) {
+      dinoY += dinoVelocity;
+      dinoVelocity -= 1;
+      if (dinoY <= 0) { dinoY = 0; dinoVelocity = 0; }
+    }
+    obstacleX -= 3;
+    if (obstacleX < 0) { obstacleX = 128 + random(20, 65); ++dinoScore; }
+    if (obstacleX < 28 && obstacleX > 12 && dinoY < 12) dinoGameOver = true;
+  }
+
   if (wakeReactionUntil != 0 && (long)(now - wakeReactionUntil) >= 0) {
     wakeReactionUntil = 0;
     if (!sleepMode && !companionMoodActive) {
@@ -650,7 +755,7 @@ void loop() {
   }
 
   if (!hungry && !companionMoodActive && !sleepMode && wakeReactionUntil == 0) applyPendingMood();
-  if (face != nullptr && !menuOpen) face->Update();
+  if (face != nullptr && !menuOpen && !eyesSpinActive && !dinoGameActive) face->Update();
   drawStatsOverlayAndSleepZzz();
 
   if (!exerciseSelected || workoutFinished) {
