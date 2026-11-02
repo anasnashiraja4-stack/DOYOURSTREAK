@@ -79,6 +79,9 @@ const emptyAddButton = document.getElementById("emptyAddButton");
 
 const habitModal = document.getElementById("habitModal");
 const closeModal = document.getElementById("closeModal");
+const minimizeModal = document.getElementById("minimizeModal");
+const restoreHabitModal = document.getElementById("restoreHabitModal");
+const habitProgressFill = document.getElementById("habitProgressFill");
 
 const habitName = document.getElementById("habitName");
 const saveHabitButton = document.getElementById("saveHabitButton");
@@ -388,6 +391,14 @@ closeModal?.addEventListener(
     closeHabitModal
 );
 
+minimizeModal?.addEventListener("click", () => {
+    habitModal?.classList.add("minimized");
+});
+
+restoreHabitModal?.addEventListener("click", () => {
+    habitModal?.classList.remove("minimized");
+});
+
 habitModal?.addEventListener("click", (event) => {
 
     if (event.target === habitModal) {
@@ -401,6 +412,7 @@ habitModal?.addEventListener("click", (event) => {
 function openHabitModal() {
 
     habitModal?.classList.remove("hidden");
+    habitModal?.classList.remove("minimized");
 
     if (habitName) {
         habitName.value = "";
@@ -456,6 +468,7 @@ function openHabitModal() {
 function closeHabitModal() {
 
     habitModal.classList.add("hidden");
+    habitModal.classList.remove("minimized");
 
 }
 
@@ -501,6 +514,10 @@ const habitSteps = [
 ];
 
 function showHabitStep(step) {
+
+    if (habitProgressFill) {
+        habitProgressFill.style.width = `${Math.max(1, Math.min(5, step)) * 20}%`;
+    }
 
     habitSteps.forEach((element, index) => {
 
