@@ -459,8 +459,8 @@ function openHabitModal() {
         });
 
 
-    habitName?.focus();
     showHabitStep(1);
+    habitName?.focus();
 
 }
 

@@ -3127,7 +3127,7 @@ body::before {
 
     box-shadow: 10px 10px 0 #000000;
 
-    animation: modalPop 0.25s ease;
+    animation: modalEnter 0.28s ease-out both;
 }
 
 .modal-title {
@@ -5049,18 +5049,6 @@ body::before {
     margin: 0 48px 16px 0;
 }
 
-.habit-cheer {
-    display: grid;
-    place-items: center;
-    flex: 0 0 54px;
-    height: 54px;
-    border: 2px solid #111;
-    border-radius: 17px;
-    background: #ffe66d;
-    font-size: 28px;
-    animation: habitCheer 2.4s ease-in-out infinite;
-}
-
 .modal-title { margin: 0; color: #111; font-size: 12px; letter-spacing: 1.5px; }
 .modal-subtitle { margin: 5px 0 0; color: #666; font-size: 13px; }
 
@@ -5112,9 +5100,8 @@ body::before {
 .habit-modal-restore > span:nth-child(2) { display: grid; gap: 3px; }
 .habit-modal-restore strong { font-size: 14px; }
 .habit-modal-restore small { color: #555; font-size: 11px; }
-.restore-sparkle { font-size: 25px; animation: habitCheer 2.4s ease-in-out infinite; }
-.restore-arrow { margin-left: auto; font-size: 20px; font-weight: 900; }
-.habit-modal-restore:hover { transform: translateY(-3px); }
+.habit-modal-restore { transition: transform .18s ease, box-shadow .18s ease; }
+.habit-modal-restore:hover { transform: translateY(-2px); box-shadow: 8px 8px 0 #111; }
 
 .habit-modal.minimized {
     align-items: flex-end;
@@ -5124,10 +5111,9 @@ body::before {
     pointer-events: none;
 }
 .habit-modal.minimized .habit-modal-card { display: none; }
-.habit-modal.minimized .habit-modal-restore { display: flex; pointer-events: auto; animation: restorePop .3s cubic-bezier(.2, 1.4, .4, 1) both; }
+.habit-modal.minimized .habit-modal-restore { display: flex; pointer-events: auto; animation: restorePop .2s ease-out both; }
 
 @keyframes habitStepIn { from { opacity: 0; transform: translateX(12px) translateY(6px); } to { opacity: 1; transform: translateX(0) translateY(0); } }
-@keyframes habitCheer { 0%, 100% { transform: rotate(-5deg) translateY(0); } 50% { transform: rotate(6deg) translateY(-3px); } }
 @keyframes restorePop { from { opacity: 0; transform: translateY(16px) scale(.85); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
 @media (max-width: 520px) {
@@ -5137,6 +5123,54 @@ body::before {
 
 @media (max-width: 420px) {
     .habit-reset-controls { grid-template-columns: 76px minmax(0, 1fr); gap: 7px; }
+}
+
+/* Keep the complete habit form reachable on short and narrow screens. */
+.habit-modal {
+    padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+        max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+}
+
+.habit-modal-card {
+    width: min(440px, 100%);
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+}
+
+.habit-modal-actions {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    width: max-content;
+    height: 34px;
+    margin: -12px 0 -34px auto;
+}
+
+.habit-modal-heading { margin-right: 48px; }
+
+@media (max-width: 520px) {
+    .habit-modal { padding: 12px; }
+    .habit-modal-card {
+        width: min(380px, 100%);
+        max-height: calc(100vh - 24px);
+        max-height: calc(100dvh - 24px);
+        padding: 20px 17px;
+        border-radius: 18px;
+        box-shadow: 6px 6px 0 #111, 0 16px 42px rgba(0, 0, 0, .2);
+    }
+    .habit-modal-card h2,
+    .habit-step h2 { font-size: 25px; }
+    .habit-modal-heading { margin-top: 2px; margin-bottom: 13px; }
+    .habit-progress { margin-bottom: 18px; }
+    .habit-step p { margin-bottom: 17px; }
+    .habit-step .input-group { margin-bottom: 18px; }
+    .step-buttons { gap: 8px; }
+    .step-buttons .main-button,
+    .step-buttons .secondary-button { min-width: 0; padding: 12px 10px; font-size: 15px; }
 }
 
 .step-buttons {
@@ -7734,4 +7768,17 @@ body::before {
     #shopPage .shop-coins img,
     #shopPage .shop-item .character-price .coin-icon,
     #shopPage .shop-item:hover > img { animation-duration: .01ms; animation-iteration-count: 1; }
+}
+
+@media (max-width: 520px) {
+    .habit-modal-card { width: min(380px, 100%); padding: 20px 17px; }
+    .habit-modal-card h2,
+    .habit-step h2 { font-size: 25px; }
+    .habit-modal-heading { margin-top: 2px; margin-bottom: 13px; }
+    .habit-progress { margin-bottom: 18px; }
+    .habit-step p { margin-bottom: 17px; }
+    .habit-step .input-group { margin-bottom: 18px; }
+    .step-buttons { gap: 8px; }
+    .step-buttons .main-button,
+    .step-buttons .secondary-button { min-width: 0; padding: 12px 10px; font-size: 15px; }
 }
