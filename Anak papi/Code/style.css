@@ -7399,7 +7399,7 @@ body::before {
     -webkit-backdrop-filter: blur(10px);
 }
 
-#shopPage .shop-coins img { width: 27px; height: 27px; animation: none; filter: none; }
+#shopPage .shop-coins img { width: 27px; height: 27px; animation: coinSpin 2.2s linear infinite; transform-style: preserve-3d; filter: drop-shadow(0 2px 4px rgba(255, 211, 79, .28)); }
 #shopPage .shop-coins strong { font-size: 17px; }
 
 #shopPage .shop-items {
@@ -7446,10 +7446,20 @@ body::before {
     filter: drop-shadow(0 9px 10px rgba(34, 34, 64, .14));
 }
 
-#shopPage .shop-item:hover > img { transform: translateY(-4px) scale(1.04); }
+#shopPage .shop-item:hover > img { animation: shopCharacterPlayful 1.25s ease-in-out infinite; }
 #shopPage .shop-item h3 { margin: 4px 0 0; font-size: 16px; letter-spacing: .6px; }
 #shopPage .shop-item .character-price { gap: 6px; margin: 8px 0 13px; color: #595986; font-size: 13px; }
-#shopPage .shop-item .character-price .coin-icon { width: 19px; height: 19px; }
+#shopPage .shop-item .character-price .coin-icon { width: 19px; height: 19px; animation: coinSpin 2.8s linear infinite; transform-style: preserve-3d; }
+
+@keyframes shopCharacterPlayful {
+    0%, 100% { transform: translateY(0) rotate(0) scale(1); }
+    14% { transform: translateY(-5px) rotate(-7deg) scale(1.04, .97); }
+    32% { transform: translateY(-20px) rotate(8deg) scale(1.06); }
+    48% { transform: translateY(-22px) rotate(-7deg) scale(1.07); }
+    64% { transform: translateY(-8px) rotate(5deg) scale(.97, 1.04); }
+    78% { transform: translateY(-2px) rotate(-3deg) scale(1.02, .98); }
+    88% { transform: translateY(-8px) rotate(3deg) scale(1.03); }
+}
 
 #shopPage .buy-character {
     width: 100%;
@@ -7487,4 +7497,10 @@ body::before {
 
 @media (max-width: 360px) {
     #shopPage .shop-items { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #shopPage .shop-coins img,
+    #shopPage .shop-item .character-price .coin-icon,
+    #shopPage .shop-item:hover > img { animation-duration: .01ms; animation-iteration-count: 1; }
 }
