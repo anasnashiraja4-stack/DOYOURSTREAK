@@ -5173,6 +5173,44 @@ body::before {
     .step-buttons .secondary-button { min-width: 0; padding: 12px 10px; font-size: 15px; }
 }
 
+/* Claw machine */
+.claw-card-mark { font-size: 15px; font-weight: 900; letter-spacing: 1px; background: #ffe66d; }
+.claw-scoreboard {
+    display: flex;
+    justify-content: center;
+    gap: clamp(12px, 4vw, 34px);
+    margin: 0 auto 14px;
+    font-size: 14px;
+    font-weight: 800;
+}
+.claw-scoreboard span { display: flex; gap: 6px; align-items: center; }
+.claw-scoreboard strong { font-size: 17px; }
+.claw-stage {
+    width: 100%;
+    overflow: hidden;
+    border: 4px solid #111;
+    border-radius: 20px;
+    background: #eaf5ff;
+    box-shadow: 7px 7px 0 #111;
+}
+#clawCanvas { display: block; width: 100%; height: auto; touch-action: manipulation; }
+.claw-controls { display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
+.claw-controls button { min-width: 132px; }
+.claw-controls .main-button { padding: 13px 24px; }
+.claw-hint { display: block; margin-top: 15px; color: #666; text-align: center; }
+.claw-restart { display: block; margin: 18px auto 0; }
+
+@media (max-width: 600px) {
+    .claw-scoreboard { gap: 13px; font-size: 12px; }
+    .claw-scoreboard span { gap: 4px; }
+    .claw-scoreboard strong { font-size: 14px; }
+    .claw-stage { border-width: 3px; border-radius: 14px; box-shadow: 4px 4px 0 #111; }
+    .claw-controls { gap: 8px; flex-wrap: nowrap; }
+    .claw-controls button { min-width: 0; flex: 1; padding: 11px 7px; font-size: 12px; white-space: nowrap; }
+    .claw-controls .main-button { padding: 11px 8px; }
+    .claw-hint { font-size: 11px; }
+}
+
 .step-buttons {
     display: flex;
     gap: 12px;
@@ -7781,4 +7819,48 @@ body::before {
     .step-buttons { gap: 8px; }
     .step-buttons .main-button,
     .step-buttons .secondary-button { min-width: 0; padding: 12px 10px; font-size: 15px; }
+}
+
+/* Let the claw game own the page while it is open; keep its exit at the top. */
+#gamePage.claw-active {
+    min-height: calc(100vh - 85px);
+    min-height: calc(100dvh - 85px);
+    padding: 0 12px 105px;
+}
+#gamePage.claw-active .game-page {
+    width: 100%;
+    max-width: 1200px;
+    padding: 10px 0 24px;
+}
+#gamePage.claw-active .game-header,
+#gamePage.claw-active #gameMenu { display: none !important; }
+#gamePage.claw-active #clawGame { margin-top: 0; }
+#gamePage.claw-active .game-screen-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    margin: 0 0 10px;
+    padding: 7px 0;
+    background: #fff;
+}
+#gamePage.claw-active .game-screen-header h2 { font-size: clamp(18px, 3vw, 26px); }
+#gamePage.claw-active .claw-stage { width: 100%; margin: 0 auto; }
+#gamePage.claw-active #clawStatus { min-height: 48px; }
+#gamePage.claw-active .claw-hint { margin-bottom: 10px; }
+#clawDrop:disabled {
+    background: #a9a9a9;
+    border-color: #888;
+    color: #f3f3f3;
+    box-shadow: 2px 2px 0 #777;
+    cursor: not-allowed;
+    filter: saturate(.35);
+}
+#clawDrop:disabled:hover,
+#clawDrop:disabled:active { transform: none; }
+
+@media (max-width: 600px) {
+    #gamePage.claw-active { padding: 0 8px 92px; }
+    #gamePage.claw-active .game-page { padding-top: 6px; }
+    #gamePage.claw-active .game-screen-header { gap: 8px; margin-bottom: 8px; }
+    #gamePage.claw-active .game-screen-header .secondary-button { padding: 9px 10px; font-size: 12px; }
 }

@@ -2780,6 +2780,9 @@ const backFromDino =
 const openFlappyGame = document.getElementById("openFlappyGame");
 const flappyGame = document.getElementById("flappyGame");
 const backFromFlappy = document.getElementById("backFromFlappy");
+const openClawGame = document.getElementById("openClawGame");
+const clawGame = document.getElementById("clawGame");
+const backFromClaw = document.getElementById("backFromClaw");
 
 
 function showGameMenu() {
@@ -2791,9 +2794,13 @@ function showGameMenu() {
     dinoGame?.classList.add("hidden");
 
     flappyGame?.classList.add("hidden");
+    clawGame?.classList.add("hidden");
+    clawGame?.closest(".game-page")?.classList.remove("claw-active");
+    gamePage?.classList.remove("claw-active");
 
     stopDinoGame();
     stopFlappyGame();
+    stopClawGame();
 
 }
 
@@ -2865,6 +2872,21 @@ openFlappyGame?.addEventListener("click", () => {
 });
 
 backFromFlappy?.addEventListener("click", showGameMenu);
+
+openClawGame?.addEventListener("click", () => {
+    gameMenu?.classList.add("hidden");
+    fightingGame?.classList.add("hidden");
+    dinoGame?.classList.add("hidden");
+    flappyGame?.classList.add("hidden");
+    clawGame?.classList.remove("hidden");
+    clawGame?.closest(".game-page")?.classList.add("claw-active");
+    gamePage?.classList.add("claw-active");
+    stopDinoGame();
+    stopFlappyGame();
+    startClawGame();
+});
+
+backFromClaw?.addEventListener("click", showGameMenu);
 /* =====================================================
    FIGHTING GAME
 ===================================================== */
@@ -4815,6 +4837,391 @@ document.addEventListener("keydown", event => {
     if (event.code !== "Space" || flappyGame?.classList.contains("hidden")) return;
     event.preventDefault();
     flapBird();
+});
+
+/* =====================================================
+   CLAW MACHINE
+===================================================== */
+
+const clawCanvas = document.getElementById("clawCanvas");
+const clawCtx = clawCanvas?.getContext("2d");
+const clawStatus = document.getElementById("clawStatus");
+const clawScoreLabel = document.getElementById("clawScore");
+const clawCoinsLabel = document.getElementById("clawCoins");
+const clawXPLabel = document.getElementById("clawXP");
+const clawLeftButton = document.getElementById("clawLeft");
+const clawRightButton = document.getElementById("clawRight");
+const clawDropButton = document.getElementById("clawDrop");
+const clawRestartButton = document.getElementById("clawRestart");
+const clawCharacterSprite = new Image();
+clawCharacterSprite.src = getGameCharacter().image;
+const clawAnomalySprite = new Image();
+clawAnomalySprite.src = "anomalis.png";
+
+const CLAW_HOME_Y = 78;
+const CLAW_BOTTOM_Y = 350;
+const CLAW_FLOOR_Y = 414;
+const CLAW_MAX_TRIES = 8;
+let clawX = 400;
+let clawY = CLAW_HOME_Y;
+let clawState = "idle";
+let clawHeldItem = null;
+let clawObjects = [];
+let clawFrameId = 0;
+let clawLastFrame = 0;
+let clawAttempts = 0;
+let clawScore = 0;
+let clawEarnedCoins = 0;
+let clawEarnedXP = 0;
+
+function createClawPrizeLayout() {
+    const floorCenter = CLAW_FLOOR_Y - 37;
+    clawObjects = [];
+
+    // Spread the three characters across the cabinet, each at a random height.
+    const characterBands = [[85, 250], [318, 482], [550, 715]];
+    characterBands.forEach(([minX, maxX]) => {
+        clawObjects.push({
+            x: minX + Math.random() * (maxX - minX),
+            y: floorCenter - Math.random() * 210,
+            type: "character",
+            removed: false,
+            falling: true,
+            held: false,
+            vy: 0
+        });
+    });
+
+    // Scatter 60 anomaly copies anywhere in the play area; gravity gathers them into piles.
+    for (let index = 0; index < 60; index += 1) {
+        let prizePosition = null;
+        for (let attempt = 0; attempt < 160 && !prizePosition; attempt += 1) {
+            const candidate = {
+                x: 72 + Math.random() * 656,
+                y: 72 + Math.random() * (floorCenter - 72)
+            };
+            const overlapsPrize = clawObjects.some(item =>
+                Math.abs(item.x - candidate.x) < 36 && Math.abs(item.y - candidate.y) < 36
+            );
+            if (!overlapsPrize) prizePosition = candidate;
+        }
+        if (!prizePosition) {
+            prizePosition = {
+                x: 72 + Math.random() * 656,
+                y: 72 + Math.random() * (floorCenter - 72)
+            };
+        }
+        clawObjects.push({
+            ...prizePosition,
+            type: "anomaly",
+            removed: false,
+            falling: true,
+            held: false,
+            vy: 0
+        });
+    }
+}
+
+function startClawGame() {
+    if (!clawCanvas || !clawCtx) return;
+    stopClawGame();
+    clawCharacterSprite.src = getGameCharacter().image;
+    clawX = clawCanvas.width / 2;
+    clawY = CLAW_HOME_Y;
+    clawState = "idle";
+    clawHeldItem = null;
+    clawAttempts = 0;
+    clawScore = 0;
+    clawEarnedCoins = 0;
+    clawEarnedXP = 0;
+    createClawPrizeLayout();
+    updateClawScoreboard();
+    clawDropButton.disabled = false;
+    clawDropButton.textContent = "CAPIT";
+    clawRestartButton?.classList.add("hidden");
+    setClawStatus("Geser capit dan cari 3 karakter di antara 60 anomaly yang berjatuhan.");
+    clawLastFrame = performance.now();
+    clawFrameId = requestAnimationFrame(clawLoop);
+}
+
+function stopClawGame() {
+    if (clawFrameId) cancelAnimationFrame(clawFrameId);
+    clawFrameId = 0;
+}
+
+function setClawStatus(message) {
+    if (clawStatus) clawStatus.textContent = message;
+}
+
+function updateClawScoreboard() {
+    if (clawScoreLabel) clawScoreLabel.textContent = clawScore;
+    if (clawCoinsLabel) clawCoinsLabel.textContent = `+${clawEarnedCoins}`;
+    if (clawXPLabel) clawXPLabel.textContent = `+${clawEarnedXP}`;
+}
+
+function beginClawDrop() {
+    if (clawState !== "idle" || clawAttempts >= CLAW_MAX_TRIES) return;
+    clawAttempts += 1;
+    clawHeldItem = null;
+    clawState = "down";
+    clawDropButton.disabled = true;
+    clawDropButton.textContent = "LAGI...";
+    setClawStatus(`Capit turun… percobaan ${clawAttempts}/${CLAW_MAX_TRIES}`);
+}
+
+function catchClawPrize() {
+    const candidates = clawObjects
+        .filter(item => {
+            if (item.removed || item.falling || item.held) return false;
+            if (item.type === "character") return true;
+            const covered = clawObjects.some(other =>
+                other !== item && other.type === "anomaly" && !other.removed && !other.held &&
+                Math.abs(other.x - item.x) < 52 && other.y < item.y && item.y - other.y < 54
+            );
+            return !covered;
+        })
+        .sort((a, b) => Math.abs(a.x - clawX) - Math.abs(b.x - clawX) || b.y - a.y);
+    const target = candidates[0];
+    if (target && Math.abs(target.x - clawX) <= 37) {
+        clawHeldItem = target;
+        target.held = true;
+        // Empty space under a pile makes the prizes above it fall under gravity.
+        for (const item of clawObjects) {
+            if (!item.removed && !item.held && item.y < target.y && Math.abs(item.x - target.x) < 52) {
+                item.falling = true;
+                item.vy = 0;
+            }
+        }
+        if (target.type === "anomaly") {
+            setClawStatus("ZONK! Anomaly ketangkap—tapi licin, bakal jatuh lagi!");
+        } else {
+            setClawStatus("Dapat karakter! Capit lagi naik…");
+        }
+    } else {
+        setClawStatus("Belum kena. Coba geser capit ke atas karakter.");
+    }
+    clawState = "up";
+}
+
+function releaseClawAnomaly() {
+    if (!clawHeldItem || clawHeldItem.type !== "anomaly") return;
+    clawHeldItem.held = false;
+    clawHeldItem.falling = true;
+    clawHeldItem.vy = 0;
+    clawHeldItem.y = clawY + 52;
+    clawHeldItem = null;
+}
+
+function finishClawLift() {
+    if (clawHeldItem?.type === "character") {
+        clawHeldItem.removed = true;
+        clawHeldItem.held = false;
+        clawHeldItem = null;
+        clawScore += 1;
+        clawEarnedCoins += 5;
+        clawEarnedXP += 10;
+        coins += 5;
+        stats.xp += 10;
+        updateCoins();
+        saveStats();
+        updateStats();
+        updateClawScoreboard();
+        setClawStatus("Dapat karakter! +5 koin, +10 EXP.");
+    }
+
+    clawState = "idle";
+    if (clawAttempts >= CLAW_MAX_TRIES) {
+        clawDropButton.disabled = true;
+        clawDropButton.textContent = "RONDE SELESAI";
+        clawRestartButton?.classList.remove("hidden");
+        setClawStatus(`Ronde selesai: ${clawScore} karakter, +${clawEarnedCoins} koin, +${clawEarnedXP} EXP.`);
+    } else {
+        clawDropButton.disabled = false;
+        clawDropButton.textContent = "CAPIT";
+    }
+}
+
+function drawClawSprite(sprite, centerX, centerY, maxWidth, maxHeight) {
+    if (!sprite.complete || sprite.naturalWidth === 0) return false;
+    const scale = Math.min(maxWidth / sprite.naturalWidth, maxHeight / sprite.naturalHeight);
+    const width = sprite.naturalWidth * scale;
+    const height = sprite.naturalHeight * scale;
+    clawCtx.drawImage(sprite, centerX - width / 2, centerY - height / 2, width, height);
+    return true;
+}
+
+function drawClawMachine() {
+    if (!clawCtx || !clawCanvas) return;
+    const ctx = clawCtx;
+    ctx.clearRect(0, 0, clawCanvas.width, clawCanvas.height);
+    ctx.fillStyle = "#eaf5ff";
+    ctx.fillRect(0, 0, 800, 460);
+
+    // Cabinet and glass
+    ctx.fillStyle = "#fff8dc";
+    ctx.strokeStyle = "#171717";
+    ctx.lineWidth = 8;
+    ctx.fillRect(24, 18, 752, 425);
+    ctx.strokeRect(24, 18, 752, 425);
+    ctx.fillStyle = "#dff3ff";
+    ctx.fillRect(48, 44, 704, 345);
+    ctx.strokeStyle = "#171717";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(48, 44, 704, 345);
+    ctx.fillStyle = "#fff";
+    ctx.globalAlpha = .4;
+    ctx.beginPath();
+    ctx.moveTo(60, 55);
+    ctx.lineTo(245, 55);
+    ctx.lineTo(110, 285);
+    ctx.lineTo(60, 285);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // Prize shelf
+    ctx.fillStyle = "#c8a66a";
+    ctx.fillRect(52, CLAW_FLOOR_Y + 8, 696, 22);
+    ctx.fillStyle = "#171717";
+    ctx.fillRect(52, CLAW_FLOOR_Y + 30, 696, 14);
+
+    // Rail and cable
+    ctx.fillStyle = "#444";
+    ctx.fillRect(95, 62, 610, 12);
+    ctx.fillStyle = "#ff6d5b";
+    ctx.fillRect(clawX - 24, 52, 48, 28);
+    ctx.strokeStyle = "#333";
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(clawX, 80);
+    ctx.lineTo(clawX, clawY);
+    ctx.stroke();
+
+    // Prizes
+    const visiblePrizes = [...clawObjects].sort((a, b) =>
+        (a.type === "character" ? 1 : 0) - (b.type === "character" ? 1 : 0)
+    );
+    for (const item of visiblePrizes) {
+        if (item.removed || item === clawHeldItem || item.held) continue;
+        ctx.fillStyle = "rgba(25, 35, 55, .18)";
+        ctx.beginPath();
+        ctx.ellipse(item.x, CLAW_FLOOR_Y - 1, 31, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        const sprite = item.type === "anomaly" ? clawAnomalySprite : clawCharacterSprite;
+        if (!drawClawSprite(sprite, item.x, item.y, 62, 62)) {
+            ctx.fillStyle = item.type === "anomaly" ? "#8a52a6" : "#ffb64d";
+            ctx.beginPath();
+            ctx.arc(item.x, item.y, 27, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    // Claw fingers
+    if (clawHeldItem) {
+        const sprite = clawHeldItem.type === "anomaly" ? clawAnomalySprite : clawCharacterSprite;
+        drawClawSprite(sprite, clawX, clawY + 55, 58, 58);
+    }
+    const closed = Boolean(clawHeldItem) || clawState === "down";
+    ctx.strokeStyle = "#171717";
+    ctx.lineWidth = 8;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(clawX - 20, clawY + 2);
+    ctx.lineTo(clawX - (closed ? 10 : 29), clawY + 36);
+    ctx.lineTo(clawX - (closed ? 5 : 21), clawY + 46);
+    ctx.moveTo(clawX + 20, clawY + 2);
+    ctx.lineTo(clawX + (closed ? 10 : 29), clawY + 36);
+    ctx.lineTo(clawX + (closed ? 5 : 21), clawY + 46);
+    ctx.stroke();
+
+    ctx.fillStyle = "#171717";
+    ctx.font = "bold 16px 'Baloo 2', sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText(`DROP ${clawAttempts}/${CLAW_MAX_TRIES}`, 63, 375);
+}
+
+function clawLoop(timestamp) {
+    if (!clawGame || clawGame.classList.contains("hidden") || !gamePage?.classList.contains("active")) {
+        clawFrameId = 0;
+        return;
+    }
+    const dt = Math.min((timestamp - clawLastFrame) / 1000, .04);
+    clawLastFrame = timestamp;
+
+    const fallingItems = [...clawObjects].sort((a, b) => b.y - a.y);
+    for (const item of fallingItems) {
+        if (!item.falling) continue;
+        let landingY = CLAW_FLOOR_Y - 37;
+        let overlappingSupport = null;
+        let nearestOverlap = Infinity;
+        for (const support of clawObjects) {
+            if (support === item || support.removed || support.held) continue;
+            if (support.y > item.y && Math.abs(support.x - item.x) < 52) {
+                const supportTop = support.y - 44;
+                const centerGap = support.y - item.y;
+                if (supportTop < item.y && centerGap < nearestOverlap) {
+                    overlappingSupport = supportTop;
+                    nearestOverlap = centerGap;
+                } else if (supportTop >= item.y && supportTop < landingY) {
+                    landingY = supportTop;
+                }
+            }
+        }
+        if (overlappingSupport !== null) {
+            item.y = overlappingSupport;
+            item.vy = 0;
+            item.falling = false;
+            continue;
+        }
+        item.vy += 1100 * dt; // gravity on the Y axis
+        item.y += item.vy * dt;
+        if (item.y >= landingY) {
+            item.y = landingY;
+            item.vy *= -.2;
+            if (Math.abs(item.vy) < 45) {
+                item.vy = 0;
+                item.falling = false;
+            }
+        }
+    }
+
+    if (clawState === "down") {
+        clawY = Math.min(CLAW_BOTTOM_Y, clawY + 430 * dt);
+        if (clawY >= CLAW_BOTTOM_Y) catchClawPrize();
+    } else if (clawState === "up") {
+        clawY = Math.max(CLAW_HOME_Y, clawY - 370 * dt);
+        if (clawHeldItem?.type === "anomaly" && clawY < 205) releaseClawAnomaly();
+        if (clawY <= CLAW_HOME_Y) finishClawLift();
+    }
+
+    drawClawMachine();
+    clawFrameId = requestAnimationFrame(clawLoop);
+}
+
+function moveClaw(direction) {
+    if (clawState !== "idle") return;
+    clawX = Math.max(90, Math.min(710, clawX + direction * 42));
+}
+
+clawLeftButton?.addEventListener("click", () => moveClaw(-1));
+clawRightButton?.addEventListener("click", () => moveClaw(1));
+clawDropButton?.addEventListener("click", beginClawDrop);
+clawRestartButton?.addEventListener("click", startClawGame);
+clawCanvas?.addEventListener("pointerdown", event => {
+    if (clawState !== "idle") return;
+    const bounds = clawCanvas.getBoundingClientRect();
+    clawX = Math.max(90, Math.min(710, (event.clientX - bounds.left) / bounds.width * clawCanvas.width));
+});
+document.addEventListener("keydown", event => {
+    if (!clawGame || clawGame.classList.contains("hidden") || !gamePage?.classList.contains("active")) return;
+    if (event.code === "Escape") {
+        event.preventDefault();
+        showGameMenu();
+        return;
+    }
+    if (event.code === "ArrowLeft") { event.preventDefault(); moveClaw(-1); }
+    if (event.code === "ArrowRight") { event.preventDefault(); moveClaw(1); }
+    if (event.code === "Space" && event.target?.tagName !== "BUTTON") { event.preventDefault(); beginClawDrop(); }
 });
 
 /* Sync website data to the optional native Windows companion. */

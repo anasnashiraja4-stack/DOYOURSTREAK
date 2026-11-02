@@ -486,6 +486,14 @@
                             <p>Terbang melewati pipa dan pecahkan skor terbaik.</p>
                         </div>
                     </button>
+                    <button id="openClawGame" class="game-card" type="button">
+                        <div class="game-card-icon claw-card-mark">CLAW</div>
+                        <div>
+                            <small>PRIZE CRANE</small>
+                            <h2>CLAW MACHINE</h2>
+                            <p>Capit karakter untuk dapat koin dan EXP. Hindari anomaly!</p>
+                        </div>
+                    </button>
                      <!-- Tombol kecil ESP32 -->
                      <div class="esp-connect-controls">
                         <button id="espConnectButton" class="esp-connect-button" type="button">🔌 CONNECT ESP32</button>
@@ -682,6 +690,29 @@
                         <button id="startFlappy" class="main-button" type="button">MULAI</button>
                         <button id="flapFlappy" class="game-action-button" type="button">🐾 TERBANG</button>
                     </div>
+                </div>
+
+                <div id="clawGame" class="game-screen hidden">
+                    <div class="game-screen-header">
+                        <button id="backFromClaw" class="secondary-button" type="button">← MENU GAME</button>
+                        <h2>CLAW MACHINE</h2>
+                    </div>
+                    <div class="claw-scoreboard">
+                        <span>DITANGKAP <strong id="clawScore">0</strong></span>
+                        <span>KOIN <strong id="clawCoins">0</strong></span>
+                        <span>EXP <strong id="clawXP">0</strong></span>
+                    </div>
+                    <div class="claw-stage">
+                        <canvas id="clawCanvas" width="800" height="460" aria-label="Claw machine game"></canvas>
+                    </div>
+                    <p id="clawStatus" class="game-status">Gerakkan capit, lalu tekan CAPIT. Karakter memberi hadiah; anomaly bikin zonk.</p>
+                    <div class="claw-controls">
+                        <button id="clawLeft" class="game-action-button" type="button" aria-label="Move claw left">◀ KIRI</button>
+                        <button id="clawDrop" class="main-button" type="button">CAPIT</button>
+                        <button id="clawRight" class="game-action-button" type="button" aria-label="Move claw right">KANAN ▶</button>
+                    </div>
+                    <button id="clawRestart" class="main-button claw-restart hidden" type="button">MAIN LAGI</button>
+                    <small class="claw-hint">Bisa pakai tombol panah kiri/kanan, lalu Spasi untuk capit.</small>
                 </div>
 
             </section>
