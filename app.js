@@ -33,6 +33,8 @@ let stats = JSON.parse(
     streak: 0,
     lastCompletedDate: null
 };
+stats.habitsCompletedTotal = Math.max(0, Number(stats.habitsCompletedTotal) || 0);
+let achievements = JSON.parse(localStorage.getItem("doyourstreak-achievements") || "{}") || {};
 let localProfiles = JSON.parse(localStorage.getItem("doyourstreak-profiles") || "[]");
 let activeProfileId = user?.profileId || null;
 
@@ -302,7 +304,7 @@ const websiteTutorialSteps = [
         page: showExercisePage,
         target: "#addHabitButton",
         title: "Build your daily routine",
-        description: "Open Exercise and choose + ADD HABIT. Give your habit a name and set it up for your routine."
+        description: "Open Habit and choose + ADD HABIT. Give your habit a name and set it up for your routine."
     },
     {
         page: showExercisePage,
@@ -314,13 +316,19 @@ const websiteTutorialSteps = [
         page: showInfoPage,
         target: "#infoPage .info-header",
         title: "Look back and keep going",
-        description: "Visit Info to review your activity and progress. Come back each day to keep your routine moving."
+        description: "Visit Events to review your calendar and updates. Come back each day to keep your routine moving."
     },
     {
         page: showShopPage,
         target: "#shopPage .shop-page-header",
         title: "Spend coins on characters",
-        description: "Earn coins as you play, then visit the Shop to explore characters. You can replay this guide anytime with HOW TO PLAY."
+        description: "Earn coins as you play, then visit Catalog to explore characters. You can replay this guide anytime with HOW TO PLAY."
+    },
+    {
+        page: showAchievementsPage,
+        target: "#achievementsPage .achievements-header",
+        title: "Celebrate your achievements",
+        description: "Open Awards to see your milestones, track progress, and celebrate new achievements as you complete habits, play games, and explore the app."
     }
 ];
 
@@ -885,6 +893,7 @@ function saveHabitNote(id, card) {
     if (!Array.isArray(habit.notes)) habit.notes = [];
     habit.notes.push({ date, duration, mood, text, createdAt: Date.now() });
     saveHabits();
+    checkAchievements();
     renderHabits();
     renderDailyTask();
 }
@@ -1010,6 +1019,7 @@ function toggleHabit(id) {
 
     habit.completed = true;
     habit.completedAt = Date.now();
+    stats.habitsCompletedTotal++;
 
     habit.streak++;
 
@@ -1025,6 +1035,8 @@ function toggleHabit(id) {
     saveHabits();
 
     saveStats();
+
+    checkAchievements();
 
     renderHabits();
 
@@ -1082,6 +1094,13 @@ function updateDailyStreak() {
 
     if (stats.lastCompletedDate === today) {
         return;
+    }
+
+    if (stats.lastCompletedDate) {
+        const previousDay = new Date(`${stats.lastCompletedDate}T00:00:00Z`);
+        const currentDay = new Date(`${today}T00:00:00Z`);
+        const daysSinceLastCompletion = Math.floor((currentDay - previousDay) / 86400000);
+        if (daysSinceLastCompletion >= 3) achievements.cameBack = true;
     }
 
 
@@ -1650,12 +1669,95 @@ const shopNav = document.getElementById("shopNav");
 const gameNav = document.getElementById("gameNav");
 const exerciseNav = document.getElementById("exerciseNav");
 const infoNav = document.getElementById("infoNav");
+const achievementsNav = document.getElementById("achievementsNav");
 
 const characterPage = document.getElementById("characterPage");
 const shopPage = document.getElementById("shopPage");
 const gamePage = document.getElementById("gamePage");
 const exercisePage = document.getElementById("exercisePage");
 const infoPage = document.getElementById("infoPage");
+const achievementsPage = document.getElementById("achievementsPage");
+
+const achievementDefinitions = [
+    { id: "ten-habits", title: "First 10 Habits", description: "Complete 10 habits.", icon: "✅", progress: () => Math.min(stats.habitsCompletedTotal, 10), target: 10 },
+    { id: "first-skin", title: "Fresh Look", description: "Purchase your first character skin.", icon: "🎨", progress: () => achievements.skinPurchased ? 1 : 0, target: 1 },
+    { id: "first-game", title: "Player One", description: "Play a game for the first time.", icon: "🎮", progress: () => achievements.gamePlayed ? 1 : 0, target: 1 },
+    { id: "seven-day-streak", title: "7-Day Streak", description: "Complete a habit seven days in a row.", icon: "🔥", progress: () => Math.min(Number(stats.streak) || 0, 7), target: 7 },
+    { id: "routine-finisher", title: "Routine Finisher", description: "Complete every habit in one day.", icon: "📋", progress: () => achievements["routine-finisher"] || (habits.length > 0 && habits.every(habit => habit.completed)) ? 1 : 0, target: 1 },
+    { id: "note-to-self", title: "Note to Self", description: "Add a note to a habit.", icon: "📝", progress: () => achievements["note-to-self"] || habits.some(habit => Array.isArray(habit.notes) && habit.notes.length > 0) ? 1 : 0, target: 1 },
+    { id: "game-explorer", title: "Game Explorer", description: "Try three different games.", icon: "🕹️", progress: () => Math.min(new Set(achievements.playedGames || []).size, 3), target: 3 },
+    { id: "style-collector", title: "Style Collector", description: "Purchase three character skins.", icon: "👗", progress: () => Math.min(getPurchasedSkinCount(), 3), target: 3 },
+    { id: "level-five", title: "Level Up", description: "Reach level 5.", icon: "⭐", progress: () => Math.min(Math.floor((Number(stats.xp) || 0) / 100) + 1, 5), target: 5 },
+    { id: "comeback", title: "Comeback", description: "Return to your habits after at least three days away.", icon: "🌱", progress: () => achievements.cameBack ? 1 : 0, target: 1 },
+    { id: "daily-task-champion", title: "Daily Task Champion", description: "Claim five daily task rewards.", icon: "🏅", progress: () => Math.min(Number(achievements.dailyTasksClaimed) || 0, 5), target: 5 }
+];
+
+function saveAchievements() {
+    localStorage.setItem("doyourstreak-achievements", JSON.stringify(achievements));
+}
+
+function getPurchasedSkinCount() {
+    let count = 0;
+    for (let index = 0; index < localStorage.length; index++) {
+        if (localStorage.key(index)?.startsWith("doyourstreak-owned-")) count++;
+    }
+    return count;
+}
+
+function markGamePlayed(gameId) {
+    if (!Array.isArray(achievements.playedGames)) achievements.playedGames = [];
+    if (gameId && !achievements.playedGames.includes(gameId)) achievements.playedGames.push(gameId);
+    achievements.gamePlayed = true;
+    checkAchievements();
+}
+
+if (getPurchasedSkinCount() > 0) achievements.skinPurchased = true;
+
+function renderAchievements() {
+    const list = document.getElementById("achievementList");
+    if (!list) return;
+    list.innerHTML = achievementDefinitions.map(achievement => {
+        const unlocked = Boolean(achievements[achievement.id]);
+        const progress = Math.min(achievement.progress(), achievement.target);
+        return `<article class="achievement-card${unlocked ? " unlocked" : ""}">
+            <div class="achievement-icon" aria-hidden="true">${achievement.icon}</div>
+            <div class="achievement-copy"><small>${unlocked ? "UNLOCKED" : "IN PROGRESS"}</small><h2>${achievement.title}</h2><p>${achievement.description}</p>
+                <div class="achievement-progress" role="progressbar" aria-label="${achievement.title}" aria-valuemin="0" aria-valuemax="${achievement.target}" aria-valuenow="${progress}"><span style="width:${progress / achievement.target * 100}%"></span></div>
+                <small class="achievement-count">${progress} / ${achievement.target}</small>
+            </div><span class="achievement-check" aria-hidden="true">${unlocked ? "✓" : "🔒"}</span>
+        </article>`;
+    }).join("");
+}
+
+let achievementToastTimer = null;
+function showAchievementToast(achievement) {
+    const toast = document.getElementById("achievementToast");
+    const title = document.getElementById("achievementToastTitle");
+    if (!toast || !title) return;
+    title.textContent = achievement.title;
+    toast.classList.add("visible");
+    clearTimeout(achievementToastTimer);
+    achievementToastTimer = setTimeout(() => toast.classList.remove("visible"), 5000);
+}
+
+function checkAchievements() {
+    let changed = false;
+    achievementDefinitions.forEach(achievement => {
+        if (!achievements[achievement.id] && achievement.progress() >= achievement.target) {
+            achievements[achievement.id] = true;
+            changed = true;
+            showAchievementToast(achievement);
+        }
+    });
+    if (changed) saveAchievements();
+    renderAchievements();
+}
+
+document.getElementById("closeAchievementToast")?.addEventListener("click", () => {
+    document.getElementById("achievementToast")?.classList.remove("visible");
+    clearTimeout(achievementToastTimer);
+});
+checkAchievements();
 
 
 function setActiveNav(activeButton) {
@@ -1665,6 +1767,7 @@ function setActiveNav(activeButton) {
     gameNav?.classList.remove("active");
     exerciseNav?.classList.remove("active");
     infoNav?.classList.remove("active");
+    achievementsNav?.classList.remove("active");
 
     activeButton?.classList.add("active");
 }
@@ -1678,6 +1781,7 @@ function showGamePage() {
     gamePage?.classList.add("active");
     exercisePage?.classList.remove("active");
     infoPage?.classList.remove("active");
+    achievementsPage?.classList.remove("active");
 
     setActiveNav(gameNav);
 
@@ -1692,6 +1796,7 @@ function showCharacterPage() {
     exercisePage?.classList.remove("active");
     infoPage?.classList.remove("active");
     gamePage?.classList.remove("active");
+    achievementsPage?.classList.remove("active");
 
     setActiveNav(characterNav);
 
@@ -1706,6 +1811,7 @@ function showShopPage() {
     gamePage?.classList.remove("active");
     exercisePage?.classList.remove("active");
     infoPage?.classList.remove("active");
+    achievementsPage?.classList.remove("active");
 
     setActiveNav(shopNav);
 
@@ -1722,6 +1828,7 @@ function showExercisePage() {
     exercisePage?.classList.add("active");
     infoPage?.classList.remove("active");
     gamePage?.classList.remove("active");
+    achievementsPage?.classList.remove("active");
 
     setActiveNav(exerciseNav);
 
@@ -1736,6 +1843,7 @@ function showInfoPage() {
     exercisePage?.classList.remove("active");
     infoPage?.classList.add("active");
     gamePage?.classList.remove("active");
+    achievementsPage?.classList.remove("active");
 
     setActiveNav(infoNav);
 
@@ -1745,8 +1853,16 @@ function showInfoPage() {
     window.scrollTo(0, 0);
 }
 
+function showAchievementsPage() {
+    [characterPage, shopPage, gamePage, exercisePage, infoPage].forEach(page => page?.classList.remove("active"));
+    achievementsPage?.classList.add("active");
+    setActiveNav(achievementsNav);
+    renderAchievements();
+    window.scrollTo(0, 0);
+}
 
-const menuButtons = [characterNav, shopNav, gameNav, exerciseNav, infoNav].filter(Boolean);
+
+const menuButtons = [characterNav, shopNav, gameNav, exerciseNav, infoNav, achievementsNav].filter(Boolean);
 let menuShuffleTimer = null;
 let menuOriginalOrder = null;
 
@@ -1816,6 +1932,7 @@ shopNav?.addEventListener("click", showShopPage);
 gameNav?.addEventListener("click", showGamePage);
 exerciseNav?.addEventListener("click", showExercisePage);
 infoNav?.addEventListener("click", showInfoPage);
+achievementsNav?.addEventListener("click", showAchievementsPage);
 
 /* =====================================================
    CALENDAR
@@ -2521,6 +2638,9 @@ function buyCharacter(character) {
 
     updateCoins();
 
+    achievements.skinPurchased = true;
+    checkAchievements();
+
     renderCharacterShop();
 
 
@@ -2704,6 +2824,8 @@ function claimDailyTask() {
 
     // Tandai sudah claim
     savedTask.claimed = true;
+    achievements.dailyTasksClaimed = (Number(achievements.dailyTasksClaimed) || 0) + 1;
+    checkAchievements();
 
     localStorage.setItem(
         "doyourstreak-daily-task",
@@ -2818,6 +2940,8 @@ openFightingGame?.addEventListener(
     "click",
     () => {
 
+        markGamePlayed("fighting");
+
         gameMenu?.classList.add("hidden");
 
         fightingGame?.classList.remove("hidden");
@@ -2839,6 +2963,8 @@ openFightingGame?.addEventListener(
 openDinoGame?.addEventListener(
     "click",
     () => {
+
+        markGamePlayed("dino");
 
         gameMenu?.classList.add("hidden");
 
@@ -2868,6 +2994,7 @@ backFromDino?.addEventListener(
 
 
 openFlappyGame?.addEventListener("click", () => {
+    markGamePlayed("flappy");
     gameMenu?.classList.add("hidden");
     fightingGame?.classList.add("hidden");
     dinoGame?.classList.add("hidden");
@@ -2879,6 +3006,7 @@ openFlappyGame?.addEventListener("click", () => {
 backFromFlappy?.addEventListener("click", showGameMenu);
 
 openClawGame?.addEventListener("click", () => {
+    markGamePlayed("claw");
     gameMenu?.classList.add("hidden");
     fightingGame?.classList.add("hidden");
     dinoGame?.classList.add("hidden");
@@ -2894,6 +3022,7 @@ openClawGame?.addEventListener("click", () => {
 backFromClaw?.addEventListener("click", showGameMenu);
 
 openCatBike?.addEventListener("click", () => {
+    markGamePlayed("cat-bike");
     gameMenu?.classList.add("hidden");
     [fightingGame, dinoGame, flappyGame, clawGame].forEach(screen => screen?.classList.add("hidden"));
     catBikeGame?.classList.remove("hidden");

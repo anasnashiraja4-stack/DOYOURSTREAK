@@ -7874,3 +7874,44 @@ body::before {
     #gamePage.claw-active .game-screen-header { gap: 8px; margin-bottom: 8px; }
     #gamePage.claw-active .game-screen-header .secondary-button { padding: 9px 10px; font-size: 12px; }
 }
+/* Achievement collection and unlock notification */
+.achievements-page { width: min(900px, 100%); margin: 0 auto; padding: 34px 22px 125px; }
+.achievements-header { margin-bottom: 26px; }
+.achievements-header > small { color: #6b52d8; font-weight: 900; letter-spacing: 2px; }
+.achievements-header h1 { margin: 7px 0; color: #171717; font-size: clamp(28px, 5vw, 42px); }
+.achievements-header p { margin: 0; color: #646464; }
+.achievement-list { display: grid; gap: 14px; }
+.achievement-card { display: flex; align-items: center; gap: 16px; padding: 18px; border: 2px solid #171717; border-radius: 18px; background: #fff; box-shadow: 4px 4px 0 #171717; }
+.achievement-card.unlocked { background: #fff8d8; }
+.achievement-icon { display: grid; width: 58px; height: 58px; flex: 0 0 58px; place-items: center; border: 2px solid #171717; border-radius: 16px; background: #f1eaff; font-size: 29px; }
+.achievement-copy { flex: 1; min-width: 0; }
+.achievement-copy > small:first-child { color: #7257d9; font-size: 10px; font-weight: 900; letter-spacing: 1.2px; }
+.achievement-copy h2 { margin: 4px 0; font-size: 18px; }
+.achievement-copy p { margin: 0 0 11px; color: #626262; font-size: 13px; }
+.achievement-progress { height: 9px; overflow: hidden; border: 1px solid #171717; border-radius: 99px; background: #eee; }
+.achievement-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6f4fe0, #a78bfa); transition: width .3s ease; }
+.achievement-count { display: block; margin-top: 5px; color: #666; font-size: 11px; }
+.achievement-check { font-size: 20px; font-weight: 900; }
+.achievement-card.unlocked .achievement-check { color: #228b54; }
+.achievement-nav { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+.achievement-nav img { width: 38px; height: 38px; object-fit: contain; }
+.achievement-nav small { color: #171717; font-size: 8px; font-weight: 900; letter-spacing: .5px; }
+.achievement-toast { position: fixed; z-index: 10000; top: max(18px, env(safe-area-inset-top)); left: 50%; display: flex; align-items: center; gap: 12px; width: min(390px, calc(100vw - 28px)); padding: 14px 16px; border: 2px solid #171717; border-radius: 16px; background: #fff8d8; box-shadow: 5px 5px 0 #171717; opacity: 0; pointer-events: none; transform: translate(-50%, -24px) scale(.96); transition: opacity .22s ease, transform .22s ease; }
+.achievement-toast.visible { opacity: 1; pointer-events: auto; transform: translate(-50%, 0) scale(1); }
+.achievement-toast-icon { font-size: 30px; }
+.achievement-toast > span:nth-child(2) { display: grid; gap: 3px; flex: 1; }
+.achievement-toast small { color: #7257d9; font-size: 9px; font-weight: 900; letter-spacing: 1px; }
+.achievement-toast strong { color: #171717; font-size: 15px; }
+.achievement-toast button { border: 0; background: transparent; color: #555; font-size: 25px; cursor: pointer; }
+.bottom-nav-image { flex-direction: column; gap: 2px; }
+.bottom-nav-image img { width: 38px; height: 38px; flex: 0 0 38px; }
+.bottom-nav-image small { color: #171717; font-family: inherit; font-size: 8px; font-weight: 900; letter-spacing: .5px; line-height: 1; }
+.bottom-nav-image.active small { color: #fff; }
+@media (max-width: 560px) {
+    .achievements-page { padding: 25px 15px 115px; }
+    .achievement-card { gap: 11px; padding: 14px 12px; }
+    .achievement-icon { width: 48px; height: 48px; flex-basis: 48px; font-size: 24px; }
+    .achievement-copy h2 { font-size: 16px; }
+    .bottom-navbar { gap: 4px; padding: 0 6px; }
+    .bottom-nav-image { width: auto; max-width: 62px; flex: 1 1 0; }
+}

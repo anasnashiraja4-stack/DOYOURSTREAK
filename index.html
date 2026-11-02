@@ -1120,6 +1120,17 @@
 
         </div>
 
+        <div id="achievementsPage" class="app-page">
+            <section class="achievements-page">
+                <header class="achievements-header">
+                    <small>DOYOURSTREAK</small>
+                    <h1>ACHIEVEMENTS</h1>
+                    <p>Celebrate every milestone on your journey.</p>
+                </header>
+                <div id="achievementList" class="achievement-list" aria-live="polite"></div>
+            </section>
+        </div>
+
         <!-- ================= PREMIUM MODAL ================= -->
         <div id="premiumModal" class="premium-modal hidden">
             <div class="premium-card">
@@ -1181,32 +1192,48 @@
 
         <nav class="bottom-navbar">
 
-            <button class="bottom-nav-image" id="characterNav" type="button">
-                <img src="buttonkarakter.png" alt="Character">
+            <button class="bottom-nav-image" id="characterNav" type="button" aria-label="Home">
+                <img src="buttonkarakter.png" alt="">
+                <small>HOME</small>
             </button>
 
-            <button class="bottom-nav-image" id="shopNav" type="button">
-                <img src="shopbutton.png" alt="Shop">
+            <button class="bottom-nav-image" id="shopNav" type="button" aria-label="Catalog">
+                <img src="shopbutton.png" alt="">
+                <small>CATALOG</small>
             </button>
 
-            <button class="bottom-nav-image" id="exerciseNav" type="button">
-                <img src="buku.png" alt="Exercise">
+            <button class="bottom-nav-image" id="exerciseNav" type="button" aria-label="Habit">
+                <img src="buku.png" alt="">
+                <small>HABIT</small>
             </button>
 
-            <button class="bottom-nav-image" id="infoNav" type="button">
-                <img src="infobutton.png" alt="Info">
+            <button class="bottom-nav-image" id="infoNav" type="button" aria-label="Events">
+                <img src="infobutton.png" alt="">
+                <small>EVENTS</small>
             </button>
 
-            <button class="bottom-nav-image" id="gameNav" type="button">
-                <img src="gameicon.png" alt="Game">
+            <button class="bottom-nav-image" id="gameNav" type="button" aria-label="Games">
+                <img src="gameicon.png" alt="">
+                <small>GAMES</small>
+            </button>
+
+            <button class="bottom-nav-image achievement-nav" id="achievementsNav" type="button" aria-label="Achievements">
+                <img src="iconawardcat.png" alt="Achievements">
+                <small>AWARDS</small>
             </button>
 
         </nav>
 
+        <div id="achievementToast" class="achievement-toast" role="status" aria-live="polite" aria-atomic="true">
+            <span class="achievement-toast-icon" aria-hidden="true">🏆</span>
+            <span><small>ACHIEVEMENT UNLOCKED</small><strong id="achievementToastTitle"></strong></span>
+            <button id="closeAchievementToast" type="button" aria-label="Dismiss notification">×</button>
+        </div>
+
         <div id="tutorialOverlay" class="tutorial-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
             <section class="tutorial-card">
                 <div class="tutorial-card-top">
-                    <span id="tutorialStepCount">STEP 1 OF 5</span>
+                    <span id="tutorialStepCount">STEP 1 OF 6</span>
                     <button id="closeTutorialButton" class="tutorial-close" type="button" aria-label="Close tutorial">×</button>
                 </div>
                 <h2 id="tutorialTitle"></h2>
