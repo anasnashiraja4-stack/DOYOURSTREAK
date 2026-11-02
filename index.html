@@ -494,6 +494,10 @@
                             <p>Capit karakter untuk dapat koin dan EXP. Hindari anomaly!</p>
                         </div>
                     </button>
+                    <button id="openCatBike" class="game-card" type="button">
+                        <div class="game-card-icon">🐱</div>
+                        <div><small>ENDLESS RIDE</small><h2>CAT BIKE</h2><p>Ride the sunny farm road and dodge cars and trucks!</p></div>
+                    </button>
                      <!-- Tombol kecil ESP32 -->
                      <div class="esp-connect-controls">
                         <button id="espConnectButton" class="esp-connect-button" type="button">🔌 CONNECT ESP32</button>
@@ -713,6 +717,17 @@
                     </div>
                     <button id="clawRestart" class="main-button claw-restart hidden" type="button">MAIN LAGI</button>
                     <small class="claw-hint">Bisa pakai tombol panah kiri/kanan, lalu Spasi untuk capit.</small>
+                </div>
+
+                <div id="catBikeGame" class="game-screen hidden">
+                    <div class="game-screen-header">
+                        <button id="backFromCatBike" class="secondary-button" type="button">← MENU GAME</button>
+                        <h2>🐱 CAT BIKE</h2>
+                    </div>
+                    <div class="cat-bike-scoreboard"><span>DISTANCE <strong id="catBikeDistance">0</strong> m</span><span>SCORE <strong id="catBikeScore">0</strong></span><span>BEST <strong id="catBikeBest">0</strong></span><span>POINTS EARNED <strong id="catBikePoints">0</strong></span></div>
+                    <div class="cat-bike-stage"><canvas id="catBikeCanvas" width="450" height="800" aria-label="Cat Bike endless road game"></canvas></div>
+                    <p id="catBikeStatus" class="game-status">Four lanes! Swipe or use ← → / A / D. Traffic can come from either end.</p>
+                    <div class="cat-bike-controls"><button id="catBikeLeft" class="game-action-button" type="button" aria-label="Steer left">◀ LEFT</button><button id="startCatBike" class="main-button" type="button">START RIDE</button><button id="catBikeRight" class="game-action-button" type="button" aria-label="Steer right">RIGHT ▶</button></div>
                 </div>
 
             </section>

@@ -2783,6 +2783,9 @@ const backFromFlappy = document.getElementById("backFromFlappy");
 const openClawGame = document.getElementById("openClawGame");
 const clawGame = document.getElementById("clawGame");
 const backFromClaw = document.getElementById("backFromClaw");
+const openCatBike = document.getElementById("openCatBike");
+const catBikeGame = document.getElementById("catBikeGame");
+const backFromCatBike = document.getElementById("backFromCatBike");
 
 
 function showGameMenu() {
@@ -2795,12 +2798,14 @@ function showGameMenu() {
 
     flappyGame?.classList.add("hidden");
     clawGame?.classList.add("hidden");
+    catBikeGame?.classList.add("hidden");
     clawGame?.closest(".game-page")?.classList.remove("claw-active");
     gamePage?.classList.remove("claw-active");
 
     stopDinoGame();
     stopFlappyGame();
     stopClawGame();
+    stopCatBikeGame();
 
 }
 
@@ -2887,6 +2892,15 @@ openClawGame?.addEventListener("click", () => {
 });
 
 backFromClaw?.addEventListener("click", showGameMenu);
+
+openCatBike?.addEventListener("click", () => {
+    gameMenu?.classList.add("hidden");
+    [fightingGame, dinoGame, flappyGame, clawGame].forEach(screen => screen?.classList.add("hidden"));
+    catBikeGame?.classList.remove("hidden");
+    stopDinoGame(); stopFlappyGame(); stopClawGame();
+    startCatBikeScreen();
+});
+backFromCatBike?.addEventListener("click", showGameMenu);
 /* =====================================================
    FIGHTING GAME
 ===================================================== */
@@ -4838,6 +4852,168 @@ document.addEventListener("keydown", event => {
     event.preventDefault();
     flapBird();
 });
+
+/* =====================================================
+   CAT BIKE — endless farm-road dodger
+===================================================== */
+const catBikeCanvas = document.getElementById("catBikeCanvas");
+const catBikeCtx = catBikeCanvas?.getContext("2d");
+const catBikeBackground = new Image();
+catBikeBackground.src = "catbikebackground.png";
+const catBikeStatus = document.getElementById("catBikeStatus");
+const catBikeDistanceLabel = document.getElementById("catBikeDistance");
+const catBikeScoreLabel = document.getElementById("catBikeScore");
+const catBikeBestLabel = document.getElementById("catBikeBest");
+const catBikePointsLabel = document.getElementById("catBikePoints");
+const catBikeBestKey = "doyourstreak-cat-bike-best";
+let catBikeBest = Number(localStorage.getItem(catBikeBestKey)) || 0;
+let catBikeDistance = 0, catBikeScore = 0, catBikePointsEarned = 0, catBikeLane = 2, catBikeTraffic = [];
+let catBikeFrame = 0, catBikeLast = 0, catBikeSpawn = 0, catBikeRunning = false;
+const catBikeRider = new Image();
+catBikeRider.src = "catbike.png";
+const catBikeObstacleImages = {};
+[["dogbike", "dogbike.png"], ["catr", "catr.png"], ["dababycar", "dababycar.png"]].forEach(([name, src]) => {
+    const image = new Image();
+    image.src = src;
+    catBikeObstacleImages[name] = image;
+});
+let daBabyObstacleCutout = null;
+if (catBikeBestLabel) catBikeBestLabel.textContent = catBikeBest;
+
+function startCatBikeScreen() {
+    stopCatBikeGame();
+    catBikeDistance = 0; catBikeScore = 0; catBikePointsEarned = 0; catBikeLane = 2; catBikeTraffic = []; catBikeSpawn = 0;
+    updateCatBikeScore();
+    if (catBikeStatus) catBikeStatus.textContent = "Dodge the traffic! Use ← → or A / D.";
+    drawCatBike();
+}
+function stopCatBikeGame() {
+    catBikeRunning = false;
+    if (catBikeFrame) cancelAnimationFrame(catBikeFrame);
+    catBikeFrame = 0;
+}
+function updateCatBikeScore() {
+    if (catBikeDistanceLabel) catBikeDistanceLabel.textContent = Math.floor(catBikeDistance);
+    if (catBikeScoreLabel) catBikeScoreLabel.textContent = catBikeScore;
+    if (catBikeBestLabel) catBikeBestLabel.textContent = catBikeBest;
+    if (catBikePointsLabel) catBikePointsLabel.textContent = catBikePointsEarned.toFixed(1).replace(/\.0$/, "");
+}
+function catBikeSteer(delta) {
+    if (!catBikeRunning) return;
+    catBikeLane = Math.max(0, Math.min(3, catBikeLane + delta));
+}
+function drawCatBike() {
+    if (!catBikeCtx || !catBikeCanvas) return;
+    const c = catBikeCtx, w = catBikeCanvas.width, h = catBikeCanvas.height;
+    c.clearRect(0, 0, w, h);
+    if (catBikeBackground.complete && catBikeBackground.naturalWidth) c.drawImage(catBikeBackground, 0, 0, w, h);
+    else { c.fillStyle="#8cc8f2";c.fillRect(0,0,w,h); }
+    // A simple, straight four-lane track sits over the path in the supplied scene.
+    c.fillStyle="rgba(35,48,46,.42)";c.fillRect(64,300,322,500);
+    c.strokeStyle="rgba(255,255,255,.95)";c.lineWidth=4;
+    c.beginPath();c.moveTo(64,300);c.lineTo(64,800);c.moveTo(386,300);c.lineTo(386,800);c.stroke();
+    const laneWidth=322/4;
+    const dashOffset=(catBikeDistance*5)%72;
+    for(let divider=1;divider<4;divider++){
+        const x=64+laneWidth*divider;
+        c.setLineDash([32,40]);c.lineDashOffset=-dashOffset;c.lineWidth=3;c.beginPath();c.moveTo(x,300);c.lineTo(x,800);c.stroke();
+    }
+    c.setLineDash([]);
+    const laneX=Array.from({length:5},(_,lane)=>64+laneWidth*(lane+.5));
+    for(const car of catBikeTraffic){
+        const y=car.y, scale=.7+(y/800)*.25, x=laneX[car.lane]; c.save();c.translate(x,y);c.scale(scale,scale);
+        if (car.type === "dogbike" || car.type === "catr" || car.type === "dababycar") {
+            const sprite = car.type === "dababycar" ? daBabyObstacleCutout : catBikeObstacleImages[car.type];
+            if (sprite && (sprite.complete === undefined || sprite.complete) && (sprite.naturalWidth === undefined || sprite.naturalWidth)) {
+                const sw = car.type === "dababycar" ? 70 : 82;
+                const sh = car.type === "dababycar" ? 122 : 82;
+                c.drawImage(sprite, -sw / 2, -sh / 2, sw, sh);
+            } else {
+                c.fillStyle = "#252a30"; c.fillRect(-24, -28, 48, 56);
+            }
+            c.restore();
+            continue;
+        }
+        c.fillStyle="#171b21";
+        if(car.type==="truck"){
+            // Box truck with a distinct cab, cargo body and paired rear wheels.
+            c.fillRect(-27,24,15,22);c.fillRect(14,24,15,22);
+            c.fillStyle=car.color;c.fillRect(-34,-40,68,57);
+            c.fillStyle="#f4ead0";c.fillRect(-27,-33,54,43);
+            c.fillStyle=car.color;c.fillRect(-34,16,68,20);
+            c.fillStyle="#bceaff";c.fillRect(-22,18,24,14);
+            c.fillStyle="#ffed9c";c.fillRect(-29,34,10,5);c.fillRect(19,34,10,5);
+        }else{
+            // Rounded car body, cabin and headlights.
+            c.fillRect(-25,13,13,20);c.fillRect(12,13,13,20);
+            c.fillStyle=car.color;c.beginPath();c.moveTo(-32,12);c.lineTo(-29,-12);c.lineTo(-17,-30);c.quadraticCurveTo(0,-38,17,-30);c.lineTo(29,-12);c.lineTo(32,12);c.closePath();c.fill();
+            c.fillStyle="#bceaff";c.beginPath();c.moveTo(-20,-12);c.lineTo(-12,-26);c.quadraticCurveTo(0,-31,12,-26);c.lineTo(20,-12);c.closePath();c.fill();
+            c.fillStyle=car.color;c.fillRect(-29,-7,58,17);
+            c.fillStyle="#fff0a0";c.fillRect(-28,5,8,5);c.fillRect(20,5,8,5);
+        }
+        c.restore();
+    }
+    // Use the supplied transparent PNG as the rider sprite.
+    const bx=laneX[catBikeLane], by=690;
+    if(catBikeRider.complete&&catBikeRider.naturalWidth){c.drawImage(catBikeRider,bx-60,by-88,120,120);}
+    else {c.font="54px sans-serif";c.textAlign="center";c.fillText("🐱",bx,by);}
+    c.save();
+    c.textAlign="center";c.font="italic 900 44px 'Arial Black', Impact, sans-serif";
+    c.lineJoin="round";c.lineWidth=9;c.strokeStyle="#173044";c.shadowColor="rgba(0,0,0,.55)";c.shadowBlur=8;c.shadowOffsetY=4;
+    c.strokeText("CAT BIKE",225,270);
+    const titleFill=c.createLinearGradient(0,225,0,270);titleFill.addColorStop(0,"#fff28a");titleFill.addColorStop(.48,"#ffb83f");titleFill.addColorStop(1,"#ff654d");
+    c.fillStyle=titleFill;c.fillText("CAT BIKE",225,270);c.restore();
+}
+catBikeBackground.addEventListener("load", drawCatBike);
+function prepareDaBabyObstacle() {
+    const image = catBikeObstacleImages.dababycar;
+    if (!image?.complete || !image.naturalWidth || daBabyObstacleCutout) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = 144; canvas.height = 256;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < pixels.data.length; i += 4) {
+        const r = pixels.data[i], g = pixels.data[i + 1], b = pixels.data[i + 2];
+        if (r >= 92 && r <= 160 && g >= 92 && g <= 160 && b >= 92 && b <= 160 && Math.max(r, g, b) - Math.min(r, g, b) <= 18) pixels.data[i + 3] = 0;
+    }
+    context.putImageData(pixels, 0, 0);
+    daBabyObstacleCutout = canvas;
+}
+catBikeObstacleImages.dababycar.addEventListener("load", prepareDaBabyObstacle);
+function startCatBikeGame() {
+    startCatBikeScreen(); catBikeRunning=true; catBikeLast=performance.now();
+    if(catBikeStatus)catBikeStatus.textContent="Ride on! Each 100 meters earns a point.";
+    catBikeFrame=requestAnimationFrame(catBikeLoop);
+}
+function endCatBikeGame() {
+    stopCatBikeGame(); catBikeBest=Math.max(catBikeBest,catBikeScore);localStorage.setItem(catBikeBestKey,String(catBikeBest));updateCatBikeScore();
+    if(catBikeStatus)catBikeStatus.textContent=`Crash! You rode ${Math.floor(catBikeDistance)} m and scored ${catBikeScore}. Press RIDE AGAIN to try again.`;
+    const button=document.getElementById("startCatBike");if(button)button.textContent="RIDE AGAIN";
+    drawCatBike();
+}
+function catBikeLoop(now) {
+    if(!catBikeRunning||catBikeGame?.classList.contains("hidden")||!gamePage?.classList.contains("active")){stopCatBikeGame();return;}
+    const dt=Math.min((now-catBikeLast)/1000,.05);catBikeLast=now;
+    catBikeDistance+=dt*34;const nextScore=Math.floor(catBikeDistance/100);if(nextScore>catBikeScore){const gained=nextScore-catBikeScore;catBikeScore=nextScore;catBikePointsEarned+=gained*.5;coins+=gained*.5;updateCoins();updateCatBikeScore();if(catBikeStatus)catBikeStatus.textContent=`+${(gained*.5).toFixed(1).replace(/\.0$/, "")} shop points! Keep riding and dodge traffic.`;}
+    catBikeSpawn+=dt;
+    if(catBikeSpawn>Math.max(.88,1.48-catBikeDistance/2600)){
+        catBikeSpawn=0;
+        const openLanes=[0,1,2].filter(lane=>!catBikeTraffic.some(car=>car.lane===lane&&car.y>-100&&car.y<880));
+        if(openLanes.length){const lane=openLanes[Math.floor(Math.random()*openLanes.length)];const kinds=["car","truck","dogbike","catr","dababycar"];const direction=Math.random()<.5?-1:1;catBikeTraffic.push({lane,y:direction<0?850:260,direction,type:kinds[Math.floor(Math.random()*kinds.length)],color:["#e45b4f","#4386d6","#f0a33b","#754fc2"][Math.floor(Math.random()*4)]});}
+    }
+    catBikeTraffic.forEach(car=>car.y+=car.direction*dt*(190+Math.min(catBikeDistance*.12,90)));
+    catBikeTraffic=catBikeTraffic.filter(car=>car.y>-140&&car.y<860);
+    if(catBikeTraffic.some(car=>car.lane===catBikeLane&&car.y>630&&car.y<750)){endCatBikeGame();return;}
+    drawCatBike();catBikeFrame=requestAnimationFrame(catBikeLoop);
+}
+document.getElementById("startCatBike")?.addEventListener("click",startCatBikeGame);
+document.getElementById("catBikeLeft")?.addEventListener("click",()=>catBikeSteer(-1));
+document.getElementById("catBikeRight")?.addEventListener("click",()=>catBikeSteer(1));
+let catBikeTouchStartX = null;
+catBikeCanvas?.addEventListener("pointerdown", event => { catBikeTouchStartX = event.clientX; });
+catBikeCanvas?.addEventListener("pointerup", event => { if (catBikeTouchStartX === null) return; const delta = event.clientX - catBikeTouchStartX; if (Math.abs(delta) > 24) catBikeSteer(delta < 0 ? -1 : 1); catBikeTouchStartX = null; });
+document.addEventListener("keydown",event=>{if(catBikeGame?.classList.contains("hidden"))return;if(["ArrowLeft","KeyA"].includes(event.code)){event.preventDefault();catBikeSteer(-1);}if(["ArrowRight","KeyD"].includes(event.code)){event.preventDefault();catBikeSteer(1);}});
 
 /* =====================================================
    CLAW MACHINE

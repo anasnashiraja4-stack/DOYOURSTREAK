@@ -7239,6 +7239,14 @@ body::before {
     aspect-ratio: 3 / 4;
     touch-action: none;
 }
+
+/* Cat Bike endless farm ride */
+.cat-bike-scoreboard { display:flex; justify-content:center; gap:clamp(12px,4vw,36px); flex-wrap:wrap; margin:10px 0 14px; font-weight:800; }
+.cat-bike-scoreboard strong { margin-left:5px; font-size:20px; }
+.cat-bike-stage { width:min(100%,450px); margin:0 auto; overflow:hidden; border:4px solid #171717; border-radius:16px; background:#91d9fb; box-shadow:6px 6px 0 #171717; touch-action:pan-y; }
+#catBikeCanvas { display:block; width:min(100%,450px); height:auto; aspect-ratio:9/16; margin:0 auto; }
+.cat-bike-controls { display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap; margin:14px 0 24px; }
+@media(max-width:560px) { .cat-bike-controls .game-action-button { min-width:105px; padding:12px 10px; } }
 .flappy-controls {
     display: flex;
     justify-content: center;
