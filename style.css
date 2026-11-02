@@ -5012,6 +5012,31 @@ body::before {
     margin-bottom: 25px;
 }
 
+.habit-reset-controls {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 10px;
+}
+
+.habit-reset-controls input,
+.habit-reset-controls select {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 13px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    color: inherit;
+    font: inherit;
+}
+
+.habit-reset-controls select option { color: #171717; }
+.habit-reset-label { color: var(--gray); font-size: 12px; }
+
+@media (max-width: 420px) {
+    .habit-reset-controls { grid-template-columns: 76px minmax(0, 1fr); gap: 7px; }
+}
+
 .step-buttons {
     display: flex;
     gap: 12px;

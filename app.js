@@ -83,6 +83,8 @@ const closeModal = document.getElementById("closeModal");
 const habitName = document.getElementById("habitName");
 const saveHabitButton = document.getElementById("saveHabitButton");
 const habitTime = document.getElementById("habitTime");
+const habitResetValue = document.getElementById("habitResetValue");
+const habitResetUnit = document.getElementById("habitResetUnit");
 
 const levelElement = document.getElementById("level");
 const xpText = document.getElementById("xpText");
@@ -407,6 +409,8 @@ function openHabitModal() {
     if (habitTime) {
         habitTime.value = "";
     }
+    if (habitResetValue) habitResetValue.value = "1";
+    if (habitResetUnit) habitResetUnit.value = "day";
 
     selectedPriority = "Normal";
     selectedEmoji = "belajaricon.png";
@@ -455,6 +459,34 @@ function closeHabitModal() {
 
 }
 
+function getHabitResetDuration(habit) {
+    const unit = habit.resetUnit || "day";
+    const value = Math.max(1, Number(habit.resetValue) || 1);
+    if (unit === "halfday") return 12 * 60 * 60 * 1000;
+    if (unit === "week") return value * 7 * 24 * 60 * 60 * 1000;
+    return value * 24 * 60 * 60 * 1000;
+}
+
+function resetExpiredHabits() {
+    const now = Date.now();
+    let changed = false;
+    habits.forEach(habit => {
+        if (!habit?.completed) return;
+        // Preserve the prior calendar-day reset behavior for existing habits.
+        if (!habit.completedAt) {
+            const today = new Date();
+            habit.completedAt = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+            changed = true;
+        }
+        if (now - habit.completedAt >= getHabitResetDuration(habit)) {
+            habit.completed = false;
+            habit.completedAt = null;
+            changed = true;
+        }
+    });
+    if (changed) saveHabits();
+}
+
 /* =====================================================
    ADD HABIT STEPS
 ===================================================== */
@@ -464,7 +496,8 @@ const habitSteps = [
     document.getElementById("habitStep1"),
     document.getElementById("habitStep2"),
     document.getElementById("habitStep3"),
-    document.getElementById("habitStep4")
+    document.getElementById("habitStep4"),
+    document.getElementById("habitStep5")
 ];
 
 function showHabitStep(step) {
@@ -550,6 +583,9 @@ document.getElementById("habitBack4")?.addEventListener(
     () => showHabitStep(3)
 );
 
+document.getElementById("habitNext4")?.addEventListener("click", () => showHabitStep(5));
+document.getElementById("habitBack5")?.addEventListener("click", () => showHabitStep(4));
+
 
 
 /* =====================================================
@@ -620,6 +656,9 @@ function createHabit() {
     const time =
         habitTime.value;
 
+    const resetUnit = habitResetUnit?.value || "day";
+    const resetValue = resetUnit === "halfday" ? 1 : Math.max(1, Math.min(365, Number(habitResetValue?.value) || 1));
+
 
     /* CHECK NAME */
 
@@ -655,6 +694,10 @@ function createHabit() {
 
         completed: false,
 
+        resetUnit,
+        resetValue,
+        completedAt: null,
+
         streak: 0
 
     };
@@ -668,6 +711,7 @@ function createHabit() {
     renderHabits();
     updateStats();
     renderDailyTask();
+    closeHabitModal();
 
 }
 
@@ -678,6 +722,7 @@ function createHabit() {
 
 function renderHabits() {
 
+    resetExpiredHabits();
     habitList.innerHTML = "";
 
     // The companion wakes as soon as the user completes one of today's habits.
@@ -718,6 +763,9 @@ function renderHabits() {
 
         const notes = Array.isArray(habit.notes) ? habit.notes : [];
         const recentNotes = notes.slice(-3).reverse();
+        const resetLabel = habit.resetUnit === "halfday"
+            ? "12 hours"
+            : `${Math.max(1, Number(habit.resetValue) || 1)} ${habit.resetUnit === "week" ? "week(s)" : "day(s)"}`;
         const noteHistory = recentNotes.length
             ? recentNotes.map(note => `<div class="habit-note-entry"><strong>${escapeHTML(note.date || "Recent")}${note.mood ? ` · ${escapeHTML(note.mood)}` : ""}${note.duration ? ` · ${Number(note.duration)} min` : ""}</strong>${note.text ? `<p>${escapeHTML(note.text)}</p>` : ""}</div>`).join("")
             : '<p class="habit-note-empty">No notes yet. Add duration, mood, or a quick thought.</p>';
@@ -752,6 +800,7 @@ function renderHabits() {
             ).toLowerCase()}">
         ${habit.priority || "Normal"}
     </span>
+    <span class="habit-reset-label">Reset: every ${resetLabel}</span>
 
                </div>
 
@@ -897,6 +946,7 @@ function triggerCharacterReaction(reaction) {
 
 function toggleHabit(id) {
 
+    resetExpiredHabits();
     const habit =
         habits.find(item => item.id === id);
 
@@ -911,6 +961,7 @@ function toggleHabit(id) {
     if (habit.completed) {
 
         habit.completed = false;
+        habit.completedAt = null;
 
         stats.xp = Math.max(
             0,
@@ -941,6 +992,7 @@ function toggleHabit(id) {
 
 
     habit.completed = true;
+    habit.completedAt = Date.now();
 
     habit.streak++;
 
