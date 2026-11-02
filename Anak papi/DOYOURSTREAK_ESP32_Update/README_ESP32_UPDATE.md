@@ -7,13 +7,15 @@
   - 1–49%: focused
   - 50–99%: happy
   - 100%: glee
-- OLED enters the `Sleepy` face after 12 seconds without a BLE command or detected workout movement, with animated floating `Zzz` marks.
+- After 12 idle seconds, the OLED shows a 3-second drowsy squint, then enters the `Sleepy` face with floating `Zzz` marks.
 - Waking from sleep triggers a brief surprised expression before returning to the current progress mood.
 - MPU6050 motion interaction runs even when no workout is selected: gentle tilt left/right makes the eyes glance in that direction; a sharp movement triggers a surprised face; returning the board to level brings the eyes forward again. Tilt thresholds use hysteresis and sharp-motion reactions have a cooldown to reduce jitter/repeated triggers.
 - Menu rendering pauses the animated face renderer while the menu is open, preventing OLED frame flicker.
 - If `player.png` (or another character image) is missing, the web app shows a dog companion instead of a blank character area. Reactions also display a speech bubble. Keep your original image assets next to `index.html` when installing the update.
 - The web character has three reactions: a happy bounce for completed habits, a level-up celebration, and a streak shake every 7 days. ESP32 connection state stays visible in the app header.
 - D18 opens a pixel RPG OLED menu with total XP, XP progress, level, and daily quest progress. D8/D9 move the highlighted menu item; shake the device to return to the animated eyes. Outside the menu, D8 still shows total XP and D9 shows level/current XP progress for 3 seconds.
+- The OLED menu includes a left-side arcade with DINO HOP, ROOF CAT, and FLAPPY, plus a separate retro 25-minute FOCUS TIMER page. D19 jumps/flaps in games and starts or pauses the timer.
+- The right menu page also includes DICE ROLL: the eyes and a bouncing die animate together before showing a random 1–6 result.
 - A BLE command, physical button press, or detected workout movement wakes the face. Sleep timing runs on the ESP32, so it works even if the browser stops sending commands.
 - Existing service/characteristic UUIDs are preserved.
 
@@ -29,7 +31,7 @@
 3. Install the dependencies already used by this sketch/project (ESP32 Arduino core, ESP32 BLE library, and the bundled `esp32-eyes` face sources).
 4. Select your ESP32 board/port and upload.
 5. Wire each physical button between its GPIO pin and GND; the firmware uses `INPUT_PULLUP`, so a pressed button reads LOW.
-   - D18: open/close the pixel RPG menu; D8/D9 browse its stats; shake to return to the eyes.
+   - D18: open/close the menu; triple-press D18 to move through entries and games; D19 launches the highlighted item or jumps in a game.
    - Outside the menu, D8 shows total XP and D9 shows level/XP progress.
    - Pin labels differ by ESP32 board. The sketch uses board aliases `D8`/`D9`/`D18` if available; otherwise D8/D9/D18 fall back to GPIO25/GPIO19/GPIO18 respectively. **Check your exact board pinout before wiring** and change `XP_BUTTON_PIN`, `LEVEL_BUTTON_PIN`, or `MENU_BUTTON_PIN` near the top of the `.ino` if needed. Do not assume the silkscreen label maps the same way on every board.
 6. In Chrome or Edge, open DOYOURSTREAK through `localhost` or HTTPS and click the ESP32 connect button.

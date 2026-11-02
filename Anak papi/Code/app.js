@@ -33,6 +33,8 @@ let stats = JSON.parse(
     streak: 0,
     lastCompletedDate: null
 };
+let localProfiles = JSON.parse(localStorage.getItem("doyourstreak-profiles") || "[]");
+let activeProfileId = user?.profileId || null;
 
 let selectedEmoji = "belajaricon.png";
 let selectedPriority = "Normal";
@@ -89,6 +91,10 @@ const xpBar = document.getElementById("xpBar");
 const streakElement = document.getElementById("streak");
 const totalXP = document.getElementById("totalXP");
 const completedToday = document.getElementById("completedToday");
+const localLeaderboard = document.getElementById("localLeaderboard");
+const localProfileSelect = document.getElementById("localProfileSelect");
+const localProfileName = document.getElementById("localProfileName");
+const createLocalProfileButton = document.getElementById("createLocalProfile");
 
 
 /* =====================================================
@@ -110,7 +116,7 @@ function setESPStatus(message, connected = false) {
     espConnectionStatus.classList.toggle("connected", connected);
     if (espTopStatus) {
         const connecting = !connected && /search|connect|sync/i.test(message);
-        espTopStatus.textContent = connected ? "● ESP32 ONLINE" : connecting ? "● ESP32 CONNECTING" : "● ESP32 OFFLINE";
+        espTopStatus.textContent = connected ? "ESP32 ONLINE" : connecting ? "ESP32 CONNECTING" : "ESP32 OFFLINE";
         espTopStatus.classList.toggle("connected", connected);
         espTopStatus.classList.toggle("connecting", connecting);
     }
@@ -209,6 +215,7 @@ if (espConnectButton) espConnectButton.addEventListener("click", connectESP32);
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    initializeLocalProfiles();
     renderDailyTask();
     setupCharacterFallback();
     setupPriorityButtons();
@@ -607,6 +614,12 @@ function renderHabits() {
             card.classList.add("completed");
         }
 
+        const notes = Array.isArray(habit.notes) ? habit.notes : [];
+        const recentNotes = notes.slice(-3).reverse();
+        const noteHistory = recentNotes.length
+            ? recentNotes.map(note => `<div class="habit-note-entry"><strong>${escapeHTML(note.date || "Recent")}${note.mood ? ` · ${escapeHTML(note.mood)}` : ""}${note.duration ? ` · ${Number(note.duration)} min` : ""}</strong>${note.text ? `<p>${escapeHTML(note.text)}</p>` : ""}</div>`).join("")
+            : '<p class="habit-note-empty">No notes yet. Add duration, mood, or a quick thought.</p>';
+
 
         card.innerHTML = `
 
@@ -644,6 +657,17 @@ function renderHabits() {
     🔥 ${habit.streak} day streak
               </div>
 
+              <details class="habit-note-details">
+                <summary>📝 NOTES (${notes.length})</summary>
+                <div class="habit-note-editor">
+                  <label>Duration <span>(minutes)</span><input class="habit-note-duration" type="number" min="1" max="600" inputmode="numeric" placeholder="e.g. 20"></label>
+                  <label>How did it feel?<select class="habit-note-mood"><option value="">Choose a mood</option><option>Great</option><option>Good</option><option>Okay</option><option>Tough</option></select></label>
+                  <label>Quick note<textarea class="habit-note-text" maxlength="240" rows="2" placeholder="What went well? Anything to remember?"></textarea></label>
+                  <button class="save-habit-note" data-id="${habit.id}" type="button">SAVE NOTE</button>
+                  <div class="habit-note-history">${noteHistory}</div>
+                </div>
+              </details>
+
                 </div>
 
             </div>
@@ -668,11 +692,32 @@ function renderHabits() {
             () => toggleHabit(habit.id)
         );
 
+        card.querySelector(".save-habit-note")?.addEventListener("click", () => saveHabitNote(habit.id, card));
+
 
         habitList.appendChild(card);
 
     });
 
+}
+
+function saveHabitNote(id, card) {
+    const habit = habits.find(item => item.id === id);
+    if (!habit) return;
+    const durationValue = card.querySelector(".habit-note-duration")?.value || "";
+    const duration = durationValue ? Math.max(1, Math.min(600, Number(durationValue))) : null;
+    const mood = card.querySelector(".habit-note-mood")?.value || "";
+    const text = card.querySelector(".habit-note-text")?.value.trim() || "";
+    if (!duration && !mood && !text) {
+        card.querySelector(".habit-note-text")?.focus();
+        return;
+    }
+    const today = new Date();
+    const date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    if (!Array.isArray(habit.notes)) habit.notes = [];
+    habit.notes.push({ date, duration, mood, text, createdAt: Date.now() });
+    saveHabits();
+    renderHabits();
 }
 
 function deleteHabit(id) {
@@ -959,6 +1004,8 @@ function saveHabits() {
         JSON.stringify(habits)
     );
 
+    saveActiveProfileSnapshot();
+
 }
 
 
@@ -969,7 +1016,125 @@ function saveStats() {
         JSON.stringify(stats)
     );
 
+    saveActiveProfileSnapshot();
+
 }
+
+function getProfileIdentity(profile) {
+    if (profile?.profileId) return String(profile.profileId);
+    const email = String(profile?.email || "").trim().toLowerCase();
+    if (email) return `email:${email}`;
+    const name = String(profile?.characterName || profile?.name || "player").trim().toLowerCase();
+    return `name:${name}`;
+}
+
+function saveActiveProfileSnapshot() {
+    if (!user) return;
+    activeProfileId = activeProfileId || getProfileIdentity(user);
+    const name = user.characterName || user.name || "Player";
+    const snapshot = {
+        id: activeProfileId,
+        name,
+        email: user.email || "",
+        user: { ...user, profileId: activeProfileId },
+        stats: { ...stats },
+        habits: JSON.parse(JSON.stringify(habits)),
+        updatedAt: Date.now()
+    };
+    const index = localProfiles.findIndex(profile => profile.id === activeProfileId);
+    if (index >= 0) localProfiles[index] = snapshot;
+    else localProfiles.push(snapshot);
+    localStorage.setItem("doyourstreak-profiles", JSON.stringify(localProfiles));
+    renderLocalLeaderboard();
+}
+
+function initializeLocalProfiles() {
+    if (user) {
+        activeProfileId = getProfileIdentity(user);
+        user.profileId = activeProfileId;
+        saveActiveProfileSnapshot();
+    } else {
+        renderLocalLeaderboard();
+    }
+}
+
+function renderLocalLeaderboard() {
+    if (!localProfileSelect || !localLeaderboard) return;
+    const profiles = [...localProfiles].sort((a, b) => {
+        const xpDifference = (Number(b.stats?.xp) || 0) - (Number(a.stats?.xp) || 0);
+        return xpDifference || (Number(b.stats?.streak) || 0) - (Number(a.stats?.streak) || 0);
+    });
+
+    localProfileSelect.innerHTML = profiles.length
+        ? profiles.map(profile => `<option value="${encodeURIComponent(profile.id)}">${escapeHTML(profile.name || "Player")}</option>`).join("")
+        : '<option value="">No profiles yet</option>';
+    if (activeProfileId) localProfileSelect.value = encodeURIComponent(activeProfileId);
+
+    if (!profiles.length) {
+        localLeaderboard.innerHTML = '<p class="leaderboard-empty">Create a local profile to start your device leaderboard.</p>';
+        return;
+    }
+
+    localLeaderboard.innerHTML = profiles.map((profile, index) => {
+        const xp = Math.max(0, Number(profile.stats?.xp) || 0);
+        const level = Math.floor(xp / 100) + 1;
+        const streak = Math.max(0, Number(profile.stats?.streak) || 0);
+        const done = (profile.habits || []).filter(habit => habit.completed).length;
+        const total = (profile.habits || []).length;
+        const active = profile.id === activeProfileId ? " is-current-profile" : "";
+        return `<article class="leaderboard-row${active}">
+            <span class="leaderboard-rank">${index === 0 ? '<img class="leaderboard-lock" src="gembok.png" alt="Champion profile">' : `#${index + 1}`}</span>
+            <div class="leaderboard-player"><strong>${escapeHTML(profile.name || "Player")}${profile.id === activeProfileId ? " (YOU)" : ""}</strong><small>LV ${level} · ${streak} day streak · ${done}/${total} today</small></div>
+            <strong class="leaderboard-xp">${xp} XP</strong>
+        </article>`;
+    }).join("");
+}
+
+function activateLocalProfile(profileId) {
+    if (!profileId || profileId === activeProfileId) return;
+    saveActiveProfileSnapshot();
+    const profile = localProfiles.find(item => item.id === profileId);
+    if (!profile) return;
+
+    activeProfileId = profile.id;
+    user = { ...(profile.user || {}), profileId: profile.id, characterName: profile.name || "Player" };
+    selectedCharacter = user.character || "player.png";
+    const playerImageElement = document.getElementById("playerImage");
+    if (playerImageElement) playerImageElement.src = selectedCharacter;
+    habits = JSON.parse(JSON.stringify(profile.habits || []));
+    stats = { xp: 0, streak: 0, lastCompletedDate: null, ...(profile.stats || {}) };
+    localStorage.setItem("doyourstreak-user", JSON.stringify(user));
+    localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
+    localStorage.setItem("doyourstreak-stats", JSON.stringify(stats));
+    showApp();
+    renderDailyTask();
+    updateCoins();
+    renderLocalLeaderboard();
+}
+
+localProfileSelect?.addEventListener("change", () => activateLocalProfile(decodeURIComponent(localProfileSelect.value)));
+createLocalProfileButton?.addEventListener("click", () => {
+    const name = localProfileName?.value.trim() || "";
+    if (name.length < 2) {
+        localProfileName?.focus();
+        return;
+    }
+    saveActiveProfileSnapshot();
+    const id = `local:${Date.now()}:${Math.random().toString(36).slice(2, 7)}`;
+    user = { email: "", profileId: id, character: "player.png", characterName: name };
+    activeProfileId = id;
+    habits = [];
+    stats = { xp: 0, streak: 0, lastCompletedDate: null };
+    localStorage.setItem("doyourstreak-user", JSON.stringify(user));
+    localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
+    localStorage.setItem("doyourstreak-stats", JSON.stringify(stats));
+    localProfileName.value = "";
+    saveActiveProfileSnapshot();
+    const playerImageElement = document.getElementById("playerImage");
+    if (playerImageElement) playerImageElement.src = user.character;
+    showApp();
+    updateCoins();
+});
 
 
 /* =====================================================
@@ -1267,20 +1432,30 @@ function startJourney() {
     /* SAVE USER */
 
     user = {
-
-        email: email,
-
+        email,
         character: selectedCharacter,
-
-        characterName: characterName
-
+        characterName,
+        profileId: email ? `email:${email.toLowerCase()}` : `name:${characterName.toLowerCase()}`
     };
+
+    activeProfileId = user.profileId;
+    const savedProfile = localProfiles.find(profile => profile.id === activeProfileId);
+    if (savedProfile) {
+        user = { ...(savedProfile.user || user), profileId: activeProfileId, characterName: savedProfile.name || characterName };
+        selectedCharacter = user.character || selectedCharacter;
+        habits = JSON.parse(JSON.stringify(savedProfile.habits || []));
+        stats = { xp: 0, streak: 0, lastCompletedDate: null, ...(savedProfile.stats || {}) };
+        localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
+        localStorage.setItem("doyourstreak-stats", JSON.stringify(stats));
+    }
 
 
     localStorage.setItem(
         "doyourstreak-user",
         JSON.stringify(user)
     );
+
+    saveActiveProfileSnapshot();
 
 
     /* CLOSE LOGIN MODAL */
@@ -1392,6 +1567,7 @@ function showInfoPage() {
     setActiveNav(infoNav);
 
     renderCalendar();
+    renderLocalLeaderboard();
 
     window.scrollTo(0, 0);
 }

@@ -51,7 +51,12 @@ Check the upstream repository for its full license terms and attribution.
 Timed emotion behavior: while idle, the face cycles Angry (2.2 s), Worried (2.2 s), Normal (5 s), then waits 9 s before repeating. During an active workout, workout moods take priority.
 
 ## OLED mini games and animation
-- Press D18 once to open or close the player menu. Triple-press D18 to move through the right page's entries; after `EYE SPIN`, the next triple-press opens the left page dedicated to the game. Press D19 to activate the selected item.
+- Press D18 once to open or close the player menu. Triple-press D18 to move through the right page's entries, then the three arcade games, then the focus timer page. Press D19 to activate the selected item.
+- `DICE ROLL` shakes the eyes and a bouncing die, then displays a random result. Press D19 after the result to roll again.
 - On the right page, `EYE SPIN` animates Vita's real eyes in a smooth shared orbit for 2 seconds, with a 2-second cycle.
 - The left page contains `DINO HOP`, a pixel-art endless runner with score, clouds, terrain, and a jumping character. Press D19 to jump; after a collision press D19 to retry. D18 opens the menu to leave the game.
+- The left page also contains `ROOF CAT`, a moonlit rooftop runner, and `FLAPPY`, a night-sky pipe-dodging game. Press D19 to jump across roofs or flap through the pipe gaps; D19 restarts either game after a crash.
+- The next menu page contains `FOCUS TIMER`, a retro 25-minute focus session. D19 starts, pauses, resumes, or restarts a completed session; the countdown continues while the menu is open.
 - Outside the menu and game, D19 retains the existing double-press fish feeding action.
+- On startup and every five minutes while the main face is visible, Vita shows happy eyes and a small waving-hand animation for 3 seconds. A menu/game in progress postpones the greeting until the face returns.
+- After 12 seconds without activity, Vita squints sleepily for 3 seconds before the sleepy face and floating `Zzz` animation begin. Any button press or BLE activity cancels the drowsy transition.

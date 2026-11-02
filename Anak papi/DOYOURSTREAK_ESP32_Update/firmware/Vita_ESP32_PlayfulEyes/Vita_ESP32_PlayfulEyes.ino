@@ -55,10 +55,13 @@ int dailyTotal = 0;
 bool deviceConnected = false;
 bool companionMoodActive = false;
 unsigned long companionMoodUntil = 0;
-// Sleep after 12 seconds without a BLE event or detected workout movement.
+// Begin dozing after 12 seconds idle, then enter sleep after the 3-second drowsy cue.
 const unsigned long sleepAfterMs = 12000;
+const unsigned long drowsyBeforeSleepMs = 3000;
 unsigned long lastActivityAt = 0;
 bool sleepMode = false;
+bool dozingOff = false;
+unsigned long dozingStartedAt = 0;
 unsigned long wakeReactionUntil = 0;
 // MPU6050 motion interaction (independent of workout tracking).
 // Gentle tilt controls eye direction; a sharp acceleration triggers surprise.
@@ -79,8 +82,12 @@ unsigned long statsOverlayUntil = 0;
 bool menuOpen = false;
 uint8_t menuSelection = 0;
 uint8_t menuPage = 0; // 0 = right/status page, 1 = left/mini-game page
-const uint8_t menuItemCount = 6;
+const uint8_t menuItemCount = 10;
 const unsigned long hungerIntervalMs =  5UL * 60UL * 1000UL;
+const unsigned long greetingIntervalMs = 5UL * 60UL * 1000UL;
+const unsigned long greetingDurationMs = 3000UL;
+unsigned long lastGreetingAt = 0;
+unsigned long greetingAnimationUntil = 0;
 const unsigned long doublePressWindowMs = 650;
 unsigned long lastFedAt = 0;
 unsigned long lastFeedPressAt = 0;
@@ -92,6 +99,20 @@ bool dinoGameActive = false;
 bool dinoGameOver = false;
 int dinoScore = 0, dinoY = 0, dinoVelocity = 0, obstacleX = 128;
 unsigned long eyesSpinUntil = 0, lastGameFrameAt = 0;
+bool roofCatGameActive = false, roofCatGameOver = false, roofCatGrounded = true;
+int roofCatScore = 0, roofCatSurfaceY = 47, roofCatNextY = 42, roofCatNextX = 150, roofCatGap = 22, roofCatSpeed = 2;
+float roofCatY = 31.0f, roofCatVelocity = 0.0f;
+unsigned long lastRoofFrameAt = 0;
+bool flappyGameActive = false, flappyGameOver = false, flappyPipeScored = false;
+int flappyScore = 0, flappyPipeX = 128, flappyGapY = 33;
+float flappyBirdY = 32.0f, flappyBirdVelocity = 0.0f;
+unsigned long lastFlappyFrameAt = 0;
+const unsigned long focusDurationMs = 25UL * 60UL * 1000UL;
+bool focusTimerScreenActive = false, focusTimerRunning = false, focusTimerDone = false;
+unsigned long focusTimerEndAt = 0, focusRemainingMs = focusDurationMs;
+bool diceScreenActive = false, diceRolling = false;
+uint8_t diceValue = 1;
+unsigned long diceStartedAt = 0, diceScreenUntil = 0, lastDiceShuffleAt = 0;
 PendingMood progressMood = MOOD_NORMAL;
 bool exerciseSelected = false;
 bool armUp = false;
@@ -129,8 +150,71 @@ void applyMood(PendingMood mood) {
   }
 }
 
+void drawWaveLine(float angle, int x1, int y1, int x2, int y2) {
+  const float c = cosf(angle), s = sinf(angle);
+  const int pivotX = 110, pivotY = 42;
+  const int screenX1 = pivotX + (int)(x1 * c - y1 * s);
+  const int screenY1 = pivotY + (int)(x1 * s + y1 * c);
+  const int screenX2 = pivotX + (int)(x2 * c - y2 * s);
+  const int screenY2 = pivotY + (int)(x2 * s + y2 * c);
+  u8g2.drawLine(screenX1, screenY1, screenX2, screenY2);
+}
+
+void drawWaveDot(float angle, int x, int y) {
+  const float c = cosf(angle), s = sinf(angle);
+  u8g2.drawPixel(110 + (int)(x * c - y * s), 42 + (int)(x * s + y * c));
+}
+
+void drawGreetingWave(unsigned long now) {
+  if (greetingAnimationUntil == 0 || (long)(now - greetingAnimationUntil) >= 0) return;
+  const unsigned long elapsed = now - (greetingAnimationUntil - greetingDurationMs);
+  const float wave = sinf((float)elapsed / 145.0f);
+  const float angle = 0.12f + wave * 0.52f;
+  // Forearm and striped cuff stay anchored while the whole glove swings from
+  // the wrist, giving the wave a clear, fluid pivot instead of a stiff slide.
+  u8g2.drawLine(113, 55, 111, 43); u8g2.drawLine(115, 55, 113, 43);
+  u8g2.drawRFrame(106, 40, 9, 6, 2);
+  u8g2.drawLine(108, 41, 108, 44); u8g2.drawLine(111, 41, 111, 44);
+  // Rounded mitten outline with four soft fingers and a thumb.
+  drawWaveLine(angle, 0, 0, -4, -2); drawWaveLine(angle, -4, -2, -10, -6);
+  drawWaveLine(angle, -10, -6, -14, -9); drawWaveLine(angle, -14, -9, -13, -12);
+  drawWaveLine(angle, -13, -12, -11, -12); drawWaveLine(angle, -11, -12, -7, -9);
+  drawWaveLine(angle, -7, -9, -8, -21); drawWaveLine(angle, -8, -21, -6, -23);
+  drawWaveLine(angle, -6, -23, -4, -21); drawWaveLine(angle, -4, -21, -4, -10);
+  drawWaveLine(angle, -4, -10, -4, -25); drawWaveLine(angle, -4, -25, -1, -27);
+  drawWaveLine(angle, -1, -27, 1, -25); drawWaveLine(angle, 1, -25, 1, -10);
+  drawWaveLine(angle, 1, -10, 3, -22); drawWaveLine(angle, 3, -22, 6, -23);
+  drawWaveLine(angle, 6, -23, 7, -20); drawWaveLine(angle, 7, -20, 5, -8);
+  drawWaveLine(angle, 5, -8, 9, -17); drawWaveLine(angle, 9, -17, 12, -17);
+  drawWaveLine(angle, 12, -17, 13, -14); drawWaveLine(angle, 13, -14, 9, -5);
+  drawWaveLine(angle, 9, -5, 5, -2); drawWaveLine(angle, 5, -2, 0, 0);
+  // Sweet face and little palm creases follow the glove's rotation too.
+  if ((elapsed / 500) % 3 == 2) {
+    drawWaveLine(angle, -6, -8, -4, -8); drawWaveLine(angle, 3, -8, 5, -8);
+  } else { drawWaveDot(angle, -5, -8); drawWaveDot(angle, 4, -8); }
+  drawWaveLine(angle, -1, -5, 1, -4); drawWaveLine(angle, 1, -4, 3, -5);
+  drawWaveLine(angle, -3, -11, 5, -11);
+  // Twinkles brighten on alternating beats while the wrist keeps swaying.
+  u8g2.drawPixel(91, 20); u8g2.drawPixel(91, 24); u8g2.drawPixel(89, 22); u8g2.drawPixel(93, 22);
+  const int sparkleX = 119 + (int)(wave * 2.0f);
+  if ((elapsed / 180) % 2 == 0) { u8g2.drawPixel(sparkleX, 30); u8g2.drawPixel(sparkleX - 2, 32); u8g2.drawPixel(sparkleX + 2, 32); u8g2.drawPixel(sparkleX, 34); }
+  u8g2.setFont(u8g2_font_5x8_tf);
+  u8g2.drawRFrame(107, 4, 17, 11, 3);
+  u8g2.drawStr(111, 12, "HI!");
+}
+
 void registerActivity() {
   lastActivityAt = millis();
+  if (dozingOff) {
+    dozingOff = false;
+    if (face != nullptr) {
+      face->RandomLook = true;
+      if (!companionMoodActive) {
+        if (hungry) face->Expression.GoTo_Sad();
+        else applyMood(progressMood);
+      }
+    }
+  }
   if (sleepMode) {
     sleepMode = false;
     if (face != nullptr) {
@@ -162,6 +246,47 @@ void setSpinningGaze(float x, float y) {
   }
 }
 
+void resetFlappyGame(unsigned long now) {
+  flappyGameActive = true; flappyGameOver = false; flappyPipeScored = false;
+  flappyScore = 0; flappyBirdY = 36.0f; flappyBirdVelocity = 0.0f;
+  flappyPipeX = 128; flappyGapY = random(25, 46); lastFlappyFrameAt = now;
+  dinoGameActive = false; roofCatGameActive = false;
+}
+
+void startDiceRoll(unsigned long now) {
+  diceScreenActive = true; diceRolling = true;
+  diceValue = random(1, 7); diceStartedAt = now; lastDiceShuffleAt = 0; diceScreenUntil = now + 1700;
+  dinoGameActive = false; roofCatGameActive = false; flappyGameActive = false; focusTimerScreenActive = false; eyesSpinActive = false;
+  face->RandomLook = false; face->RandomBlink = false;
+}
+
+void drawDiceFace3D(int x, int y, uint8_t value) {
+  // Isometric cube: outlined front, bright top, and shaded right face.
+  const int ax = x + 2, ay = y + 7;
+  const int bx = x + 20, by = y + 7;
+  const int cx = x + 20, cy = y + 25;
+  const int dx = x + 2, dy = y + 25;
+  const int ex = x + 8, ey = y + 1;
+  const int fx = x + 26, fy = y + 1;
+  const int gx = x + 26, gy = y + 19;
+  u8g2.drawLine(ax, ay, bx, by); u8g2.drawLine(bx, by, cx, cy);
+  u8g2.drawLine(cx, cy, dx, dy); u8g2.drawLine(dx, dy, ax, ay);
+  u8g2.drawLine(ax, ay, ex, ey); u8g2.drawLine(ex, ey, fx, fy);
+  u8g2.drawLine(fx, fy, bx, by); u8g2.drawLine(fx, fy, gx, gy);
+  u8g2.drawLine(gx, gy, cx, cy);
+  // Top bevels and right-face hatching give the tiny OLED die some depth.
+  u8g2.drawLine(ex + 2, ey + 2, fx - 2, fy + 2);
+  u8g2.drawLine(bx + 3, by + 4, gx - 3, gy - 4);
+  u8g2.drawLine(bx + 6, by + 4, gx - 1, gy - 4);
+  u8g2.drawLine(x + 11, y + 4, x + 13, y + 4);
+  u8g2.drawLine(x + 15, y + 4, x + 17, y + 4);
+  // Pips on the front face use the familiar 1–6 layouts.
+  if (value == 1 || value == 3 || value == 5) u8g2.drawDisc(x + 11, y + 16, 1);
+  if (value >= 2) { u8g2.drawDisc(x + 6, y + 11, 1); u8g2.drawDisc(x + 16, y + 21, 1); }
+  if (value >= 4) { u8g2.drawDisc(x + 16, y + 11, 1); u8g2.drawDisc(x + 6, y + 21, 1); }
+  if (value == 6) { u8g2.drawDisc(x + 6, y + 16, 1); u8g2.drawDisc(x + 16, y + 16, 1); }
+}
+
 void drawStatsOverlayAndSleepZzz() {
   if (face == nullptr) return;
   const unsigned long now = millis();
@@ -173,9 +298,9 @@ void drawStatsOverlayAndSleepZzz() {
     u8g2.drawBox(3, 3, 122, 11);
     u8g2.setDrawColor(0);
     u8g2.setFont(u8g2_font_5x8_tf);
-    u8g2.drawStr(7, 12, menuPage == 0 ? "VITA // RIGHT PAGE" : "VITA // LEFT PAGE");
+    u8g2.drawStr(7, 12, menuPage == 0 ? "VITA // RIGHT PAGE" : (menuPage == 1 ? "VITA // GAME ARCADE" : "VITA // FOCUS TIMER"));
     u8g2.setDrawColor(1);
-    const char *labels[menuItemCount] = {"TOTAL XP", "XP PROGRESS", "LEVEL", "DAILY QUESTS", "EYE SPIN", "DINO HOP"};
+    const char *labels[menuItemCount] = {"TOTAL XP", "XP PROGRESS", "LEVEL", "DAILY QUESTS", "EYE SPIN", "DICE ROLL", "DINO HOP", "ROOF CAT", "FLAPPY", "FOCUS TIMER"};
     char values[menuItemCount][24];
     snprintf(values[0], sizeof(values[0]), "%d XP", doYourXP);
     snprintf(values[1], sizeof(values[1]), "%d / 100", doYourProgress);
@@ -183,21 +308,154 @@ void drawStatsOverlayAndSleepZzz() {
     snprintf(values[3], sizeof(values[3]), "%d / %d  %d%%", dailyCompleted, dailyTotal, dailyPercent);
     snprintf(values[4], sizeof(values[4]), "PLAY");
     snprintf(values[5], sizeof(values[5]), "PLAY");
+    snprintf(values[6], sizeof(values[6]), "PLAY");
+    snprintf(values[7], sizeof(values[7]), "PLAY");
+    snprintf(values[8], sizeof(values[8]), "OPEN");
+    snprintf(values[9], sizeof(values[9]), "OPEN");
     for (uint8_t i = 0; i < menuItemCount; ++i) {
-      if ((menuPage == 0 && i == 5) || (menuPage == 1 && i != 5)) continue;
-      const int y = 21 + i * 7;
-      if (i == menuSelection) { u8g2.drawBox(5, y - 6, 118, 8); u8g2.setDrawColor(0); }
+      if ((menuPage == 0 && i >= 6) || (menuPage == 1 && (i < 6 || i >= 9)) || (menuPage == 2 && i != 9)) continue;
+      const int y = menuPage == 0 ? 19 + i * 6 : (menuPage == 1 ? 26 + (i - 6) * 12 : 37);
+      if (i == menuSelection) { u8g2.drawBox(5, y - 5, 118, 7); u8g2.setDrawColor(0); }
       u8g2.drawStr(9, y, labels[i]);
       if (menuPage == 0 && i < 4) u8g2.drawStr(77, y, values[i]);
-      else u8g2.drawStr(103, y, values[i]);
+      else u8g2.drawStr(menuPage == 0 ? 103 : 103, y, values[i]);
       u8g2.setDrawColor(1);
     }
-    if (menuPage == 1) u8g2.drawBox(6, 50, 2, 2);
-    else u8g2.drawBox(6, 15 + menuSelection * 7, 2, 2);
+    if (menuPage == 2) { u8g2.setFont(u8g2_font_5x8_tf); u8g2.drawStr(15, 51, "25 MIN // DEEP FOCUS"); }
+    else if (menuPage == 0) u8g2.drawBox(6, 13 + menuSelection * 6, 2, 2);
     u8g2.setFont(u8g2_font_4x6_tf);
-    u8g2.drawStr(8, 60, "D18 x3 PAGE  D19 PLAY");
+    u8g2.drawStr(8, 60, "D18 x3 NEXT  D19 PLAY");
     u8g2.sendBuffer();
     return;
+  }
+
+  if (diceScreenActive) {
+    if (diceRolling) {
+      const float shakePhase = (float)(now - diceStartedAt);
+      face->RandomLook = false;
+      setSpinningGaze(0.85f * sinf(shakePhase / 38.0f), 0.72f * cosf(shakePhase / 31.0f));
+    }
+    face->Update();
+    const int dieX = diceRolling ? 50 + (int)(sinf((float)now / 34.0f) * 22.0f) : 50;
+    const int dieY = diceRolling ? 26 + (int)(fabsf(sinf((float)now / 47.0f)) * 4.0f) : 26;
+    u8g2.drawHLine(dieX + 5, 57, 17);
+    drawDiceFace3D(dieX, dieY, diceValue);
+    u8g2.setFont(u8g2_font_5x8_tf);
+    u8g2.drawStr(10, 10, diceRolling ? "LUCKY ROLL // SHAKING" : "YOUR LUCKY NUMBER");
+    u8g2.setFont(u8g2_font_4x6_tf);
+    u8g2.drawStr(18, 62, diceRolling ? "EYES SHAKE // DICE ROLL" : "D19 REROLL // D18 MENU");
+    u8g2.sendBuffer(); return;
+  }
+
+  if (focusTimerScreenActive) {
+    u8g2.clearBuffer();
+    u8g2.drawFrame(1, 1, 126, 62); u8g2.drawFrame(4, 4, 120, 56);
+    u8g2.setFont(u8g2_font_5x8_tf);
+    u8g2.drawStr(8, 12, "VITA FOCUS DECK // 01");
+    u8g2.drawHLine(10, 16, 108);
+    // Retro pixel ticks around the timer face.
+    for (int i = 0; i < 12; ++i) {
+      const int x = 13 + i * 9;
+      u8g2.drawVLine(x, 20, (i % 3 == 0) ? 4 : 2);
+    }
+    const unsigned long remaining = focusTimerRunning && (long)(focusTimerEndAt - now) > 0
+      ? focusTimerEndAt - now : focusRemainingMs;
+    const unsigned int minutes = remaining / 60000UL;
+    const unsigned int seconds = (remaining / 1000UL) % 60UL;
+    char clockText[8]; snprintf(clockText, sizeof(clockText), "%02u:%02u", minutes, seconds);
+    u8g2.setFont(u8g2_font_logisoso24_tf);
+    u8g2.drawStr(23, 44, clockText);
+    u8g2.setFont(u8g2_font_5x8_tf);
+    const char *timerStatus = focusTimerDone ? "SESSION COMPLETE" : (focusTimerRunning ? "FOCUS MODE // LOCK IN" : (focusRemainingMs == focusDurationMs ? "READY WHEN YOU ARE" : "PAUSED // READY SOON"));
+    u8g2.drawStr(13, 51, timerStatus);
+    u8g2.drawFrame(10, 54, 108, 4);
+    const unsigned long elapsed = focusDurationMs - remaining;
+    int fill = (int)(104UL * elapsed / focusDurationMs);
+    if (focusTimerDone) fill = 104;
+    if (fill > 0) u8g2.drawBox(12, 55, fill, 2);
+    u8g2.setFont(u8g2_font_4x6_tf);
+    u8g2.drawStr(16, 64, focusTimerDone ? "D19 RESTART  //  D18 MENU" : (focusTimerRunning ? "D19 PAUSE  //  D18 MENU" : "D19 START  //  D18 MENU"));
+    u8g2.sendBuffer(); return;
+  }
+
+  if (flappyGameActive) {
+    u8g2.clearBuffer();
+    u8g2.drawBox(0, 0, 128, 13); u8g2.setDrawColor(0); u8g2.setFont(u8g2_font_5x8_tf);
+    u8g2.drawStr(4, 9, flappyGameOver ? "FLAPPY // CRASH!" : "FLAPPY // SKY DASH");
+    char scoreLine[16]; snprintf(scoreLine, sizeof(scoreLine), "SCORE %03d", flappyScore);
+    u8g2.drawStr(83, 9, scoreLine); u8g2.setDrawColor(1);
+    // Night-sky scene: moon, stars, distant city and layered cloud streaks.
+    u8g2.drawDisc(110, 23, 6); u8g2.setDrawColor(0); u8g2.drawDisc(113, 21, 6); u8g2.setDrawColor(1);
+    u8g2.drawPixel(12, 20); u8g2.drawPixel(60, 17); u8g2.drawPixel(76, 29); u8g2.drawPixel(121, 27);
+    u8g2.drawHLine(3, 32, 9); u8g2.drawHLine(7, 30, 5); u8g2.drawHLine(66, 24, 11); u8g2.drawHLine(70, 22, 5);
+    for (int bx = 0; bx < 128; bx += 19) { const int bh = 7 + (bx % 4) * 2; u8g2.drawFrame(bx, 55 - bh, 13, bh); }
+    // Tall art-deco pipes frame a narrow flight gate. Caps make the gap clear.
+    const int pipeWidth = 13, gapTop = flappyGapY - 12, gapBottom = flappyGapY + 12;
+    if (flappyPipeX < 128 && flappyPipeX + pipeWidth > 0) {
+      const int pipeX = flappyPipeX;
+      if (gapTop > 13) { u8g2.drawBox(pipeX, 13, min(pipeWidth, 128 - pipeX), gapTop - 13); u8g2.drawFrame(pipeX, 13, min(pipeWidth, 128 - pipeX), gapTop - 13); }
+      u8g2.drawBox(pipeX - 2, gapTop - 3, pipeWidth + 4, 4); u8g2.drawFrame(pipeX - 2, gapTop - 3, pipeWidth + 4, 4);
+      if (gapBottom < 61) { u8g2.drawBox(pipeX, gapBottom, min(pipeWidth, 128 - pipeX), 61 - gapBottom); u8g2.drawFrame(pipeX, gapBottom, min(pipeWidth, 128 - pipeX), 61 - gapBottom); }
+      u8g2.drawBox(pipeX - 2, gapBottom - 1, pipeWidth + 4, 4); u8g2.drawFrame(pipeX - 2, gapBottom - 1, pipeWidth + 4, 4);
+      if (pipeX + 4 < 128) { u8g2.drawVLine(pipeX + 4, 16, max(0, gapTop - 21)); u8g2.drawVLine(pipeX + 4, gapBottom + 5, max(0, 56 - gapBottom)); }
+    }
+    // Puffy little bird with a flapping wing, eye, and beak.
+    const int birdX = 30, birdY = (int)flappyBirdY;
+    u8g2.drawDisc(birdX, birdY, 4);
+    if ((now / 90) % 2) { u8g2.drawTriangle(birdX - 2, birdY, birdX + 1, birdY - 4, birdX + 2, birdY + 1); }
+    else { u8g2.drawTriangle(birdX - 2, birdY, birdX + 1, birdY + 4, birdX + 2, birdY); }
+    u8g2.drawDisc(birdX + 2, birdY - 1, 1); u8g2.setDrawColor(0); u8g2.drawPixel(birdX + 2, birdY - 1); u8g2.setDrawColor(1);
+    u8g2.drawTriangle(birdX + 4, birdY, birdX + 8, birdY + 1, birdX + 4, birdY + 2);
+    u8g2.drawHLine(0, 61, 128);
+    if (flappyGameOver) { u8g2.drawBox(22, 20, 84, 28); u8g2.setDrawColor(0); u8g2.setFont(u8g2_font_6x10_tf); u8g2.drawStr(37, 32, "SKY CRASH!"); u8g2.setFont(u8g2_font_5x8_tf); u8g2.drawStr(31, 42, "D19: FLY AGAIN"); u8g2.setDrawColor(1); }
+    else { u8g2.setFont(u8g2_font_4x6_tf); u8g2.drawStr(5, 62, "D19 FLAP  -  THREAD THE PIPES"); }
+    u8g2.sendBuffer(); return;
+  }
+
+  if (roofCatGameActive) {
+    u8g2.clearBuffer();
+    u8g2.drawBox(0, 0, 128, 13); u8g2.setDrawColor(0); u8g2.setFont(u8g2_font_5x8_tf);
+    u8g2.drawStr(4, 9, roofCatGameOver ? "ROOF CAT // OOPS!" : "ROOF CAT // RUN");
+    char scoreLine[18]; snprintf(scoreLine, sizeof(scoreLine), "%03d ROOFS", roofCatScore);
+    u8g2.drawStr(86, 9, scoreLine); u8g2.setDrawColor(1);
+    // Moonlit skyline with tiny stars and windows.
+    u8g2.drawDisc(110, 23, 6); u8g2.setDrawColor(0); u8g2.drawDisc(113, 21, 6); u8g2.setDrawColor(1);
+    u8g2.drawPixel(11, 20); u8g2.drawPixel(54, 18); u8g2.drawPixel(76, 27); u8g2.drawPixel(121, 31);
+    u8g2.drawFrame(4, 30, 13, 25); u8g2.drawFrame(18, 25, 12, 30); u8g2.drawFrame(31, 34, 13, 21);
+    u8g2.drawFrame(44, 28, 12, 27); u8g2.drawFrame(57, 32, 14, 23); u8g2.drawFrame(72, 23, 12, 32);
+    u8g2.drawFrame(85, 31, 14, 24); u8g2.drawFrame(100, 27, 11, 28); u8g2.drawFrame(112, 34, 13, 21);
+    for (int wx = 7; wx < 124; wx += 13) { u8g2.drawPixel(wx, 39); u8g2.drawPixel(wx + 5, 47); }
+
+    // Rooftops are ledges: the gap and height change after each successful landing.
+    int roofEdge = roofCatNextX - roofCatGap;
+    if (roofEdge < 0) roofEdge = 0;
+    if (roofEdge > 128) roofEdge = 128;
+    if (roofCatSurfaceY < 55) { u8g2.drawBox(0, roofCatSurfaceY, roofEdge, 64 - roofCatSurfaceY); u8g2.drawHLine(0, roofCatSurfaceY, roofEdge); }
+    if (roofCatNextX < 128) {
+      const int startX = max(0, roofCatNextX);
+      if (roofCatNextY < 55) { u8g2.drawBox(startX, roofCatNextY, 128 - startX, 64 - roofCatNextY); u8g2.drawHLine(startX, roofCatNextY, 128 - startX); }
+    }
+    for (int wx = 5; wx < 125; wx += 17) {
+      if (wx < roofEdge && roofCatSurfaceY < 55) u8g2.drawFrame(wx, roofCatSurfaceY + 5, 4, 5);
+      if (wx >= roofCatNextX && roofCatNextY < 55) u8g2.drawFrame(wx, roofCatNextY + 5, 4, 5);
+    }
+    // Animated kitten with pointy ears, bright eyes, a curled tail and tiny paws.
+    const int catX = 29, catTop = (int)roofCatY;
+    u8g2.drawTriangle(catX + 4, catTop + 7, catX + 5, catTop, catX + 10, catTop + 5);
+    u8g2.drawTriangle(catX + 11, catTop + 5, catX + 17, catTop, catX + 18, catTop + 8);
+    u8g2.drawRFrame(catX + 3, catTop + 4, 16, 12, 5);
+    u8g2.drawPixel(catX + 8, catTop + 9); u8g2.drawPixel(catX + 14, catTop + 9);
+    u8g2.drawPixel(catX + 11, catTop + 11); u8g2.drawLine(catX + 11, catTop + 12, catX + 9, catTop + 13); u8g2.drawLine(catX + 11, catTop + 12, catX + 13, catTop + 13);
+    u8g2.drawRFrame(catX + 5, catTop + 12, 12, 7, 3);
+    u8g2.drawLine(catX + 5, catTop + 14, catX + 1, catTop + 11); u8g2.drawLine(catX + 1, catTop + 11, catX + 2, catTop + 8);
+    if ((now / 130) % 2) { u8g2.drawLine(catX + 7, catTop + 18, catX + 5, catTop + 20); u8g2.drawLine(catX + 14, catTop + 18, catX + 16, catTop + 20); }
+    else { u8g2.drawLine(catX + 7, catTop + 18, catX + 8, catTop + 20); u8g2.drawLine(catX + 14, catTop + 18, catX + 13, catTop + 20); }
+    if (roofCatGameOver) {
+      u8g2.drawBox(20, 17, 90, 31); u8g2.setDrawColor(0); u8g2.drawFrame(20, 17, 90, 31);
+      u8g2.setFont(u8g2_font_6x10_tf); u8g2.drawStr(36, 30, "CAT DOWN!");
+      u8g2.setFont(u8g2_font_5x8_tf); u8g2.drawStr(29, 41, "D19: TRY AGAIN"); u8g2.setDrawColor(1);
+    } else { u8g2.setFont(u8g2_font_4x6_tf); u8g2.drawStr(4, 62, "D19 JUMP // LAND ON THE NEXT ROOF"); }
+    u8g2.sendBuffer(); return;
   }
 
   if (dinoGameActive) {
@@ -284,6 +542,7 @@ void drawStatsOverlayAndSleepZzz() {
   } else if (statsOverlay != STATS_NONE) {
     statsOverlay = STATS_NONE;
   }
+  drawGreetingWave(now);
   u8g2.sendBuffer();
 }
 
@@ -317,8 +576,11 @@ void handleStatsButtons() {
   if (menuTapCount != 0 && now - lastMenuTapAt > 550) {
     if (menuTapCount >= 3) {
       if (!menuOpen) { menuOpen = true; menuPage = 0; menuSelection = 0; }
-      else if (menuPage == 0 && menuSelection < 4) ++menuSelection;
-      else if (menuPage == 0) { menuPage = 1; menuSelection = 5; }
+      else if (menuPage == 0 && menuSelection < 5) ++menuSelection;
+      else if (menuPage == 0) { menuPage = 1; menuSelection = 6; }
+      else if (menuSelection == 6) menuSelection = 7;
+      else if (menuSelection == 7) menuSelection = 8;
+      else if (menuPage == 1) { menuPage = 2; menuSelection = 9; }
       else { menuPage = 0; menuSelection = 0; }
     } else menuOpen = !menuOpen;
     statsOverlay = STATS_NONE;
@@ -332,14 +594,55 @@ void handleStatsButtons() {
     if (stableFeedState == LOW) {
       registerActivity();
       if (menuOpen) {
-        if (menuPage == 0 && menuSelection == 4) { menuOpen = false; eyesSpinActive = true; eyesSpinUntil = now + 2000; }
-        else if (menuPage == 1) { menuOpen = false; dinoGameActive = true; dinoGameOver = false; dinoScore = 0; dinoY = 0; dinoVelocity = 0; obstacleX = 128; }
+        if (menuPage == 0 && menuSelection == 4) { menuOpen = false; focusTimerScreenActive = false; diceScreenActive = false; eyesSpinActive = true; eyesSpinUntil = now + 2000; }
+        else if (menuPage == 0 && menuSelection == 5) { menuOpen = false; startDiceRoll(now); }
+        else if (menuPage == 1 && menuSelection == 6) { menuOpen = false; focusTimerScreenActive = false; diceScreenActive = false; dinoGameActive = true; roofCatGameActive = false; flappyGameActive = false; dinoGameOver = false; dinoScore = 0; dinoY = 0; dinoVelocity = 0; obstacleX = 128; }
+        else if (menuPage == 1 && menuSelection == 7) {
+          menuOpen = false; focusTimerScreenActive = false; roofCatGameActive = true; dinoGameActive = false; flappyGameActive = false; roofCatGameOver = false;
+          roofCatScore = 0; roofCatSurfaceY = 47; roofCatGap = 22; roofCatNextX = 128 + roofCatGap;
+          roofCatNextY = random(36, 47); roofCatY = roofCatSurfaceY - 20; roofCatVelocity = 0;
+          roofCatGrounded = true; roofCatSpeed = 2; lastRoofFrameAt = now;
+        }
+        else if (menuPage == 1 && menuSelection == 8) { menuOpen = false; focusTimerScreenActive = false; diceScreenActive = false; resetFlappyGame(now); }
+        else if (menuPage == 2 && menuSelection == 9) { menuOpen = false; diceScreenActive = false; focusTimerScreenActive = true; dinoGameActive = false; roofCatGameActive = false; flappyGameActive = false; }
         lastFeedPressAt = 0;
         return;
       }
       if (dinoGameActive) {
         if (dinoGameOver) { dinoGameOver = false; dinoScore = 0; dinoY = 0; dinoVelocity = 0; obstacleX = 128; }
         else if (dinoY == 0) dinoVelocity = 8;
+        lastFeedPressAt = 0;
+        return;
+      }
+      if (roofCatGameActive) {
+        if (roofCatGameOver) {
+          roofCatGameOver = false; roofCatScore = 0; roofCatSurfaceY = 47; roofCatGap = 22;
+          roofCatNextX = 128 + roofCatGap; roofCatNextY = random(36, 47); roofCatY = roofCatSurfaceY - 20;
+          roofCatVelocity = 0; roofCatGrounded = true; roofCatSpeed = 2;
+        } else if (roofCatGrounded) { roofCatVelocity = -7.5f; roofCatGrounded = false; }
+        lastFeedPressAt = 0;
+        return;
+      }
+      if (flappyGameActive) {
+        if (flappyGameOver) resetFlappyGame(now);
+        else flappyBirdVelocity = -4.0f;
+        lastFeedPressAt = 0;
+        return;
+      }
+      if (diceScreenActive) {
+        if (!diceRolling) startDiceRoll(now);
+        lastFeedPressAt = 0;
+        return;
+      }
+      if (focusTimerScreenActive) {
+        if (focusTimerDone) { focusTimerDone = false; focusRemainingMs = focusDurationMs; }
+        if (focusTimerRunning) {
+          focusRemainingMs = (long)(focusTimerEndAt - now) > 0 ? focusTimerEndAt - now : 0;
+          focusTimerRunning = false;
+        } else if (focusRemainingMs > 0) {
+          focusTimerRunning = true;
+          focusTimerEndAt = now + focusRemainingMs;
+        }
         lastFeedPressAt = 0;
         return;
       }
@@ -368,7 +671,7 @@ void handleStatsButtons() {
     stableD8State = d8Reading;
     if (stableD8State == LOW) {
       registerActivity();
-      if (menuOpen && menuPage == 0) menuSelection = (menuSelection + 4) % 5;
+      if (menuOpen && menuPage == 0) menuSelection = (menuSelection + 5) % 6;
       else { statsOverlay = STATS_XP; statsOverlayUntil = now + 3000; }
       Serial.printf("Button D8: total XP = %d\n", doYourXP);
     }
@@ -380,7 +683,7 @@ void handleStatsButtons() {
     stableD9State = d9Reading;
     if (stableD9State == LOW) {
       registerActivity();
-      if (menuOpen && menuPage == 0) menuSelection = (menuSelection + 1) % 5;
+      if (menuOpen && menuPage == 0) menuSelection = (menuSelection + 1) % 6;
       else { statsOverlay = STATS_LEVEL; statsOverlayUntil = now + 3000; }
       Serial.printf("Button D9: level = %d, XP progress = %d/100\n", doYourLevel, doYourProgress);
     }
@@ -666,13 +969,13 @@ void setup() {
   advertising->setScanResponse(true);
   advertising->start();
 
-  // Start awake in the neutral mood. The OLED sleeps after 12 seconds of
-  // inactivity and wakes as soon as a BLE event or workout movement occurs.
+  // Start awake in the neutral mood. After 12 seconds idle, the face gets
+  // drowsy for 3 seconds before the Sleepy face and Zzz animation begin.
   lastActivityAt = millis();
   lastFedAt = millis();
   sleepMode = false;
   face->Expression.GoTo_Normal();
-  Serial.println("Progress mood enabled; sleep animation starts after 12s idle.");
+  Serial.println("Progress mood enabled; drowsy cue starts after 12s, sleep follows 3s later.");
 
   Serial.println("==============================");
   Serial.println(" VITA ESP32 - PLAYFUL EYES");
@@ -709,6 +1012,7 @@ void loop() {
     hungry = true;
     pendingMood = MOOD_NONE;
     companionMoodActive = false;
+    dozingOff = false;
     wakeReactionUntil = 0;
     if (sleepMode) {
       sleepMode = false;
@@ -721,17 +1025,73 @@ void loop() {
     Serial.println("ESP32: hungry -> waiting for D19 double press");
   }
 
-  if (!hungry && !sleepMode && !companionMoodActive && now - lastActivityAt >= sleepAfterMs) {
-    sleepMode = true;
-    if (face != nullptr) {
-      face->RandomBlink = false;
-      face->RandomLook = false;
-      face->Expression.GoTo_Sleepy();
+  // Greet once at startup, then every five minutes. If a menu/game is in use,
+  // wait until the main face is visible so the wave and happy eyes can be seen.
+  if ((lastGreetingAt == 0 || now - lastGreetingAt >= greetingIntervalMs) &&
+      !menuOpen && !dinoGameActive && !roofCatGameActive && !flappyGameActive && !focusTimerScreenActive && !diceScreenActive && !eyesSpinActive) {
+    lastGreetingAt = now;
+    greetingAnimationUntil = now + greetingDurationMs;
+    companionMood = MOOD_HAPPY;
+    companionMoodActive = true;
+    companionMoodUntil = greetingAnimationUntil;
+    pendingMood = MOOD_NONE;
+    wakeReactionUntil = 0;
+    if (sleepMode) {
+      sleepMode = false;
+      face->RandomBlink = true;
+      face->RandomLook = true;
     }
-    Serial.println("ESP32 idle 12s -> SLEEP");
+    dozingOff = false;
+    face->Expression.GoTo_Happy();
+    Serial.println("ESP32 greeting: happy eyes + waving hand");
+  }
+
+  if (!hungry && !sleepMode && !companionMoodActive && now - lastActivityAt >= sleepAfterMs) {
+    if (!dozingOff) {
+      dozingOff = true;
+      dozingStartedAt = now;
+      if (face != nullptr) {
+        face->RandomBlink = true;
+        face->RandomLook = false;
+        face->Expression.GoTo_Squint();
+      }
+      Serial.println("ESP32 idle -> DROWSY (3s before sleep)");
+    } else if (now - dozingStartedAt >= drowsyBeforeSleepMs) {
+      dozingOff = false;
+      sleepMode = true;
+      if (face != nullptr) {
+        face->RandomBlink = false;
+        face->RandomLook = false;
+        face->Expression.GoTo_Sleepy();
+      }
+      Serial.println("ESP32 drowsy 3s -> SLEEP");
+    }
   }
 
   handleStatsButtons();
+
+  if (diceScreenActive) {
+    if (diceRolling && now - lastDiceShuffleAt >= 85) {
+      lastDiceShuffleAt = now;
+      diceValue = random(1, 7);
+    }
+    if (diceRolling && now - diceStartedAt >= 1700) {
+      diceRolling = false;
+      diceValue = random(1, 7);
+      diceScreenUntil = now + 3000;
+      face->RandomBlink = true; face->RandomLook = true;
+      face->LookFront(); face->Expression.GoTo_Glee();
+    } else if (!diceRolling && (long)(now - diceScreenUntil) >= 0) {
+      diceScreenActive = false;
+      if (hungry) face->Expression.GoTo_Sad(); else applyMood(progressMood);
+    }
+  }
+
+  if (focusTimerRunning) {
+    if ((long)(now - focusTimerEndAt) >= 0) {
+      focusTimerRunning = false; focusRemainingMs = 0; focusTimerDone = true;
+    } else focusRemainingMs = focusTimerEndAt - now;
+  }
 
   if (dinoGameActive && !dinoGameOver && now - lastGameFrameAt >= 35) {
     lastGameFrameAt = now;
@@ -745,6 +1105,52 @@ void loop() {
     if (obstacleX < 28 && obstacleX > 12 && dinoY < 12) dinoGameOver = true;
   }
 
+  if (roofCatGameActive && !roofCatGameOver && now - lastRoofFrameAt >= 35) {
+    lastRoofFrameAt = now;
+    roofCatNextX -= roofCatSpeed;
+    if (!roofCatGrounded) {
+      const float previousFoot = roofCatY + 20.0f;
+      roofCatVelocity += 0.55f;
+      roofCatY += roofCatVelocity;
+      const float currentFoot = roofCatY + 20.0f;
+      const bool crossedNextRoof = previousFoot <= roofCatNextY && currentFoot >= roofCatNextY;
+      const bool overlapsNextRoof = roofCatNextX <= 48 && roofCatNextX + 68 >= 29;
+      if (crossedNextRoof && overlapsNextRoof && roofCatVelocity > 0) {
+        roofCatY = roofCatNextY - 20.0f;
+        roofCatVelocity = 0.0f;
+        roofCatGrounded = true;
+        roofCatSurfaceY = roofCatNextY;
+        ++roofCatScore;
+        roofCatSpeed = min(4, 2 + roofCatScore / 5);
+        roofCatGap = random(18, 31);
+        roofCatNextX = 128 + roofCatGap;
+        roofCatNextY = constrain(roofCatSurfaceY + random(-7, 8), 34, 48);
+      } else if (roofCatY > 64 || roofCatNextX + 68 < 29) {
+        roofCatGameOver = true;
+      }
+    } else {
+      const int roofEdge = roofCatNextX - roofCatGap;
+      if (roofEdge <= 47) roofCatGameOver = true;
+    }
+  }
+
+  if (flappyGameActive && !flappyGameOver && now - lastFlappyFrameAt >= 35) {
+    lastFlappyFrameAt = now;
+    flappyBirdVelocity += 0.32f;
+    flappyBirdY += flappyBirdVelocity;
+    flappyPipeX -= 2;
+    const int gapTop = flappyGapY - 12, gapBottom = flappyGapY + 12;
+    if (flappyBirdY < 18 || flappyBirdY > 59) flappyGameOver = true;
+    if (flappyPipeX < 35 && flappyPipeX + 13 > 25 &&
+        (flappyBirdY - 3 < gapTop || flappyBirdY + 3 > gapBottom)) flappyGameOver = true;
+    if (!flappyPipeScored && flappyPipeX + 13 < 25) { ++flappyScore; flappyPipeScored = true; }
+    if (flappyPipeX < -17) {
+      flappyPipeX = 128 + random(18, 48);
+      flappyGapY = random(25, 46);
+      flappyPipeScored = false;
+    }
+  }
+
   if (wakeReactionUntil != 0 && (long)(now - wakeReactionUntil) >= 0) {
     wakeReactionUntil = 0;
     if (!sleepMode && !companionMoodActive) {
@@ -754,8 +1160,8 @@ void loop() {
     }
   }
 
-  if (!hungry && !companionMoodActive && !sleepMode && wakeReactionUntil == 0) applyPendingMood();
-  if (face != nullptr && !menuOpen && !eyesSpinActive && !dinoGameActive) face->Update();
+  if (!hungry && !companionMoodActive && !sleepMode && !dozingOff && wakeReactionUntil == 0) applyPendingMood();
+  if (face != nullptr && !menuOpen && !eyesSpinActive && !dinoGameActive && !roofCatGameActive && !flappyGameActive && !focusTimerScreenActive && !diceScreenActive) face->Update();
   drawStatsOverlayAndSleepZzz();
 
   if (!exerciseSelected || workoutFinished) {

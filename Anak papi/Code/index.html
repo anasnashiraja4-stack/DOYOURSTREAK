@@ -20,7 +20,7 @@
         <nav class="landing-navbar">
 
             <div class="landing-logo">
-                <span>DO</span>YOUR<span>STREAK</span>
+                <img src="reallogo.png" alt="DOYOURSTREAK">
             </div>
 
             <button id="loginButton" class="login-button">
@@ -99,7 +99,7 @@
                     </button>
 
                     <div class="login-logo">
-                        DOYOURSTREAK
+                        <img src="reallogo.png" alt="DOYOURSTREAK">
                     </div>
 
                     <div class="login-step-number">
@@ -236,19 +236,29 @@
         <header class="topbar">
 
             <div class="brand">
-                <span>DO</span>YOUR<span>STREAK</span>
+                <img src="reallogo.png" alt="DOYOURSTREAK">
             </div>
 
             <div class="user-info">
-                <div>
-                    <small>PLAYER</small>
-                    <strong id="headerName">Player</strong>
+                <div class="header-player">
+                    <span class="header-player-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" focusable="false">
+                            <path d="m3.5 10.5 8.5-7 8.5 7v9a1.5 1.5 0 0 1-1.5 1.5h-14A1.5 1.5 0 0 1 3.5 19.5z" />
+                            <path d="M9 21v-7h6v7" />
+                            <path d="m2.5 11.2 9.5-7.8 9.5 7.8" />
+                        </svg>
+                    </span>
+                    <div class="header-player-copy">
+                        <small>PLAYER</small>
+                        <strong id="headerName">Player</strong>
+                    </div>
                 </div>
 
-                <div class="level-badge">
-                    LVL <span id="level">1</span>
+                <div class="level-badge" aria-label="Player level">
+                    <small>LVL</small>
+                    <strong id="level">1</strong>
                 </div>
-                <span id="espTopStatus" class="esp-top-status" role="status" aria-live="polite">● ESP32 OFFLINE</span>
+                <span id="espTopStatus" class="esp-top-status" role="status" aria-live="polite">ESP32 OFFLINE</span>
             </div>
 
 
@@ -476,7 +486,7 @@
                         </div>
                     </button>
                      <!-- Tombol kecil ESP32 -->
-                     <div class="user-info">
+                     <div class="esp-connect-controls">
                         <button id="espConnectButton" class="esp-connect-button" type="button">🔌 CONNECT ESP32</button>
                        <span id="espConnectionStatus" class="esp-connection-status" role="status">ESP32: Disconnected</span>
                      </div>
@@ -913,6 +923,27 @@
                     <h1>CALENDAR & EVENTS</h1>
                     <p>Check your schedule and the latest admin updates.</p>
                 </div>
+
+                <section class="local-leaderboard-card" aria-labelledby="localLeaderboardTitle">
+                    <div class="local-leaderboard-heading">
+                        <div>
+                            <small>THIS DEVICE</small>
+                            <h2 id="localLeaderboardTitle">LOCAL PLAYER RANKING</h2>
+                            <p>Compare XP and streaks between profiles saved on this device.</p>
+                        </div>
+                        <img class="leaderboard-champion" src="Champion1.png" alt="Champion">
+                    </div>
+                    <div class="local-profile-controls">
+                        <label for="localProfileSelect">ACTIVE PROFILE</label>
+                        <select id="localProfileSelect" aria-label="Switch local profile"></select>
+                        <label for="localProfileName">ADD A PROFILE</label>
+                        <div class="local-profile-create">
+                            <input id="localProfileName" type="text" maxlength="24" placeholder="New player name">
+                            <button id="createLocalProfile" type="button">ADD</button>
+                        </div>
+                    </div>
+                    <div id="localLeaderboard" class="local-leaderboard" aria-live="polite"></div>
+                </section>
 
                 <!-- CALENDAR -->
                 <div class="calendar-card">
