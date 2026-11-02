@@ -269,7 +269,102 @@ function showApp() {
     updateStats();
     syncWindowsDesktopWidget();
 
+    if (!localStorage.getItem("doyourstreak-tutorial-seen")) {
+        window.setTimeout(startWebsiteTutorial, 350);
+    }
+
 }
+
+/* =====================================================
+   FIRST VISIT TUTORIAL
+===================================================== */
+const tutorialOverlay = document.getElementById("tutorialOverlay");
+const tutorialTitle = document.getElementById("tutorialTitle");
+const tutorialDescription = document.getElementById("tutorialDescription");
+const tutorialStepCount = document.getElementById("tutorialStepCount");
+const tutorialNextButton = document.getElementById("nextTutorialButton");
+let activeTutorialStep = 0;
+let tutorialFocus = null;
+
+const websiteTutorialSteps = [
+    {
+        page: showCharacterPage,
+        target: "#characterPage .character-stats",
+        title: "Your streak starts here",
+        description: "Your character page shows your current streak, total XP, and how many habits you have completed today."
+    },
+    {
+        page: showExercisePage,
+        target: "#addHabitButton",
+        title: "Build your daily routine",
+        description: "Open Exercise and choose + ADD HABIT. Give your habit a name and set it up for your routine."
+    },
+    {
+        page: showExercisePage,
+        target: "#habitList",
+        title: "Check off what you finish",
+        description: "When you complete a habit, mark it done here. Completed habits add XP and help grow your streak."
+    },
+    {
+        page: showInfoPage,
+        target: "#infoPage .info-header",
+        title: "Look back and keep going",
+        description: "Visit Info to review your activity and progress. Come back each day to keep your routine moving."
+    },
+    {
+        page: showShopPage,
+        target: "#shopPage .shop-page-header",
+        title: "Spend coins on characters",
+        description: "Earn coins as you play, then visit the Shop to explore characters. You can replay this guide anytime with HOW TO PLAY."
+    }
+];
+
+function renderWebsiteTutorialStep() {
+    const step = websiteTutorialSteps[activeTutorialStep];
+    if (!step || !tutorialOverlay) return;
+    if (tutorialFocus) tutorialFocus.classList.remove("tutorial-focus");
+    step.page();
+    tutorialFocus = document.querySelector(step.target);
+    tutorialFocus?.classList.add("tutorial-focus");
+    tutorialStepCount.textContent = `STEP ${activeTutorialStep + 1} OF ${websiteTutorialSteps.length}`;
+    tutorialTitle.textContent = step.title;
+    tutorialDescription.textContent = step.description;
+    tutorialNextButton.textContent = activeTutorialStep === websiteTutorialSteps.length - 1 ? "FINISH ✓" : "NEXT →";
+}
+
+function startWebsiteTutorial() {
+    if (!tutorialOverlay || appScreen.classList.contains("hidden")) return;
+    activeTutorialStep = 0;
+    tutorialOverlay.classList.remove("hidden");
+    renderWebsiteTutorialStep();
+}
+
+function closeWebsiteTutorial() {
+    tutorialOverlay?.classList.add("hidden");
+    tutorialFocus?.classList.remove("tutorial-focus");
+    tutorialFocus = null;
+    localStorage.setItem("doyourstreak-tutorial-seen", "true");
+}
+
+document.getElementById("openTutorialButton")?.addEventListener("click", startWebsiteTutorial);
+document.getElementById("closeTutorialButton")?.addEventListener("click", closeWebsiteTutorial);
+document.getElementById("skipTutorialButton")?.addEventListener("click", closeWebsiteTutorial);
+tutorialNextButton?.addEventListener("click", () => {
+    if (activeTutorialStep >= websiteTutorialSteps.length - 1) {
+        closeWebsiteTutorial();
+        return;
+    }
+    activeTutorialStep += 1;
+    renderWebsiteTutorialStep();
+});
+tutorialOverlay?.addEventListener("click", event => {
+    if (event.target === tutorialOverlay) closeWebsiteTutorial();
+});
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && tutorialOverlay && !tutorialOverlay.classList.contains("hidden")) {
+        closeWebsiteTutorial();
+    }
+});
 
 
 /* =====================================================
