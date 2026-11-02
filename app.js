@@ -5033,10 +5033,15 @@ const clawCharacterSprite = new Image();
 clawCharacterSprite.src = getGameCharacter().image;
 const clawAnomalySprite = new Image();
 clawAnomalySprite.src = "anomalis.png";
+const clawBackgroundSprite = new Image();
+clawBackgroundSprite.src = "bgclaw.jpe";
 
-const CLAW_HOME_Y = 78;
-const CLAW_BOTTOM_Y = 350;
-const CLAW_FLOOR_Y = 414;
+const CLAW_HOME_Y = 56;
+const CLAW_BOTTOM_Y = 355;
+const CLAW_FLOOR_Y = 438;
+const CLAW_PRIZE_SIZE = 42;
+const CLAW_STACK_GAP = 38;
+const CLAW_COLLISION_X = 32;
 const CLAW_MAX_TRIES = 8;
 let clawX = 400;
 let clawY = CLAW_HOME_Y;
@@ -5051,45 +5056,32 @@ let clawEarnedCoins = 0;
 let clawEarnedXP = 0;
 
 function createClawPrizeLayout() {
-    const floorCenter = CLAW_FLOOR_Y - 37;
     clawObjects = [];
-
-    // Spread the three characters across the cabinet, each at a random height.
-    const characterBands = [[85, 250], [318, 482], [550, 715]];
-    characterBands.forEach(([minX, maxX]) => {
-        clawObjects.push({
-            x: minX + Math.random() * (maxX - minX),
-            y: floorCenter - Math.random() * 210,
-            type: "character",
-            removed: false,
-            falling: true,
-            held: false,
-            vy: 0
-        });
-    });
-
-    // Scatter 60 anomaly copies anywhere in the play area; gravity gathers them into piles.
-    for (let index = 0; index < 60; index += 1) {
-        let prizePosition = null;
-        for (let attempt = 0; attempt < 160 && !prizePosition; attempt += 1) {
-            const candidate = {
-                x: 72 + Math.random() * 656,
-                y: 72 + Math.random() * (floorCenter - 72)
-            };
-            const overlapsPrize = clawObjects.some(item =>
-                Math.abs(item.x - candidate.x) < 36 && Math.abs(item.y - candidate.y) < 36
-            );
-            if (!overlapsPrize) prizePosition = candidate;
+    const floorCenter = CLAW_FLOOR_Y - CLAW_PRIZE_SIZE / 2;
+    const cells = [];
+    for (let row = 0; row < 8; row += 1) {
+        const offset = row % 2 ? 21 : 0;
+        for (let column = 0; column < 17; column += 1) {
+            const x = 50 + offset + column * 42;
+            if (x <= 750) cells.push({ x, y: 76 + row * 42 });
         }
-        if (!prizePosition) {
-            prizePosition = {
-                x: 72 + Math.random() * 656,
-                y: 72 + Math.random() * (floorCenter - 72)
-            };
-        }
+    }
+    for (let i = cells.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cells[i], cells[j]] = [cells[j], cells[i]];
+    }
+
+    // Randomly occupied staggered positions fill the playfield without forming straight columns.
+    const characterCellIndices = new Set();
+    while (characterCellIndices.size < 3) {
+        characterCellIndices.add(Math.floor(Math.random() * 63));
+    }
+    for (let cellIndex = 0; cellIndex < 63; cellIndex += 1) {
+        const cell = cells[cellIndex];
         clawObjects.push({
-            ...prizePosition,
-            type: "anomaly",
+            x: cell.x + (Math.random() - .5) * 10,
+            y: Math.min(cell.y + (Math.random() - .5) * 2, floorCenter - 3),
+            type: characterCellIndices.has(cellIndex) ? "character" : "anomaly",
             removed: false,
             falling: true,
             held: false,
@@ -5152,7 +5144,7 @@ function catchClawPrize() {
             if (item.type === "character") return true;
             const covered = clawObjects.some(other =>
                 other !== item && other.type === "anomaly" && !other.removed && !other.held &&
-                Math.abs(other.x - item.x) < 52 && other.y < item.y && item.y - other.y < 54
+                Math.abs(other.x - item.x) < CLAW_COLLISION_X && other.y < item.y && item.y - other.y < CLAW_STACK_GAP + 8
             );
             return !covered;
         })
@@ -5163,7 +5155,7 @@ function catchClawPrize() {
         target.held = true;
         // Empty space under a pile makes the prizes above it fall under gravity.
         for (const item of clawObjects) {
-            if (!item.removed && !item.held && item.y < target.y && Math.abs(item.x - target.x) < 52) {
+            if (!item.removed && !item.held && item.y < target.y && Math.abs(item.x - target.x) < CLAW_COLLISION_X) {
                 item.falling = true;
                 item.vy = 0;
             }
@@ -5184,7 +5176,7 @@ function releaseClawAnomaly() {
     clawHeldItem.held = false;
     clawHeldItem.falling = true;
     clawHeldItem.vy = 0;
-    clawHeldItem.y = clawY + 52;
+    clawHeldItem.y = clawY + 42;
     clawHeldItem = null;
 }
 
@@ -5231,45 +5223,23 @@ function drawClawMachine() {
     const ctx = clawCtx;
     ctx.clearRect(0, 0, clawCanvas.width, clawCanvas.height);
     ctx.fillStyle = "#eaf5ff";
-    ctx.fillRect(0, 0, 800, 460);
-
-    // Cabinet and glass
-    ctx.fillStyle = "#fff8dc";
-    ctx.strokeStyle = "#171717";
-    ctx.lineWidth = 8;
-    ctx.fillRect(24, 18, 752, 425);
-    ctx.strokeRect(24, 18, 752, 425);
-    ctx.fillStyle = "#dff3ff";
-    ctx.fillRect(48, 44, 704, 345);
-    ctx.strokeStyle = "#171717";
-    ctx.lineWidth = 4;
-    ctx.strokeRect(48, 44, 704, 345);
-    ctx.fillStyle = "#fff";
-    ctx.globalAlpha = .4;
-    ctx.beginPath();
-    ctx.moveTo(60, 55);
-    ctx.lineTo(245, 55);
-    ctx.lineTo(110, 285);
-    ctx.lineTo(60, 285);
-    ctx.closePath();
-    ctx.fill();
-    ctx.globalAlpha = 1;
-
-    // Prize shelf
-    ctx.fillStyle = "#c8a66a";
-    ctx.fillRect(52, CLAW_FLOOR_Y + 8, 696, 22);
-    ctx.fillStyle = "#171717";
-    ctx.fillRect(52, CLAW_FLOOR_Y + 30, 696, 14);
+    ctx.fillRect(0, 0, clawCanvas.width, clawCanvas.height);
+    if (clawBackgroundSprite.complete && clawBackgroundSprite.naturalWidth > 0) {
+        ctx.globalAlpha = .4;
+        ctx.drawImage(clawBackgroundSprite, 0, 0, clawCanvas.width, clawCanvas.height);
+        ctx.globalAlpha = 1;
+    } else {
+        ctx.fillStyle = "#40315d";
+        ctx.fillRect(0, 0, clawCanvas.width, clawCanvas.height);
+    }
 
     // Rail and cable
-    ctx.fillStyle = "#444";
-    ctx.fillRect(95, 62, 610, 12);
-    ctx.fillStyle = "#ff6d5b";
-    ctx.fillRect(clawX - 24, 52, 48, 28);
-    ctx.strokeStyle = "#333";
+    ctx.fillStyle = "#3a3a47";
+    ctx.fillRect(clawX - 18, 25, 36, 20);
+    ctx.strokeStyle = "#f4f1dc";
     ctx.lineWidth = 5;
     ctx.beginPath();
-    ctx.moveTo(clawX, 80);
+    ctx.moveTo(clawX, 44);
     ctx.lineTo(clawX, clawY);
     ctx.stroke();
 
@@ -5279,15 +5249,15 @@ function drawClawMachine() {
     );
     for (const item of visiblePrizes) {
         if (item.removed || item === clawHeldItem || item.held) continue;
-        ctx.fillStyle = "rgba(25, 35, 55, .18)";
+        ctx.fillStyle = "rgba(15, 20, 28, .2)";
         ctx.beginPath();
-        ctx.ellipse(item.x, CLAW_FLOOR_Y - 1, 31, 8, 0, 0, Math.PI * 2);
+        ctx.ellipse(item.x, item.y + 17, 18, 4, 0, 0, Math.PI * 2);
         ctx.fill();
         const sprite = item.type === "anomaly" ? clawAnomalySprite : clawCharacterSprite;
-        if (!drawClawSprite(sprite, item.x, item.y, 62, 62)) {
+        if (!drawClawSprite(sprite, item.x, item.y, CLAW_PRIZE_SIZE, CLAW_PRIZE_SIZE)) {
             ctx.fillStyle = item.type === "anomaly" ? "#8a52a6" : "#ffb64d";
             ctx.beginPath();
-            ctx.arc(item.x, item.y, 27, 0, Math.PI * 2);
+            ctx.arc(item.x, item.y, CLAW_PRIZE_SIZE / 2, 0, Math.PI * 2);
             ctx.fill();
         }
     }
@@ -5295,7 +5265,7 @@ function drawClawMachine() {
     // Claw fingers
     if (clawHeldItem) {
         const sprite = clawHeldItem.type === "anomaly" ? clawAnomalySprite : clawCharacterSprite;
-        drawClawSprite(sprite, clawX, clawY + 55, 58, 58);
+        drawClawSprite(sprite, clawX, clawY + 42, CLAW_PRIZE_SIZE, CLAW_PRIZE_SIZE);
     }
     const closed = Boolean(clawHeldItem) || clawState === "down";
     ctx.strokeStyle = "#171717";
@@ -5313,7 +5283,7 @@ function drawClawMachine() {
     ctx.fillStyle = "#171717";
     ctx.font = "bold 16px 'Baloo 2', sans-serif";
     ctx.textAlign = "left";
-    ctx.fillText(`DROP ${clawAttempts}/${CLAW_MAX_TRIES}`, 63, 375);
+    ctx.fillText(`DROP ${clawAttempts}/${CLAW_MAX_TRIES}`, 18, 448);
 }
 
 function clawLoop(timestamp) {
@@ -5325,39 +5295,27 @@ function clawLoop(timestamp) {
     clawLastFrame = timestamp;
 
     const fallingItems = [...clawObjects].sort((a, b) => b.y - a.y);
+    const floorCenter = CLAW_FLOOR_Y - CLAW_PRIZE_SIZE / 2;
     for (const item of fallingItems) {
         if (!item.falling) continue;
-        let landingY = CLAW_FLOOR_Y - 37;
-        let overlappingSupport = null;
-        let nearestOverlap = Infinity;
+        const nextVelocity = item.vy + 1100 * dt;
+        const nextY = item.y + nextVelocity * dt;
+        let landingY = floorCenter;
         for (const support of clawObjects) {
             if (support === item || support.removed || support.held) continue;
-            if (support.y > item.y && Math.abs(support.x - item.x) < 52) {
-                const supportTop = support.y - 44;
-                const centerGap = support.y - item.y;
-                if (supportTop < item.y && centerGap < nearestOverlap) {
-                    overlappingSupport = supportTop;
-                    nearestOverlap = centerGap;
-                } else if (supportTop >= item.y && supportTop < landingY) {
-                    landingY = supportTop;
-                }
+            const centerGap = support.y - item.y;
+            if (centerGap >= CLAW_STACK_GAP && Math.abs(support.x - item.x) < CLAW_COLLISION_X) {
+                const supportTop = support.y - CLAW_STACK_GAP;
+                if (supportTop >= item.y && supportTop < landingY) landingY = supportTop;
             }
         }
-        if (overlappingSupport !== null) {
-            item.y = overlappingSupport;
+        if (nextY >= landingY) {
+            item.y = landingY;
             item.vy = 0;
             item.falling = false;
-            continue;
-        }
-        item.vy += 1100 * dt; // gravity on the Y axis
-        item.y += item.vy * dt;
-        if (item.y >= landingY) {
-            item.y = landingY;
-            item.vy *= -.2;
-            if (Math.abs(item.vy) < 45) {
-                item.vy = 0;
-                item.falling = false;
-            }
+        } else {
+            item.y = nextY;
+            item.vy = nextVelocity;
         }
     }
 
