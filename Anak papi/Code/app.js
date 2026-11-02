@@ -718,6 +718,7 @@ function saveHabitNote(id, card) {
     habit.notes.push({ date, duration, mood, text, createdAt: Date.now() });
     saveHabits();
     renderHabits();
+    renderDailyTask();
 }
 
 function deleteHabit(id) {
@@ -1573,6 +1574,71 @@ function showInfoPage() {
 }
 
 
+const menuButtons = [characterNav, shopNav, gameNav, exerciseNav, infoNav].filter(Boolean);
+let menuShuffleTimer = null;
+let menuOriginalOrder = null;
+
+function animateMenuOrder(order) {
+    const menu = document.querySelector(".bottom-navbar");
+    if (!menu) return;
+    const before = new Map([...menu.querySelectorAll(".bottom-nav-image")].map(button => [button, button.getBoundingClientRect().left]));
+    order.forEach(button => menu.appendChild(button));
+    order.forEach(button => {
+        const deltaX = before.get(button) - button.getBoundingClientRect().left;
+        if (Math.abs(deltaX) < 1 || button.classList.contains("menu-jump")) return;
+        button.animate(
+            [{ translate: `${deltaX}px 0` }, { translate: "0px 0px" }],
+            { duration: 360, easing: "cubic-bezier(.2, .75, .3, 1)" }
+        );
+    });
+}
+
+menuButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        if (menuShuffleTimer) {
+            clearTimeout(menuShuffleTimer);
+            menuShuffleTimer = null;
+        }
+        if (menuOriginalOrder) {
+            animateMenuOrder(menuOriginalOrder);
+            menuOriginalOrder = null;
+        }
+
+        button.classList.remove("menu-jump");
+        void button.offsetWidth;
+        button.classList.add("menu-jump");
+
+        const originalOrder = [...document.querySelectorAll(".bottom-navbar .bottom-nav-image")];
+        if (originalOrder.length > 2) {
+            const clickedIndex = originalOrder.indexOf(button);
+            let swapIndex = -1;
+            let nearestPairDistance = Infinity;
+            for (let index = 0; index < originalOrder.length - 1; index++) {
+                if (index === clickedIndex || index + 1 === clickedIndex) continue;
+                const distance = Math.abs(index + .5 - clickedIndex);
+                if (distance < nearestPairDistance) {
+                    nearestPairDistance = distance;
+                    swapIndex = index;
+                }
+            }
+            const swappedOrder = [...originalOrder];
+            if (swapIndex >= 0) {
+                [swappedOrder[swapIndex], swappedOrder[swapIndex + 1]] = [swappedOrder[swapIndex + 1], swappedOrder[swapIndex]];
+            }
+            menuOriginalOrder = originalOrder;
+            animateMenuOrder(swappedOrder);
+            menuShuffleTimer = setTimeout(() => {
+                animateMenuOrder(originalOrder);
+                menuOriginalOrder = null;
+                menuShuffleTimer = null;
+            }, 620);
+        }
+    });
+    button.addEventListener("animationend", event => {
+        if (event.animationName === "menuButtonOrbit") button.classList.remove("menu-jump");
+    });
+});
+
 characterNav?.addEventListener("click", showCharacterPage);
 shopNav?.addEventListener("click", showShopPage);
 gameNav?.addEventListener("click", showGamePage);
@@ -2081,9 +2147,27 @@ function updateCharacter() {
    PREVIOUS CHARACTER
 ========================================= */
 
+function animateCharacterArrow(button, direction) {
+    if (!button) return;
+    button.classList.remove("orbit-next", "orbit-prev");
+    void button.offsetWidth;
+    button.classList.add(direction === "next" ? "orbit-next" : "orbit-prev");
+}
+
+function animateCharacterSlide(direction) {
+    const character = document.querySelector("#characterPage .character-main");
+    if (!character) return;
+    character.classList.remove("character-slide-next", "character-slide-prev");
+    void character.offsetWidth;
+    character.classList.add(direction === "next" ? "character-slide-next" : "character-slide-prev");
+}
+
 prevCharacter?.addEventListener(
     "click",
     () => {
+
+        animateCharacterArrow(prevCharacter, "prev");
+        animateCharacterSlide("prev");
 
         currentCharacter =
             findNextOwnedCharacter(-1);
@@ -2101,6 +2185,9 @@ prevCharacter?.addEventListener(
 nextCharacter?.addEventListener(
     "click",
     () => {
+
+        animateCharacterArrow(nextCharacter, "next");
+        animateCharacterSlide("next");
 
         currentCharacter =
             findNextOwnedCharacter(1);
@@ -2276,53 +2363,28 @@ function buyCharacter(character) {
 // ================================
 
 const dailyTasks = [
-    {
-        id: "complete1",
-        title: "Complete 1 Habit",
-        description: "Complete at least 1 habit today.",
-        target: 1,
-        reward: 20,
-        check: () => {
-            return habits.filter(habit => habit.completed).length;
-        }
-    },
-
-    {
-        id: "complete2",
-        title: "Complete 2 Habits",
-        description: "Complete at least 2 habits today.",
-        target: 2,
-        reward: 30,
-        check: () => {
-            return habits.filter(habit => habit.completed).length;
-        }
-    },
-
-    {
-        id: "highpriority",
-        title: "Complete a High Priority Habit",
-        description: "Complete 1 High priority habit.",
-        target: 1,
-        reward: 40,
-        check: () => {
-            return habits.filter(
-                habit =>
-                    habit.completed &&
-                    habit.priority === "High"
-            ).length;
-        }
-    },
-
-    {
-        id: "complete3",
-        title: "Complete 3 Habits",
-        description: "Complete at least 3 habits today.",
-        target: 3,
-        reward: 50,
-        check: () => {
-            return habits.filter(habit => habit.completed).length;
-        }
-    }
+    { id: "complete1", title: "One Small Win", description: "Selesaikan 1 habit hari ini.", target: 1, reward: 20,
+        check: () => habits.filter(habit => habit.completed).length },
+    { id: "complete2", title: "Double Progress", description: "Selesaikan 2 habit hari ini.", target: 2, reward: 30,
+        available: () => habits.length >= 2, check: () => habits.filter(habit => habit.completed).length },
+    { id: "complete3", title: "Three in a Row", description: "Selesaikan 3 habit hari ini.", target: 3, reward: 40,
+        available: () => habits.length >= 3, check: () => habits.filter(habit => habit.completed).length },
+    { id: "complete4", title: "Keep the Momentum", description: "Selesaikan 4 habit hari ini.", target: 4, reward: 50,
+        available: () => habits.length >= 4, check: () => habits.filter(habit => habit.completed).length },
+    { id: "complete5", title: "Full Power", description: "Selesaikan 5 habit hari ini.", target: 5, reward: 60,
+        available: () => habits.length >= 5, check: () => habits.filter(habit => habit.completed).length },
+    { id: "highpriority", title: "Prioritas Utama", description: "Selesaikan 1 habit prioritas tinggi.", target: 1, reward: 35,
+        available: () => habits.some(habit => habit.priority === "High"), check: () => habits.filter(habit => habit.completed && habit.priority === "High").length },
+    { id: "normalpriority", title: "Jaga Ritme", description: "Selesaikan 1 habit prioritas normal.", target: 1, reward: 25,
+        available: () => habits.some(habit => habit.priority === "Normal"), check: () => habits.filter(habit => habit.completed && habit.priority === "Normal").length },
+    { id: "lowpriority", title: "Langkah Santai", description: "Selesaikan 1 habit prioritas rendah.", target: 1, reward: 20,
+        available: () => habits.some(habit => habit.priority === "Low"), check: () => habits.filter(habit => habit.completed && habit.priority === "Low").length },
+    { id: "finishroutine", title: "Routine Complete", description: "Selesaikan semua habit yang kamu punya hari ini.", target: 1, reward: 55,
+        available: () => habits.length >= 2, check: () => habits.length > 0 && habits.every(habit => habit.completed) ? 1 : 0 },
+    { id: "halfroutine", title: "Halfway There", description: "Selesaikan setidaknya setengah dari habit kamu.", target: 1, reward: 35,
+        available: () => habits.length >= 3, check: () => habits.length > 0 && habits.filter(habit => habit.completed).length >= Math.ceil(habits.length / 2) ? 1 : 0 },
+    { id: "addnote", title: "Quick Reflection", description: "Tulis satu catatan singkat pada habit hari ini.", target: 1, reward: 25,
+        available: () => habits.length > 0, check: () => habits.some(habit => (habit.notes || []).some(note => note.date === getTodayDate())) ? 1 : 0 }
 ];
 
 function getTodayDate() {
@@ -2346,11 +2408,9 @@ function getDailyTask() {
     // Kalau belum ada task atau sudah ganti hari
     if (!savedTask || savedTask.date !== today) {
 
-        const randomIndex = Math.floor(
-            Math.random() * dailyTasks.length
-        );
-
-        const randomTask = dailyTasks[randomIndex];
+        const availableTasks = dailyTasks.filter(task => !task.available || task.available());
+        const randomIndex = Math.floor(Math.random() * availableTasks.length);
+        const randomTask = availableTasks[randomIndex] || dailyTasks[0];
 
         savedTask = {
             date: today,
