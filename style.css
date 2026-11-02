@@ -7349,3 +7349,158 @@ body::before {
     .bottom-nav-image.menu-jump::before,
     .bottom-nav-image.menu-jump::after { animation-duration: .01ms; will-change: auto; }
 }
+
+/* Character shop refresh */
+#shopPage {
+    padding: 34px 22px 125px;
+}
+
+#shopPage .shop-page {
+    width: min(100%, 1120px);
+}
+
+#shopPage .shop-page-header {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+    padding: 25px 28px;
+    border: 0;
+    border-radius: 22px;
+    background: linear-gradient(115deg, #171729, #302d58 68%, #4c62a3);
+    box-shadow: 0 12px 30px rgba(27, 28, 67, .18);
+    color: #fff;
+}
+
+#shopPage .shop-page-header::after {
+    content: "";
+    position: absolute;
+    width: 210px;
+    height: 210px;
+    top: -125px;
+    right: 135px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .08);
+    pointer-events: none;
+}
+
+#shopPage .shop-page-header > div { position: relative; z-index: 1; }
+#shopPage .shop-page-header small { color: #c8c8ff; font-size: 10px; letter-spacing: 2px; }
+#shopPage .shop-page-header h1 { margin-top: 6px; font-size: clamp(25px, 3vw, 34px); letter-spacing: -.5px; }
+
+#shopPage .shop-coins {
+    min-width: 95px;
+    justify-content: center;
+    gap: 7px;
+    padding: 8px 13px;
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+#shopPage .shop-coins img { width: 27px; height: 27px; animation: coinSpin 2.2s linear infinite; transform-style: preserve-3d; filter: drop-shadow(0 2px 4px rgba(255, 211, 79, .28)); }
+#shopPage .shop-coins strong { font-size: 17px; }
+
+#shopPage .shop-items {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    align-items: stretch;
+    gap: 18px;
+}
+
+#shopPage .shop-item {
+    display: flex;
+    min-height: 300px;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 18px 17px;
+    border: 1px solid #e8e8ef;
+    border-radius: 20px;
+    background: linear-gradient(160deg, #fff, #fafaff);
+    box-shadow: 0 7px 22px rgba(30, 32, 67, .08);
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+#shopPage .shop-item::before {
+    width: 150px;
+    height: 150px;
+    top: 34px;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, #efefff 0%, #f5f5ff 62%, rgba(245, 245, 255, 0) 70%);
+}
+
+#shopPage .shop-item:hover {
+    transform: translateY(-5px);
+    border-color: #c9c8f5;
+    box-shadow: 0 15px 32px rgba(48, 45, 88, .14);
+}
+
+#shopPage .shop-item:hover::before { transform: translateX(-50%) scale(1.08); }
+
+#shopPage .shop-item > img {
+    width: 158px;
+    height: 158px;
+    margin: 3px 0 8px;
+    filter: drop-shadow(0 9px 10px rgba(34, 34, 64, .14));
+}
+
+#shopPage .shop-item:hover > img { animation: shopCharacterPlayful 1.25s ease-in-out infinite; }
+#shopPage .shop-item h3 { margin: 4px 0 0; font-size: 16px; letter-spacing: .6px; }
+#shopPage .shop-item .character-price { gap: 6px; margin: 8px 0 13px; color: #595986; font-size: 13px; }
+#shopPage .shop-item .character-price .coin-icon { width: 19px; height: 19px; animation: coinSpin 2.8s linear infinite; transform-style: preserve-3d; }
+
+@keyframes shopCharacterPlayful {
+    0%, 100% { transform: translateY(0) rotate(0) scale(1); }
+    14% { transform: translateY(-5px) rotate(-7deg) scale(1.04, .97); }
+    32% { transform: translateY(-20px) rotate(8deg) scale(1.06); }
+    48% { transform: translateY(-22px) rotate(-7deg) scale(1.07); }
+    64% { transform: translateY(-8px) rotate(5deg) scale(.97, 1.04); }
+    78% { transform: translateY(-2px) rotate(-3deg) scale(1.02, .98); }
+    88% { transform: translateY(-8px) rotate(3deg) scale(1.03); }
+}
+
+#shopPage .buy-character {
+    width: 100%;
+    max-width: 230px;
+    margin-top: auto;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 11px;
+    background: #272744;
+    box-shadow: none;
+    font-size: 12px;
+    letter-spacing: .5px;
+    transition: background .18s ease, transform .18s ease;
+}
+
+#shopPage .buy-character:hover:not(:disabled) { transform: translateY(-2px); background: #514fc1; color: #fff; box-shadow: none; }
+#shopPage .buy-character:active:not(:disabled) { transform: scale(.98); }
+#shopPage .buy-character:disabled { background: #e8e8ee; color: #777; cursor: default; }
+
+@media (max-width: 600px) {
+    #shopPage { padding: 20px 14px 110px; }
+    #shopPage .shop-page-header { gap: 12px; margin-bottom: 16px; padding: 18px 16px; border-radius: 17px; }
+    #shopPage .shop-page-header h1 { font-size: 22px; }
+    #shopPage .shop-coins { min-width: 0; padding: 7px 9px; }
+    #shopPage .shop-coins img { width: 23px; height: 23px; }
+    #shopPage .shop-coins strong { font-size: 15px; }
+    #shopPage .shop-items { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+    #shopPage .shop-item { min-height: 245px; padding: 14px 10px 12px; border-radius: 16px; }
+    #shopPage .shop-item::before { width: 120px; height: 120px; top: 27px; }
+    #shopPage .shop-item > img { width: min(100%, 125px); height: 125px; }
+    #shopPage .shop-item h3 { font-size: 12px; }
+    #shopPage .shop-item .character-price { font-size: 11px; }
+    #shopPage .buy-character { padding: 9px 8px; font-size: 10px; }
+}
+
+@media (max-width: 360px) {
+    #shopPage .shop-items { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #shopPage .shop-coins img,
+    #shopPage .shop-item .character-price .coin-icon,
+    #shopPage .shop-item:hover > img { animation-duration: .01ms; animation-iteration-count: 1; }
+}
