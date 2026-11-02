@@ -1119,6 +1119,43 @@ body::before {
     }
 }
 
+/* The companion sleeps until the first habit is completed today. */
+#characterPage .character-main.character-sleeping img,
+#characterPage .character-main.character-sleeping .character-fallback {
+    animation: characterSleep 3.2s ease-in-out infinite;
+    filter: saturate(.72) brightness(.94) drop-shadow(0 10px 16px rgba(0, 0, 0, .16));
+}
+
+#characterPage .character-main.character-sleeping::after {
+    content: "Zzz";
+    position: absolute;
+    top: 24px;
+    right: calc(50% - 112px);
+    color: #6174a8;
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    transform: rotate(10deg);
+    animation: sleepZzz 2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes characterSleep {
+    0%, 100% { transform: translateY(0) scale(.98); }
+    50% { transform: translateY(4px) scale(1); }
+}
+
+@keyframes sleepZzz {
+    0%, 100% { opacity: .55; transform: translate(0, 4px) rotate(10deg) scale(.9); }
+    50% { opacity: 1; transform: translate(4px, -4px) rotate(10deg) scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #characterPage .character-main.character-sleeping img,
+    #characterPage .character-main.character-sleeping .character-fallback,
+    #characterPage .character-main.character-sleeping::after { animation: none; }
+}
+
 /* First visit guide */
 .tutorial-open-button {
     padding: 8px 11px;

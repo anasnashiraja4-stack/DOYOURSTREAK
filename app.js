@@ -680,6 +680,13 @@ function renderHabits() {
 
     habitList.innerHTML = "";
 
+    // The companion wakes as soon as the user completes one of today's habits.
+    const characterMain = document.querySelector("#characterPage .character-main");
+    characterMain?.classList.toggle(
+        "character-sleeping",
+        !habits.some(habit => habit && habit.completed)
+    );
+
     syncWindowsDesktopWidget();
 
 
