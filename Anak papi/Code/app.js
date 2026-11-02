@@ -1532,6 +1532,7 @@ function showShopPage() {
 
     characterPage?.classList.remove("active");
     shopPage?.classList.add("active");
+    gamePage?.classList.remove("active");
     exercisePage?.classList.remove("active");
     infoPage?.classList.remove("active");
 
