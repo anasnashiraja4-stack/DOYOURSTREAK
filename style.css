@@ -7975,3 +7975,49 @@ body::before {
     .award-option-grid { grid-template-columns: 1fr; gap: 12px; }
     .award-option { min-height: 112px; padding: 16px; }
 }
+
+@media (max-width: 600px) {
+    .topbar {
+        min-height: auto;
+        padding: 8px 12px;
+        gap: 6px;
+        flex-wrap: nowrap;
+    }
+
+    .brand-group { flex: 0 1 auto; min-width: 0; gap: 6px; }
+    .brand img { width: 44px; height: 44px; }
+    .header-clock { gap: 2px; padding-left: 6px; }
+    .header-clock time { font-size: 12px; }
+    .header-clock span { font-size: 8px; }
+
+    .user-info {
+        flex: 0 1 auto;
+        min-width: 0;
+        flex-wrap: nowrap;
+        gap: 4px;
+        padding: 4px;
+        border-radius: 11px;
+    }
+    .header-player { gap: 4px; padding-right: 1px; }
+    .header-player-icon { width: 24px; height: 24px; flex-basis: 24px; }
+    .header-player-copy small { font-size: 7px; }
+    .header-player-copy strong { max-width: clamp(42px, 14vw, 80px); font-size: 11px; }
+    .level-badge { min-height: 29px; gap: 3px; padding: 3px 5px; }
+    .level-badge small { font-size: 7px; }
+    .level-badge strong { font-size: 13px; }
+    .esp-top-status { gap: 3px; padding: 5px; font-size: 7px; letter-spacing: 0; }
+    .tutorial-open-button { padding: 5px; font-size: 7px; }
+}
+
+@media (max-width: 380px) {
+    .topbar { padding-right: 7px; padding-left: 7px; gap: 4px; }
+    .brand img { width: 38px; height: 38px; }
+    .header-clock { padding-left: 4px; }
+    .header-clock span { display: none; }
+    .user-info { gap: 3px; padding: 3px; }
+    .header-player-icon { display: none; }
+    .header-player-copy strong { max-width: 42px; font-size: 10px; }
+    .level-badge { padding: 3px 4px; }
+    .esp-top-status { padding: 4px; font-size: 6px; }
+    .tutorial-open-button { padding: 4px; font-size: 6px; }
+}
