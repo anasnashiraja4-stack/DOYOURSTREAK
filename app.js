@@ -35,6 +35,7 @@ let stats = JSON.parse(
 };
 stats.habitsCompletedTotal = Math.max(0, Number(stats.habitsCompletedTotal) || 0);
 let achievements = JSON.parse(localStorage.getItem("doyourstreak-achievements") || "{}") || {};
+let questProgress = JSON.parse(localStorage.getItem("doyourstreak-quests") || "{}") || {};
 let localProfiles = JSON.parse(localStorage.getItem("doyourstreak-profiles") || "[]");
 let activeProfileId = user?.profileId || null;
 
@@ -72,6 +73,26 @@ const nameError =
 
 const playerName = document.getElementById("playerName");
 const headerName = document.getElementById("headerName");
+const headerClockTime = document.getElementById("headerClockTime");
+const headerClockDate = document.getElementById("headerClockDate");
+
+function updateHeaderClock() {
+    const now = new Date();
+    if (headerClockTime) {
+        headerClockTime.textContent = new Intl.DateTimeFormat(undefined, {
+            hour: "2-digit", minute: "2-digit"
+        }).format(now);
+        headerClockTime.dateTime = now.toISOString();
+    }
+    if (headerClockDate) {
+        headerClockDate.textContent = new Intl.DateTimeFormat(undefined, {
+            weekday: "short", month: "short", day: "numeric", year: "numeric"
+        }).format(now);
+    }
+}
+
+updateHeaderClock();
+window.setInterval(updateHeaderClock, 1000);
 
 const habitList = document.getElementById("habitList");
 const emptyState = document.getElementById("emptyState");
@@ -327,8 +348,8 @@ const websiteTutorialSteps = [
     {
         page: showAchievementsPage,
         target: "#achievementsPage .achievements-header",
-        title: "Celebrate your achievements",
-        description: "Open Awards to see your milestones, track progress, and celebrate new achievements as you complete habits, play games, and explore the app."
+        title: "Explore your Awards",
+        description: "Choose Achievement, Weekly Quests, Monthly Quests, or Annual Quests. Open a section, then use BACK TO AWARDS to return. Quests refresh automatically, and completed quests can be claimed for coins and XP."
     }
 ];
 
@@ -490,6 +511,7 @@ function getHabitResetDuration(habit) {
 
 function resetExpiredHabits() {
     const now = Date.now();
+    const todayKey = getTodayDate();
     let changed = false;
     habits.forEach(habit => {
         if (!habit?.completed) return;
@@ -499,14 +521,31 @@ function resetExpiredHabits() {
             habit.completedAt = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
             changed = true;
         }
-        if (now - habit.completedAt >= getHabitResetDuration(habit)) {
+        const isDailyReset = (habit.resetUnit || "day") === "day" && Math.max(1, Number(habit.resetValue) || 1) === 1;
+        const completedDate = new Date(habit.completedAt);
+        const completedDay = `${completedDate.getFullYear()}-${String(completedDate.getMonth() + 1).padStart(2, "0")}-${String(completedDate.getDate()).padStart(2, "0")}`;
+        if ((isDailyReset && completedDay !== todayKey) || (!isDailyReset && now - habit.completedAt >= getHabitResetDuration(habit))) {
             habit.completed = false;
             habit.completedAt = null;
             changed = true;
         }
     });
     if (changed) saveHabits();
+    return changed;
 }
+
+function refreshHabitsForNewDay() {
+    if (!resetExpiredHabits()) return;
+    renderHabits();
+    updateStats();
+    renderDailyTask();
+}
+
+// Check periodically so an already-open tab also refreshes after local midnight.
+window.setInterval(refreshHabitsForNewDay, 30_000);
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) refreshHabitsForNewDay();
+});
 
 /* =====================================================
    ADD HABIT STEPS
@@ -893,7 +932,9 @@ function saveHabitNote(id, card) {
     if (!Array.isArray(habit.notes)) habit.notes = [];
     habit.notes.push({ date, duration, mood, text, createdAt: Date.now() });
     saveHabits();
+    achievements.notesWritten = (Number(achievements.notesWritten) || 0) + 1;
     checkAchievements();
+    recordQuestProgress("notesAdded");
     renderHabits();
     renderDailyTask();
 }
@@ -1020,6 +1061,8 @@ function toggleHabit(id) {
     habit.completed = true;
     habit.completedAt = Date.now();
     stats.habitsCompletedTotal++;
+    recordRoutineFinisherDay();
+    recordQuestProgress("habitsCompleted");
 
     habit.streak++;
 
@@ -1100,7 +1143,9 @@ function updateDailyStreak() {
         const previousDay = new Date(`${stats.lastCompletedDate}T00:00:00Z`);
         const currentDay = new Date(`${today}T00:00:00Z`);
         const daysSinceLastCompletion = Math.floor((currentDay - previousDay) / 86400000);
-        if (daysSinceLastCompletion >= 3) achievements.cameBack = true;
+        if (daysSinceLastCompletion >= 30) {
+            achievements.comebackDays = Math.max(Number(achievements.comebackDays) || 0, daysSinceLastCompletion);
+        }
     }
 
 
@@ -1677,20 +1722,134 @@ const gamePage = document.getElementById("gamePage");
 const exercisePage = document.getElementById("exercisePage");
 const infoPage = document.getElementById("infoPage");
 const achievementsPage = document.getElementById("achievementsPage");
+const awardsMenu = document.getElementById("awardsMenu");
+const awardDetail = document.getElementById("awardDetail");
+const achievementList = document.getElementById("achievementList");
+const questList = document.getElementById("questList");
+let currentAwardSection = null;
 
 const achievementDefinitions = [
-    { id: "ten-habits", title: "First 10 Habits", description: "Complete 10 habits.", icon: "✅", progress: () => Math.min(stats.habitsCompletedTotal, 10), target: 10 },
-    { id: "first-skin", title: "Fresh Look", description: "Purchase your first character skin.", icon: "🎨", progress: () => achievements.skinPurchased ? 1 : 0, target: 1 },
-    { id: "first-game", title: "Player One", description: "Play a game for the first time.", icon: "🎮", progress: () => achievements.gamePlayed ? 1 : 0, target: 1 },
-    { id: "seven-day-streak", title: "7-Day Streak", description: "Complete a habit seven days in a row.", icon: "🔥", progress: () => Math.min(Number(stats.streak) || 0, 7), target: 7 },
-    { id: "routine-finisher", title: "Routine Finisher", description: "Complete every habit in one day.", icon: "📋", progress: () => achievements["routine-finisher"] || (habits.length > 0 && habits.every(habit => habit.completed)) ? 1 : 0, target: 1 },
-    { id: "note-to-self", title: "Note to Self", description: "Add a note to a habit.", icon: "📝", progress: () => achievements["note-to-self"] || habits.some(habit => Array.isArray(habit.notes) && habit.notes.length > 0) ? 1 : 0, target: 1 },
-    { id: "game-explorer", title: "Game Explorer", description: "Try three different games.", icon: "🕹️", progress: () => Math.min(new Set(achievements.playedGames || []).size, 3), target: 3 },
-    { id: "style-collector", title: "Style Collector", description: "Purchase three character skins.", icon: "👗", progress: () => Math.min(getPurchasedSkinCount(), 3), target: 3 },
-    { id: "level-five", title: "Level Up", description: "Reach level 5.", icon: "⭐", progress: () => Math.min(Math.floor((Number(stats.xp) || 0) / 100) + 1, 5), target: 5 },
-    { id: "comeback", title: "Comeback", description: "Return to your habits after at least three days away.", icon: "🌱", progress: () => achievements.cameBack ? 1 : 0, target: 1 },
-    { id: "daily-task-champion", title: "Daily Task Champion", description: "Claim five daily task rewards.", icon: "🏅", progress: () => Math.min(Number(achievements.dailyTasksClaimed) || 0, 5), target: 5 }
+    { id: "ten-habits", title: "Habit Centurion", description: "Complete 100 habits.", progress: () => Math.min(Number(stats.habitsCompletedTotal) || 0, 100), target: 100 },
+    { id: "first-skin", title: "Fresh Look", description: "Purchase 3 character skins.", progress: () => Math.min(getPurchasedSkinCount(), 3), target: 3 },
+    { id: "first-game", title: "Game Regular", description: "Play 10 games.", progress: () => Math.min(Number(achievements.gameSessions) || 0, 10), target: 10 },
+    { id: "seven-day-streak", title: "Month of Momentum", description: "Keep a habit streak for 30 days.", progress: () => Math.min(Number(stats.streak) || 0, 30), target: 30 },
+    { id: "routine-finisher", title: "Routine Finisher", description: "Complete every habit on 7 different days.", progress: () => Math.min(Number(achievements.routineFinisherDays) || 0, 7), target: 7 },
+    { id: "note-to-self", title: "Thoughtful Tracker", description: "Write 25 habit notes.", progress: () => Math.min(Number(achievements.notesWritten) || 0, 25), target: 25 },
+    { id: "game-explorer", title: "Arcade Devotee", description: "Play 100 games.", progress: () => Math.min(Number(achievements.gameSessions) || 0, 100), target: 100 },
+    { id: "style-collector", title: "Style Collector", description: "Purchase 15 character skins.", progress: () => Math.min(getPurchasedSkinCount(), 15), target: 15 },
+    { id: "level-five", title: "Level 25", description: "Reach level 25.", progress: () => Math.min(Math.floor((Number(stats.xp) || 0) / 100) + 1, 25), target: 25 },
+    { id: "comeback", title: "Long Road Back", description: "Return to your habits after 30 days away.", progress: () => Math.min(Number(achievements.comebackDays) || 0, 30), target: 30 },
+    { id: "daily-task-champion", title: "Daily Task Champion", description: "Claim 100 daily task rewards.", progress: () => Math.min(Number(achievements.dailyTasksClaimed) || 0, 100), target: 100 }
 ];
+
+const questPeriods = [
+    { id: "weekly", title: "WEEKLY QUESTS", difficulty: "MEDIUM", quests: [
+        { id: "habits", metric: "habitsCompleted", title: "Habit Momentum", description: "Complete 15 habits this week.", target: 15, coins: 120, xp: 30 },
+        { id: "games", metric: "gamesPlayed", title: "Play Break", description: "Open and play 5 games this week.", target: 5, coins: 100, xp: 25 },
+        { id: "notes", metric: "notesAdded", title: "Weekly Reflection", description: "Write 3 habit notes this week.", target: 3, coins: 90, xp: 25 }
+    ] },
+    { id: "monthly", title: "MONTHLY QUESTS", difficulty: "HARD", quests: [
+        { id: "habits", metric: "habitsCompleted", title: "Habit Machine", description: "Complete 120 habits this month.", target: 120, coins: 1000, xp: 300 },
+        { id: "games", metric: "gamesPlayed", title: "Arcade Regular", description: "Play 30 games this month.", target: 30, coins: 800, xp: 250 },
+        { id: "tasks", metric: "dailyTasksClaimed", title: "Task Tactician", description: "Claim 20 daily task rewards this month.", target: 20, coins: 1000, xp: 350 }
+    ] },
+    { id: "annual", title: "ANNUAL QUESTS", difficulty: "NEARLY IMPOSSIBLE", quests: [
+        { id: "habits", metric: "habitsCompleted", title: "Legendary Habit Master", description: "Complete 2,500 habits this year.", target: 2500, coins: 25000, xp: 5000 },
+        { id: "games", metric: "gamesPlayed", title: "Arcade Legend", description: "Play 500 games this year.", target: 500, coins: 20000, xp: 5000 },
+        { id: "tasks", metric: "dailyTasksClaimed", title: "Year of Perfect Focus", description: "Claim 300 daily task rewards this year.", target: 300, coins: 30000, xp: 7000 }
+    ] }
+];
+
+function getQuestPeriodKey(periodId) {
+    const today = getTodayDate();
+    if (periodId === "monthly") return today.slice(0, 7);
+    if (periodId === "annual") return today.slice(0, 4);
+    const monday = new Date(`${today}T00:00:00`);
+    monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7);
+    return monday.toISOString().slice(0, 10);
+}
+
+function getQuestPeriodState(periodId) {
+    const key = getQuestPeriodKey(periodId);
+    if (!questProgress[periodId] || questProgress[periodId].key !== key) {
+        questProgress[periodId] = { key, counters: {}, claimed: [] };
+    }
+    const state = questProgress[periodId];
+    if (!state.counters || typeof state.counters !== "object") state.counters = {};
+    if (!Array.isArray(state.claimed)) state.claimed = [];
+    return state;
+}
+
+function saveQuestProgress() {
+    localStorage.setItem("doyourstreak-quests", JSON.stringify(questProgress));
+}
+
+function getQuestResetText(periodId) {
+    const today = new Date(`${getTodayDate()}T00:00:00`);
+    let resetDate;
+    if (periodId === "weekly") {
+        resetDate = new Date(today);
+        const daysUntilMonday = (8 - today.getDay()) % 7 || 7;
+        resetDate.setDate(today.getDate() + daysUntilMonday);
+    } else if (periodId === "monthly") {
+        resetDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    } else {
+        resetDate = new Date(today.getFullYear() + 1, 0, 1);
+    }
+    return `REFRESHES ${resetDate.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }).toUpperCase()}`;
+}
+
+function renderQuestBoard() {
+    const list = questList;
+    if (!list) return;
+    const selectedPeriod = questPeriods.find(period => period.id === currentAwardSection);
+    list.innerHTML = (selectedPeriod ? [selectedPeriod] : []).map(period => {
+        const state = getQuestPeriodState(period.id);
+        return `<section class="quest-period" aria-labelledby="quest-${period.id}-title">
+            <div class="quest-period-header"><div><h3 id="quest-${period.id}-title">${period.title}</h3><small>${period.difficulty}</small></div><small>${getQuestResetText(period.id)}</small></div>
+            <div class="quest-cards">${period.quests.map(quest => {
+                const progress = Math.min(Number(state.counters[quest.metric]) || 0, quest.target);
+                const isClaimed = state.claimed.includes(quest.id);
+                const canClaim = progress >= quest.target && !isClaimed;
+                return `<article class="quest-card"><div><h4>${quest.title}</h4><p>${quest.description}</p></div>
+                    <div class="quest-progress" role="progressbar" aria-label="${quest.title}" aria-valuemin="0" aria-valuemax="${quest.target}" aria-valuenow="${progress}"><span style="width:${progress / quest.target * 100}%"></span></div>
+                    <div class="quest-card-footer"><span class="quest-reward">${progress} / ${quest.target} · ${quest.coins.toLocaleString()} coins + ${quest.xp.toLocaleString()} XP</span>
+                    <button class="quest-claim" type="button" data-claim-quest="${period.id}:${quest.id}" ${canClaim ? "" : "disabled"}>${isClaimed ? "CLAIMED ✓" : canClaim ? "CLAIM REWARD" : "IN PROGRESS"}</button></div></article>`;
+            }).join("")}</div>
+        </section>`;
+    }).join("");
+    saveQuestProgress();
+}
+
+function recordQuestProgress(metric, amount = 1) {
+    questPeriods.forEach(period => {
+        const state = getQuestPeriodState(period.id);
+        state.counters[metric] = (Number(state.counters[metric]) || 0) + amount;
+    });
+    saveQuestProgress();
+    renderQuestBoard();
+}
+
+document.getElementById("questList")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-claim-quest]");
+    if (!button) return;
+    const [periodId, questId] = button.dataset.claimQuest.split(":");
+    const period = questPeriods.find(item => item.id === periodId);
+    const quest = period?.quests.find(item => item.id === questId);
+    const state = getQuestPeriodState(periodId);
+    if (!quest || state.claimed.includes(quest.id) || (Number(state.counters[quest.metric]) || 0) < quest.target) return;
+    state.claimed.push(quest.id);
+    coins += quest.coins;
+    stats.xp += quest.xp;
+    saveQuestProgress();
+    saveStats();
+    updateStats();
+    updateCoins();
+    renderQuestBoard();
+});
+
+renderQuestBoard();
+window.setInterval(renderQuestBoard, 60000);
 
 function saveAchievements() {
     localStorage.setItem("doyourstreak-achievements", JSON.stringify(achievements));
@@ -1708,26 +1867,62 @@ function markGamePlayed(gameId) {
     if (!Array.isArray(achievements.playedGames)) achievements.playedGames = [];
     if (gameId && !achievements.playedGames.includes(gameId)) achievements.playedGames.push(gameId);
     achievements.gamePlayed = true;
+    achievements.gameSessions = (Number(achievements.gameSessions) || 0) + 1;
     checkAchievements();
+    recordQuestProgress("gamesPlayed");
+}
+
+function recordRoutineFinisherDay() {
+    if (!habits.length || !habits.every(habit => habit.completed)) return;
+    const today = getTodayDate();
+    if (achievements.lastRoutineFinisherDate === today) return;
+    achievements.lastRoutineFinisherDate = today;
+    achievements.routineFinisherDays = (Number(achievements.routineFinisherDays) || 0) + 1;
 }
 
 if (getPurchasedSkinCount() > 0) achievements.skinPurchased = true;
 
 function renderAchievements() {
-    const list = document.getElementById("achievementList");
+    const list = achievementList;
     if (!list) return;
     list.innerHTML = achievementDefinitions.map(achievement => {
         const unlocked = Boolean(achievements[achievement.id]);
-        const progress = Math.min(achievement.progress(), achievement.target);
+        const progress = unlocked ? achievement.target : Math.min(achievement.progress(), achievement.target);
         return `<article class="achievement-card${unlocked ? " unlocked" : ""}">
-            <div class="achievement-icon" aria-hidden="true">${achievement.icon}</div>
             <div class="achievement-copy"><small>${unlocked ? "UNLOCKED" : "IN PROGRESS"}</small><h2>${achievement.title}</h2><p>${achievement.description}</p>
                 <div class="achievement-progress" role="progressbar" aria-label="${achievement.title}" aria-valuemin="0" aria-valuemax="${achievement.target}" aria-valuenow="${progress}"><span style="width:${progress / achievement.target * 100}%"></span></div>
                 <small class="achievement-count">${progress} / ${achievement.target}</small>
-            </div><span class="achievement-check" aria-hidden="true">${unlocked ? "✓" : "🔒"}</span>
+            </div>
         </article>`;
     }).join("");
 }
+
+function showAwardsMenu() {
+    currentAwardSection = null;
+    if (awardsMenu) awardsMenu.hidden = false;
+    if (awardDetail) awardDetail.hidden = true;
+    window.scrollTo(0, 0);
+}
+
+function openAwardSection(section) {
+    const titles = { achievement: "ACHIEVEMENTS", weekly: "WEEKLY QUESTS", monthly: "MONTHLY QUESTS", annual: "ANNUAL QUESTS" };
+    if (!titles[section]) return;
+    currentAwardSection = section;
+    awardsMenu.hidden = true;
+    awardDetail.hidden = false;
+    document.getElementById("awardDetailTitle").textContent = titles[section];
+    achievementList.hidden = section !== "achievement";
+    questList.hidden = section === "achievement";
+    if (section === "achievement") renderAchievements();
+    else renderQuestBoard();
+    window.scrollTo(0, 0);
+}
+
+awardsMenu?.addEventListener("click", event => {
+    const option = event.target.closest("[data-award-section]");
+    if (option) openAwardSection(option.dataset.awardSection);
+});
+document.getElementById("awardBackButton")?.addEventListener("click", showAwardsMenu);
 
 let achievementToastTimer = null;
 function showAchievementToast(achievement) {
@@ -1741,15 +1936,13 @@ function showAchievementToast(achievement) {
 }
 
 function checkAchievements() {
-    let changed = false;
     achievementDefinitions.forEach(achievement => {
         if (!achievements[achievement.id] && achievement.progress() >= achievement.target) {
             achievements[achievement.id] = true;
-            changed = true;
             showAchievementToast(achievement);
         }
     });
-    if (changed) saveAchievements();
+    saveAchievements();
     renderAchievements();
 }
 
@@ -1857,7 +2050,7 @@ function showAchievementsPage() {
     [characterPage, shopPage, gamePage, exercisePage, infoPage].forEach(page => page?.classList.remove("active"));
     achievementsPage?.classList.add("active");
     setActiveNav(achievementsNav);
-    renderAchievements();
+    showAwardsMenu();
     window.scrollTo(0, 0);
 }
 
@@ -2826,6 +3019,7 @@ function claimDailyTask() {
     savedTask.claimed = true;
     achievements.dailyTasksClaimed = (Number(achievements.dailyTasksClaimed) || 0) + 1;
     checkAchievements();
+    recordQuestProgress("dailyTasksClaimed");
 
     localStorage.setItem(
         "doyourstreak-daily-task",

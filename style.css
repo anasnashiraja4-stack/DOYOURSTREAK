@@ -357,7 +357,33 @@ body::before {
     object-fit: contain;
 }
 
-.brand { margin-right: auto; }
+.brand-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: auto;
+}
+
+.header-clock {
+    display: grid;
+    gap: 3px;
+    padding-left: 12px;
+    border-left: 2px solid #ddd;
+    color: #222;
+    line-height: 1.1;
+}
+
+.header-clock time {
+    font-size: 18px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+}
+
+.header-clock span {
+    color: #666;
+    font-size: 11px;
+    font-weight: 700;
+}
 
 .brand,
 .landing-logo {
@@ -1185,6 +1211,8 @@ body::before {
 
 .tutorial-card {
     width: min(100%, 430px);
+    max-height: calc(100dvh - 44px);
+    overflow-y: auto;
     padding: 25px;
     border: 3px solid #111;
     border-radius: 18px;
@@ -7123,6 +7151,10 @@ body::before {
 @media (max-width: 600px) {
     .topbar { padding-right: 10px; padding-left: 10px; gap: 7px; }
     .brand img { width: 56px; height: 56px; }
+    .brand-group { gap: 8px; }
+    .header-clock { gap: 2px; padding-left: 8px; }
+    .header-clock time { font-size: 15px; }
+    .header-clock span { font-size: 9px; }
     .user-info { gap: 5px; padding: 5px; border-radius: 13px; }
     .header-player { gap: 5px; padding-right: 3px; }
     .header-player-icon { width: 27px; height: 27px; flex-basis: 27px; font-size: 16px; border-radius: 8px; }
@@ -7135,6 +7167,10 @@ body::before {
 }
 @media (max-width: 390px) {
     .brand img { width: 48px; height: 48px; }
+    .brand-group { gap: 6px; }
+    .header-clock { padding-left: 6px; }
+    .header-clock time { font-size: 13px; }
+    .header-clock span { font-size: 8px; }
     .header-player-icon { display: none; }
     .header-player-copy strong { max-width: 72px; font-size: 12px; }
     .esp-top-status { padding: 6px 7px; font-size: 7px; }
@@ -7881,9 +7917,8 @@ body::before {
 .achievements-header h1 { margin: 7px 0; color: #171717; font-size: clamp(28px, 5vw, 42px); }
 .achievements-header p { margin: 0; color: #646464; }
 .achievement-list { display: grid; gap: 14px; }
-.achievement-card { display: flex; align-items: center; gap: 16px; padding: 18px; border: 2px solid #171717; border-radius: 18px; background: #fff; box-shadow: 4px 4px 0 #171717; }
+.achievement-card { display: flex; align-items: center; padding: 18px; border: 2px solid #171717; border-radius: 18px; background: #fff; box-shadow: 4px 4px 0 #171717; }
 .achievement-card.unlocked { background: #fff8d8; }
-.achievement-icon { display: grid; width: 58px; height: 58px; flex: 0 0 58px; place-items: center; border: 2px solid #171717; border-radius: 16px; background: #f1eaff; font-size: 29px; }
 .achievement-copy { flex: 1; min-width: 0; }
 .achievement-copy > small:first-child { color: #7257d9; font-size: 10px; font-weight: 900; letter-spacing: 1.2px; }
 .achievement-copy h2 { margin: 4px 0; font-size: 18px; }
@@ -7891,8 +7926,31 @@ body::before {
 .achievement-progress { height: 9px; overflow: hidden; border: 1px solid #171717; border-radius: 99px; background: #eee; }
 .achievement-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6f4fe0, #a78bfa); transition: width .3s ease; }
 .achievement-count { display: block; margin-top: 5px; color: #666; font-size: 11px; }
-.achievement-check { font-size: 20px; font-weight: 900; }
-.achievement-card.unlocked .achievement-check { color: #228b54; }
+.award-option-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.award-option { display: grid; gap: 7px; min-height: 145px; padding: 20px; text-align: left; border: 2px solid #171717; border-radius: 18px; background: #fff; box-shadow: 4px 4px 0 #171717; font: inherit; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; }
+.award-option:hover { transform: translateY(-3px); box-shadow: 6px 7px 0 #171717; }
+.award-option small { color: #6b52d8; font-size: 10px; font-weight: 900; letter-spacing: 1.2px; }
+.award-option strong { color: #171717; font-size: 20px; }
+.award-option span { color: #646464; font-size: 13px; }
+.award-detail { margin-top: 4px; }
+.award-back-button { margin-bottom: 16px; }
+.award-detail > h2 { margin: 0 0 16px; font-size: 25px; }
+[hidden] { display: none !important; }
+.quest-period-list { display: grid; gap: 18px; }
+.quest-period { padding: 18px; border: 2px solid #171717; border-radius: 18px; background: #f8f6ff; box-shadow: 4px 4px 0 #171717; }
+.quest-period-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
+.quest-period-header h3 { margin: 0; font-size: 19px; }
+.quest-period-header small { color: #6b52d8; font-weight: 900; letter-spacing: 1px; }
+.quest-cards { display: grid; gap: 10px; }
+.quest-card { display: grid; grid-template-columns: 1fr auto; gap: 8px 14px; align-items: center; padding: 13px; border: 1.5px solid #171717; border-radius: 13px; background: #fff; }
+.quest-card h4 { margin: 0 0 4px; font-size: 15px; }
+.quest-card p { margin: 0; color: #626262; font-size: 12px; }
+.quest-progress { grid-column: 1 / -1; height: 8px; overflow: hidden; border: 1px solid #171717; border-radius: 99px; background: #eee; }
+.quest-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6f4fe0, #a78bfa); }
+.quest-card-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; grid-column: 1 / -1; }
+.quest-reward { color: #6b52d8; font-size: 11px; font-weight: 900; }
+.quest-claim { padding: 7px 11px; border: 1.5px solid #171717; border-radius: 9px; background: #ffe66d; font: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
+.quest-claim:disabled { background: #e7e7e7; color: #666; cursor: default; }
 .achievement-nav { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
 .achievement-nav img { width: 38px; height: 38px; object-fit: contain; }
 .achievement-nav small { color: #171717; font-size: 8px; font-weight: 900; letter-spacing: .5px; }
@@ -7910,8 +7968,10 @@ body::before {
 @media (max-width: 560px) {
     .achievements-page { padding: 25px 15px 115px; }
     .achievement-card { gap: 11px; padding: 14px 12px; }
-    .achievement-icon { width: 48px; height: 48px; flex-basis: 48px; font-size: 24px; }
     .achievement-copy h2 { font-size: 16px; }
+    .quest-period { padding: 13px; }
     .bottom-navbar { gap: 4px; padding: 0 6px; }
     .bottom-nav-image { width: auto; max-width: 62px; flex: 1 1 0; }
+    .award-option-grid { grid-template-columns: 1fr; gap: 12px; }
+    .award-option { min-height: 112px; padding: 16px; }
 }

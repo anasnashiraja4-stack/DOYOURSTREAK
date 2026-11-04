@@ -235,8 +235,14 @@
         <!-- HEADER -->
         <header class="topbar">
 
-            <div class="brand">
-                <img src="reallogo.png" alt="DOYOURSTREAK">
+            <div class="brand-group">
+                <div class="brand">
+                    <img src="reallogo.png" alt="DOYOURSTREAK">
+                </div>
+                <div class="header-clock" aria-label="Current local date and time">
+                    <time id="headerClockTime"></time>
+                    <span id="headerClockDate"></span>
+                </div>
             </div>
 
             <div class="user-info">
@@ -1127,7 +1133,18 @@
                     <h1>ACHIEVEMENTS</h1>
                     <p>Celebrate every milestone on your journey.</p>
                 </header>
-                <div id="achievementList" class="achievement-list" aria-live="polite"></div>
+                <div id="awardsMenu" class="award-option-grid" aria-label="Choose an awards section">
+                    <button class="award-option" type="button" data-award-section="achievement"><small>YOUR MILESTONES</small><strong>Achievement</strong><span>Track long-term goals and progress.</span></button>
+                    <button class="award-option" type="button" data-award-section="weekly"><small>REFRESHES WEEKLY</small><strong>Weekly Quests</strong><span>Medium goals with medium rewards.</span></button>
+                    <button class="award-option" type="button" data-award-section="monthly"><small>REFRESHES MONTHLY</small><strong>Monthly Quests</strong><span>Hard goals with high rewards.</span></button>
+                    <button class="award-option" type="button" data-award-section="annual"><small>REFRESHES ANNUALLY</small><strong>Annual Quests</strong><span>Near-impossible goals with very high rewards.</span></button>
+                </div>
+                <section id="awardDetail" class="award-detail" hidden>
+                    <button id="awardBackButton" class="secondary-button award-back-button" type="button">← BACK TO AWARDS</button>
+                    <h2 id="awardDetailTitle"></h2>
+                    <div id="achievementList" class="achievement-list" aria-live="polite"></div>
+                    <div id="questList" class="quest-period-list" aria-live="polite"></div>
+                </section>
             </section>
         </div>
 
