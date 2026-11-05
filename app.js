@@ -311,6 +311,7 @@ const tutorialTitle = document.getElementById("tutorialTitle");
 const tutorialDescription = document.getElementById("tutorialDescription");
 const tutorialStepCount = document.getElementById("tutorialStepCount");
 const tutorialNextButton = document.getElementById("nextTutorialButton");
+const tutorialCard = tutorialOverlay?.querySelector(".tutorial-card");
 let activeTutorialStep = 0;
 let tutorialFocus = null;
 
@@ -364,6 +365,35 @@ function renderWebsiteTutorialStep() {
     tutorialTitle.textContent = step.title;
     tutorialDescription.textContent = step.description;
     tutorialNextButton.textContent = activeTutorialStep === websiteTutorialSteps.length - 1 ? "FINISH ✓" : "NEXT →";
+    requestAnimationFrame(positionTutorialCard);
+}
+
+function positionTutorialCard() {
+    if (!tutorialOverlay) return;
+    tutorialOverlay.classList.remove("tutorial-card-top", "tutorial-card-bottom");
+    if (
+        tutorialOverlay.classList.contains("hidden") ||
+        !tutorialCard ||
+        !tutorialFocus ||
+        !window.matchMedia("(max-width: 600px)").matches
+    ) return;
+
+    const targetRect = tutorialFocus.getBoundingClientRect();
+    const cardRect = tutorialCard.getBoundingClientRect();
+    const overlapsCard =
+        targetRect.left < cardRect.right &&
+        targetRect.right > cardRect.left &&
+        targetRect.top < cardRect.bottom &&
+        targetRect.bottom > cardRect.top;
+    if (!overlapsCard) return;
+
+    const overlayPadding = 22;
+    const spaceAbove = targetRect.top - overlayPadding;
+    const spaceBelow = window.innerHeight - targetRect.bottom - overlayPadding;
+    const placement = spaceAbove >= cardRect.height || spaceAbove >= spaceBelow
+        ? "tutorial-card-top"
+        : "tutorial-card-bottom";
+    tutorialOverlay.classList.add(placement);
 }
 
 function startWebsiteTutorial() {
@@ -375,6 +405,7 @@ function startWebsiteTutorial() {
 
 function closeWebsiteTutorial() {
     tutorialOverlay?.classList.add("hidden");
+    tutorialOverlay?.classList.remove("tutorial-card-top", "tutorial-card-bottom");
     tutorialFocus?.classList.remove("tutorial-focus");
     tutorialFocus = null;
     localStorage.setItem("doyourstreak-tutorial-seen", "true");
@@ -383,6 +414,7 @@ function closeWebsiteTutorial() {
 document.getElementById("openTutorialButton")?.addEventListener("click", startWebsiteTutorial);
 document.getElementById("closeTutorialButton")?.addEventListener("click", closeWebsiteTutorial);
 document.getElementById("skipTutorialButton")?.addEventListener("click", closeWebsiteTutorial);
+window.addEventListener("resize", positionTutorialCard);
 tutorialNextButton?.addEventListener("click", () => {
     if (activeTutorialStep >= websiteTutorialSteps.length - 1) {
         closeWebsiteTutorial();

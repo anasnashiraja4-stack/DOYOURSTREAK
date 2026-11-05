@@ -1249,6 +1249,8 @@ body::before {
     .tutorial-open-button { padding: 7px; font-size: 9px; }
     .user-info { flex-wrap: wrap; justify-content: flex-end; }
     .tutorial-card { padding: 20px; }
+    .tutorial-overlay.tutorial-card-top { align-items: start; }
+    .tutorial-overlay.tutorial-card-bottom { align-items: end; }
 }
 
 
@@ -7981,19 +7983,20 @@ body::before {
         min-height: auto;
         padding: 8px 12px;
         gap: 6px;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
     }
 
-    .brand-group { flex: 0 1 auto; min-width: 0; gap: 6px; }
+    .brand-group { flex: 1 1 auto; min-width: 0; gap: 6px; }
     .brand img { width: 44px; height: 44px; }
     .header-clock { gap: 2px; padding-left: 6px; }
     .header-clock time { font-size: 12px; }
     .header-clock span { font-size: 8px; }
 
     .user-info {
-        flex: 0 1 auto;
+        flex: 1 0 100%;
         min-width: 0;
         flex-wrap: nowrap;
+        justify-content: space-between;
         gap: 4px;
         padding: 4px;
         border-radius: 11px;
@@ -8006,7 +8009,7 @@ body::before {
     .level-badge small { font-size: 7px; }
     .level-badge strong { font-size: 13px; }
     .esp-top-status { gap: 3px; padding: 5px; font-size: 7px; letter-spacing: 0; }
-    .tutorial-open-button { padding: 5px; font-size: 7px; }
+    .tutorial-open-button { padding: 6px 8px; font-size: 8px; }
 }
 
 @media (max-width: 380px) {
@@ -8019,5 +8022,5 @@ body::before {
     .header-player-copy strong { max-width: 42px; font-size: 10px; }
     .level-badge { padding: 3px 4px; }
     .esp-top-status { padding: 4px; font-size: 6px; }
-    .tutorial-open-button { padding: 4px; font-size: 6px; }
+    .tutorial-open-button { padding: 5px 7px; font-size: 7px; }
 }
