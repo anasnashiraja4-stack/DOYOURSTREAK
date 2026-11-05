@@ -1448,6 +1448,9 @@ function showPlaceholder() {
 const loginButton =
     document.getElementById("loginButton");
 
+const logoutButton =
+    document.getElementById("logoutButton");
+
 const loginModal =
     document.getElementById("loginModal");
 
@@ -1469,6 +1472,22 @@ loginButton?.addEventListener("click", () => {
 
     }, 100);
 
+});
+
+logoutButton?.addEventListener("click", () => {
+    if (!user) return;
+
+    saveActiveProfileSnapshot();
+    user = null;
+    activeProfileId = null;
+    habits = [];
+    stats = { xp: 0, streak: 0, lastCompletedDate: null };
+
+    localStorage.removeItem("doyourstreak-user");
+    localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
+    localStorage.setItem("doyourstreak-stats", JSON.stringify(stats));
+    loginModal?.classList.add("hidden");
+    showLogin();
 });
 
 /* CLOSE LOGIN */
