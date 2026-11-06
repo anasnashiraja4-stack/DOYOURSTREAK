@@ -71,7 +71,11 @@
                 <div class="download-buttons">
 
                     <a href="#" class="download-button windows" id="windowsDownload">
-                        <span class="download-icon">▣</span>
+                        <span class="download-icon">
+                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                <path fill="#00A4EF" d="M5 10.4 21 8v14H5zM24 7.6l19-2.8V22H24zM5 25h16v14L5 36.6zM24 25h19v17.2l-19-2.8z"/>
+                            </svg>
+                        </span>
 
                         <div>
                             <small>DOWNLOAD FOR</small>
@@ -81,7 +85,16 @@
 
 
                     <a href="#" class="download-button android" id="androidDownload">
-                        <span class="download-icon">◆</span>
+                        <span class="download-icon">
+                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                <g fill="#3DDC84">
+                                    <path d="M13.2 13.6 9.7 7.5a1 1 0 0 1 1.7-1l3.7 6.4a15 15 0 0 1 18 0l3.7-6.4a1 1 0 0 1 1.7 1L35 13.6a14 14 0 0 1 6 11.4H7.2a14 14 0 0 1 6-11.4Z"/>
+                                    <path d="M7.2 27h33.6v9.2a4 4 0 0 1-4 4h-1.6v5.1a2.8 2.8 0 0 1-5.6 0v-5.1H18.4v5.1a2.8 2.8 0 0 1-5.6 0v-5.1h-1.6a4 4 0 0 1-4-4V27Zm-5.4 0a2.8 2.8 0 0 1 5.6 0v8a2.8 2.8 0 0 1-5.6 0v-8Zm38.8 0a2.8 2.8 0 0 1 5.6 0v8a2.8 2.8 0 0 1-5.6 0v-8Z"/>
+                                    <circle cx="16.5" cy="19" r="1.5" fill="#111"/>
+                                    <circle cx="31.5" cy="19" r="1.5" fill="#111"/>
+                                </g>
+                            </svg>
+                        </span>
 
                         <div>
                             <small>DOWNLOAD FOR</small>
@@ -298,7 +311,7 @@
                     <strong id="coinAmount">0</strong>
                 </div>
 
-                <button id="premiumOpenButton" class="premium-open-button" type="button" aria-label="Open Premium">
+                <button id="premiumOpenButton" class="premium-open-button" type="button" aria-label="Buka Premium">
                     <img src="iconpremium.png" alt="Premium">
                 </button>
 
@@ -1160,35 +1173,35 @@
         </div>
 
         <!-- ================= PREMIUM MODAL ================= -->
-        <div id="premiumModal" class="premium-modal hidden">
+        <div id="premiumModal" class="premium-modal hidden" role="dialog" aria-modal="true" aria-labelledby="premiumTitle">
             <div class="premium-card">
 
                 <button id="premiumCloseButton" class="premium-close" type="button"
-                    aria-label="Close Premium">×</button>
+                    aria-label="Tutup Premium">×</button>
 
                 <div class="premium-heading">
                     <img src="iconpremium.png" alt="">
                     <div>
-                        <small>DOYOURSTREAK EXCLUSIVE</small>
-                        <h2>PREMIUM</h2>
-                        <p>Upgrade your streak experience.</p>
+                        <small>FITUR EKSTRA</small>
+                        <h2 id="premiumTitle">Premium</h2>
+                        <p>Buka karakter spesial dan lihat progres kebiasaanmu.</p>
                     </div>
                 </div>
 
                 <div class="premium-tabs">
                     <button type="button" class="premium-tab active" data-premium-tab="characters">
-                        CHARACTERS
+                        Karakter
                     </button>
 
                     <button type="button" class="premium-tab" data-premium-tab="statistics">
-                        STATISTICS
+                        Statistik
                     </button>
                 </div>
 
                 <div id="premiumCharactersPanel" class="premium-panel">
                     <div class="premium-section-heading">
-                        <h3>Character Collection</h3>
-                        <p>Unlock exclusive characters and skins.</p>
+                        <h3>Koleksi karakter</h3>
+                        <p>Pilih karakter spesial untuk menemani streak-mu.</p>
                     </div>
 
                     <div id="premiumCharacterGrid" class="premium-character-grid"></div>
@@ -1196,23 +1209,21 @@
 
                 <div id="premiumStatisticsPanel" class="premium-panel hidden">
                     <div class="premium-section-heading">
-                        <h3>Priority Statistics</h3>
-                        <p>Understand your habits and completion progress.</p>
+                        <h3>Statistik kebiasaan</h3>
+                        <p>Lihat jumlah kebiasaan dan progres penyelesaiannya.</p>
                     </div>
 
                     <div id="premiumStatisticsContent"></div>
                 </div>
 
                 <div class="premium-demo-area">
-                    <p id="premiumStatusText">Premium Demo is currently locked.</p>
+                    <p id="premiumStatusText">Demo Premium belum aktif.</p>
 
                     <button id="premiumDemoButton" class="premium-demo-button" type="button">
-                        ACTIVATE PREMIUM DEMO
+                        Aktifkan demo gratis
                     </button>
 
-                    <small>
-                        Demo only — no real payment is made.
-                    </small>
+                    <small>Mode demo saja — gratis, tidak ada pembayaran. Status tersimpan di browser ini.</small>
                 </div>
 
             </div>

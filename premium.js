@@ -32,6 +32,12 @@ const priorityChartColors = {
     Low: "#d4d4d4"
 };
 
+const priorityLabels = {
+    High: "Tinggi",
+    Normal: "Normal",
+    Low: "Rendah"
+};
+
 function hasPremiumDemo() {
     return localStorage.getItem(PREMIUM_DEMO_KEY) === "true";
 }
@@ -112,7 +118,6 @@ premiumDemoButton?.addEventListener("click", () => {
         renderCharacterShop();
     }
 
-    premiumDemoButton.textContent = "PREMIUM DEMO ACTIVE ✓";
 });
 
 
@@ -121,14 +126,14 @@ function updatePremiumStatus() {
 
     if (premiumStatusText) {
         premiumStatusText.textContent = active
-            ? "Premium Demo is active. All demo features are unlocked!"
-            : "Premium Demo is currently locked.";
+            ? "Demo aktif! Karakter dan statistik sudah terbuka."
+            : "Aktifkan demo gratis untuk mencoba fitur Premium.";
     }
 
     if (premiumDemoButton) {
         premiumDemoButton.textContent = active
-            ? "PREMIUM DEMO ACTIVE ✓"
-            : "ACTIVATE PREMIUM DEMO";
+            ? "Demo Premium aktif ✓"
+            : "Aktifkan demo gratis";
     }
 }
 
@@ -168,8 +173,8 @@ function renderPremiumCharacterGrid() {
         selectButton.type = "button";
 
         selectButton.textContent = unlocked
-            ? "SELECT"
-            : "LOCKED 🔒";
+            ? "Pilih"
+            : "Terkunci";
 
         selectButton.disabled = !unlocked;
 
@@ -208,10 +213,9 @@ function renderPriorityStatistics() {
     if (!hasPremiumDemo()) {
         premiumStatisticsContent.innerHTML = `
             <div class="premium-empty-stats">
-                <h3>🔒 Premium Statistics</h3>
+                <h3>Statistik terkunci</h3>
                 <p>
-                    Activate Premium Demo to view your habit
-                    completion and priority charts.
+                    Aktifkan demo gratis untuk melihat progres dan statistik kebiasaanmu.
                 </p>
             </div>
         `;
@@ -252,10 +256,9 @@ function renderPriorityStatistics() {
     if (totalHabits === 0) {
         premiumStatisticsContent.innerHTML = `
             <div class="premium-empty-stats">
-                <h3>No habits yet!</h3>
+                <h3>Belum ada kebiasaan</h3>
                 <p>
-                    Add some habits first. Your priority charts
-                    will appear here automatically.
+                    Tambahkan kebiasaan terlebih dahulu. Statistik akan muncul di sini.
                 </p>
             </div>
         `;
@@ -267,8 +270,8 @@ function renderPriorityStatistics() {
     const bars = priorityData.map(item => `
         <div class="priority-bar-row">
             <div class="priority-bar-label">
-                <span>${item.name}</span>
-                <span>${item.completed}/${item.total} completed</span>
+                <span>${priorityLabels[item.name]}</span>
+                <span>${item.completed} dari ${item.total} selesai</span>
             </div>
 
             <div class="priority-bar-track">
@@ -281,7 +284,7 @@ function renderPriorityStatistics() {
                 ></div>
             </div>
 
-            <small>${item.percentage}% completion</small>
+            <small>${item.percentage}% selesai</small>
         </div>
     `).join("");
 
@@ -320,7 +323,7 @@ function renderPriorityStatistics() {
             ></span>
 
             <span>
-                ${item.name}: ${item.total}
+                ${priorityLabels[item.name]}: ${item.total}
                 (${Math.round(item.total / totalHabits * 100)}%)
             </span>
         </div>
@@ -329,35 +332,35 @@ function renderPriorityStatistics() {
     premiumStatisticsContent.innerHTML = `
         <div class="premium-stat-grid">
             <div class="premium-stat-card">
-                <small>TOTAL HABITS</small>
+                <small>JUMLAH KEBIASAAN</small>
                 <strong>${totalHabits}</strong>
             </div>
 
             <div class="premium-stat-card">
-                <small>COMPLETED</small>
+                <small>SELESAI</small>
                 <strong>${completedHabits}</strong>
             </div>
 
             <div class="premium-stat-card">
-                <small>PENDING</small>
+                <small>MENUNGGU</small>
                 <strong>${pendingHabits}</strong>
             </div>
         </div>
 
         <div class="premium-chart-card">
-            <h4>Completion by Priority</h4>
+            <h4>Progres berdasarkan prioritas</h4>
             ${bars}
         </div>
 
         <div class="premium-chart-card">
-            <h4>Habit Distribution</h4>
+            <h4>Kebiasaan berdasarkan prioritas</h4>
 
             <div class="priority-donut-layout">
                 <svg
                     class="priority-donut"
                     viewBox="0 0 120 120"
                     role="img"
-                    aria-label="Habit distribution by priority"
+                    aria-label="Kebiasaan berdasarkan prioritas"
                 >
                     <circle
                         cx="60"
@@ -395,8 +398,7 @@ function renderPriorityStatistics() {
         </div>
 
         <p style="font-size:12px;color:#666;margin-top:14px">
-            Charts reflect your current habit list.
-            They do not represent historical weekly or monthly trends.
+            Statistik ini berdasarkan daftar kebiasaanmu saat ini, bukan riwayat mingguan atau bulanan.
         </p>
     `;
 }
