@@ -123,6 +123,16 @@ const localLeaderboard = document.getElementById("localLeaderboard");
 const localProfileSelect = document.getElementById("localProfileSelect");
 const localProfileName = document.getElementById("localProfileName");
 const createLocalProfileButton = document.getElementById("createLocalProfile");
+const eventChatLaunchButton = document.getElementById("eventChatLaunch");
+const eventChatBackButton = document.getElementById("eventChatBackButton");
+const eventChatMessagesElement = document.getElementById("eventChatMessages");
+const eventChatForm = document.getElementById("eventChatForm");
+const eventChatInput = document.getElementById("eventChatInput");
+const eventChatAvatar = document.getElementById("eventChatAvatar");
+const eventChatProfileName = document.getElementById("eventChatProfileName");
+const eventChatFeedback = document.getElementById("eventChatFeedback");
+let eventChatHistory = JSON.parse(localStorage.getItem("doyourstreak-event-chat") || "[]");
+if (!Array.isArray(eventChatHistory)) eventChatHistory = [];
 
 
 /* =====================================================
@@ -1358,6 +1368,86 @@ function renderLocalLeaderboard() {
     }).join("");
 }
 
+function getEventChatCharacterImage() {
+    const playerImage = document.getElementById("playerImage");
+    const imageSource = playerImage?.getAttribute("src") || user?.character || "player.png";
+    const imageName = imageSource.split(/[\\/]/).pop();
+    return imageName && /^[\w-]+\.png$/i.test(imageName) ? imageName : "player.png";
+}
+
+function renderEventChat() {
+    if (!eventChatMessagesElement) return;
+
+    const characterImage = getEventChatCharacterImage();
+    if (eventChatAvatar) eventChatAvatar.src = characterImage;
+    if (eventChatProfileName) {
+        eventChatProfileName.textContent = user?.characterName || user?.name || "PLAYER";
+    }
+
+    if (!eventChatHistory.length) {
+        eventChatMessagesElement.innerHTML = '<p class="event-chat-empty">Belum ada pesan. Mulai obrolan dan kenalan dengan pemain lain!</p>';
+        return;
+    }
+
+    eventChatMessagesElement.innerHTML = eventChatHistory.slice(-100).map(message => {
+        const name = escapeHTML(String(message?.name || "PLAYER"));
+        const text = escapeHTML(String(message?.text || ""));
+        const image = message?.characterImage && /^[\w-]+\.png$/i.test(message.characterImage)
+            ? message.characterImage
+            : "player.png";
+        const date = new Date(Number(message?.createdAt));
+        const time = Number.isFinite(date.getTime())
+            ? date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
+            : "";
+        const ownMessage = message?.profileId === activeProfileId ? " is-own-message" : "";
+
+        return `<article class="event-chat-message${ownMessage}">
+            <img class="event-chat-message-avatar" src="${escapeHTML(image)}" alt="">
+            <div class="event-chat-message-body">
+                <div class="event-chat-message-meta"><strong>${name}</strong><time>${escapeHTML(time)}</time></div>
+                <p>${text}</p>
+            </div>
+        </article>`;
+    }).join("");
+
+    eventChatMessagesElement.scrollTop = eventChatMessagesElement.scrollHeight;
+}
+
+eventChatLaunchButton?.addEventListener("click", showEventChatPage);
+eventChatBackButton?.addEventListener("click", showInfoPage);
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && eventChatPage?.classList.contains("active")) {
+        showInfoPage();
+    }
+});
+
+eventChatForm?.addEventListener("submit", event => {
+    event.preventDefault();
+    const text = eventChatInput?.value.trim() || "";
+    if (!text) return;
+
+    if (!user) {
+        if (eventChatFeedback) eventChatFeedback.textContent = "Buat atau pilih profil terlebih dahulu untuk mengirim pesan.";
+        return;
+    }
+
+    const profileId = activeProfileId || getProfileIdentity(user);
+    eventChatHistory = [...eventChatHistory, {
+        profileId,
+        name: user.characterName || user.name || "PLAYER",
+        characterImage: getEventChatCharacterImage(),
+        text: text.slice(0, 280),
+        createdAt: Date.now()
+    }].slice(-100);
+    localStorage.setItem("doyourstreak-event-chat", JSON.stringify(eventChatHistory));
+    if (eventChatInput) eventChatInput.value = "";
+    if (eventChatFeedback) eventChatFeedback.textContent = "Pesan terkirim dan tersimpan di perangkat ini.";
+    renderEventChat();
+    eventChatInput?.focus();
+});
+
+renderEventChat();
+
 function activateLocalProfile(profileId) {
     if (!profileId || profileId === activeProfileId) return;
     saveActiveProfileSnapshot();
@@ -1378,6 +1468,7 @@ function activateLocalProfile(profileId) {
     renderDailyTask();
     updateCoins();
     renderLocalLeaderboard();
+    renderEventChat();
 }
 
 localProfileSelect?.addEventListener("change", () => activateLocalProfile(decodeURIComponent(localProfileSelect.value)));
@@ -1402,6 +1493,7 @@ createLocalProfileButton?.addEventListener("click", () => {
     if (playerImageElement) playerImageElement.src = user.character;
     showApp();
     updateCoins();
+    renderEventChat();
 });
 
 
@@ -1804,6 +1896,7 @@ const shopPage = document.getElementById("shopPage");
 const gamePage = document.getElementById("gamePage");
 const exercisePage = document.getElementById("exercisePage");
 const infoPage = document.getElementById("infoPage");
+const eventChatPage = document.getElementById("eventChatPage");
 const achievementsPage = document.getElementById("achievementsPage");
 const awardsMenu = document.getElementById("awardsMenu");
 const awardDetail = document.getElementById("awardDetail");
@@ -2058,6 +2151,7 @@ function showGamePage() {
     exercisePage?.classList.remove("active");
     infoPage?.classList.remove("active");
     achievementsPage?.classList.remove("active");
+    eventChatPage?.classList.remove("active");
 
     setActiveNav(gameNav);
 
@@ -2073,6 +2167,7 @@ function showCharacterPage() {
     infoPage?.classList.remove("active");
     gamePage?.classList.remove("active");
     achievementsPage?.classList.remove("active");
+    eventChatPage?.classList.remove("active");
 
     setActiveNav(characterNav);
 
@@ -2088,6 +2183,7 @@ function showShopPage() {
     exercisePage?.classList.remove("active");
     infoPage?.classList.remove("active");
     achievementsPage?.classList.remove("active");
+    eventChatPage?.classList.remove("active");
 
     setActiveNav(shopNav);
 
@@ -2105,6 +2201,7 @@ function showExercisePage() {
     infoPage?.classList.remove("active");
     gamePage?.classList.remove("active");
     achievementsPage?.classList.remove("active");
+    eventChatPage?.classList.remove("active");
 
     setActiveNav(exerciseNav);
 
@@ -2120,17 +2217,28 @@ function showInfoPage() {
     infoPage?.classList.add("active");
     gamePage?.classList.remove("active");
     achievementsPage?.classList.remove("active");
+    eventChatPage?.classList.remove("active");
 
     setActiveNav(infoNav);
 
     renderCalendar();
     renderLocalLeaderboard();
+    renderEventChat();
 
     window.scrollTo(0, 0);
 }
 
+function showEventChatPage() {
+    [characterPage, shopPage, gamePage, exercisePage, infoPage, achievementsPage].forEach(page => page?.classList.remove("active"));
+    eventChatPage?.classList.add("active");
+    setActiveNav(infoNav);
+    renderEventChat();
+    window.scrollTo(0, 0);
+    eventChatInput?.focus();
+}
+
 function showAchievementsPage() {
-    [characterPage, shopPage, gamePage, exercisePage, infoPage].forEach(page => page?.classList.remove("active"));
+    [characterPage, shopPage, gamePage, exercisePage, infoPage, eventChatPage].forEach(page => page?.classList.remove("active"));
     achievementsPage?.classList.add("active");
     setActiveNav(achievementsNav);
     showAwardsMenu();
@@ -2218,9 +2326,9 @@ let calendarDate = new Date();
 
 
 const calendarEvents = {
-    "2026-10-10": "STREAK WEEK",
-    "2026-10-15": "NEW CHARACTER UPDATE",
-    "2026-10-25": "COMMUNITY EVENT"
+    "2026-11-09": "STREAK SPRINT",
+    "2026-11-15": "CHARACTER PARADE",
+    "2026-11-22": "WEEKEND QUEST"
 };
 
 

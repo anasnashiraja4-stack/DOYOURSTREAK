@@ -1032,7 +1032,7 @@
                 <div class="info-header">
                     <small>DOYOURSTREAK</small>
                     <h1>CALENDAR & EVENTS</h1>
-                    <p>Check your schedule and the latest admin updates.</p>
+                    <p>Plan your next challenge and meet the DOYOURSTREAK community.</p>
                 </div>
 
                 <section class="local-leaderboard-card" aria-labelledby="localLeaderboardTitle">
@@ -1082,72 +1082,102 @@
                 </div>
 
 
-                <!-- ADMIN EVENTS -->
+                <!-- COMMUNITY EVENTS -->
                 <div class="events-section">
 
                     <div class="events-title">
-                        <small>ADMIN UPDATE</small>
-                        <h2>EVENTS</h2>
+                        <small>NOVEMBER LINEUP</small>
+                        <h2>UPCOMING EVENTS</h2>
                     </div>
 
                     <div id="adminEvents" class="admin-events">
 
                         <!-- EVENT 1 -->
-                        <div class="event-card">
+                        <article class="event-card">
                             <div class="event-date">
-                                <strong>10</strong>
-                                <span>OCT</span>
+                                <strong>09</strong>
+                                <span>NOV</span>
                             </div>
 
                             <div class="event-content">
-                                <h3>STREAK WEEK</h3>
-                                <p>
-                                    Keep your streak alive this week and complete
-                                    your exercises every day!
-                                </p>
+                                <span class="event-tag">7 DAYS · +50 XP</span>
+                                <h3>STREAK SPRINT</h3>
+                                <p>Complete one habit each day for seven days and keep your streak alive.</p>
                             </div>
-                        </div>
+                            <span class="event-arrow" aria-hidden="true">↗</span>
+                        </article>
 
 
                         <!-- EVENT 2 -->
-                        <div class="event-card">
+                        <article class="event-card">
                             <div class="event-date">
                                 <strong>15</strong>
-                                <span>OCT</span>
+                                <span>NOV</span>
                             </div>
 
                             <div class="event-content">
-                                <h3>NEW CHARACTER UPDATE</h3>
-                                <p>
-                                    A new character might be coming to the shop.
-                                    Stay tuned!
-                                </p>
+                                <span class="event-tag">COMMUNITY · SHOWCASE</span>
+                                <h3>CHARACTER PARADE</h3>
+                                <p>Show off your character in chat and cheer on other streak builders.</p>
                             </div>
-                        </div>
+                            <span class="event-arrow" aria-hidden="true">↗</span>
+                        </article>
 
 
                         <!-- EVENT 3 -->
-                        <div class="event-card">
+                        <article class="event-card">
                             <div class="event-date">
-                                <strong>25</strong>
-                                <span>OCT</span>
+                                <strong>22</strong>
+                                <span>NOV</span>
                             </div>
 
                             <div class="event-content">
-                                <h3>COMMUNITY EVENT</h3>
-                                <p>
-                                    Complete your exercises and earn extra XP
-                                    during the event.
-                                </p>
+                                <span class="event-tag">WEEKEND · +30 XP</span>
+                                <h3>WEEKEND QUEST</h3>
+                                <p>Finish three habits this weekend to earn a bonus for your progress.</p>
                             </div>
-                        </div>
+                            <span class="event-arrow" aria-hidden="true">↗</span>
+                        </article>
 
                     </div>
+
+                    <button id="eventChatLaunch" class="event-chat-launch" type="button">
+                        <img src="iconchat.jpe" alt="">
+                        <span><strong>STREAK CHAT</strong><small>Join the community conversation</small></span>
+                        <span class="event-chat-launch-arrow" aria-hidden="true">↗</span>
+                    </button>
 
                 </div>
 
             </section>
 
+        </div>
+
+        <div id="eventChatPage" class="app-page">
+            <section class="event-chat-page">
+                <button id="eventChatBackButton" class="event-chat-back" type="button">← BACK TO EVENTS</button>
+                <section class="event-chat" aria-labelledby="eventChatTitle">
+                    <div class="event-chat-heading">
+                        <div>
+                            <small>LOCAL COMMUNITY · THIS DEVICE</small>
+                            <h1 id="eventChatTitle">STREAK CHAT</h1>
+                            <p>Ngobrol sebagai karaktermu dan beri semangat ke pemain lain.</p>
+                        </div>
+                        <span class="event-chat-status"><i aria-hidden="true"></i> CHAT AKTIF</span>
+                    </div>
+                    <div id="eventChatMessages" class="event-chat-messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
+                    <form id="eventChatForm" class="event-chat-form">
+                        <div class="event-chat-profile">
+                            <img id="eventChatAvatar" src="player.png" alt="">
+                            <span id="eventChatProfileName">PLAYER</span>
+                        </div>
+                        <label class="sr-only" for="eventChatInput">Tulis pesan chat</label>
+                        <textarea id="eventChatInput" rows="2" maxlength="280" placeholder="Tulis pesan untuk komunitas..." required></textarea>
+                        <button id="eventChatSend" type="submit" aria-label="Kirim pesan">KIRIM <span aria-hidden="true">↗</span></button>
+                    </form>
+                    <p id="eventChatFeedback" class="event-chat-feedback" aria-live="polite">Pesan tersimpan di perangkat ini.</p>
+                </section>
+            </section>
         </div>
 
         <div id="achievementsPage" class="app-page">
