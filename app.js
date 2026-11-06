@@ -1451,6 +1451,13 @@ const loginButton =
 const logoutButton =
     document.getElementById("logoutButton");
 
+const logoutConfirmOverlay =
+    document.getElementById("logoutConfirmOverlay");
+const cancelLogoutButton =
+    document.getElementById("cancelLogoutButton");
+const confirmLogoutButton =
+    document.getElementById("confirmLogoutButton");
+
 const loginModal =
     document.getElementById("loginModal");
 
@@ -1477,6 +1484,30 @@ loginButton?.addEventListener("click", () => {
 logoutButton?.addEventListener("click", () => {
     if (!user) return;
 
+    logoutConfirmOverlay?.classList.remove("hidden");
+    confirmLogoutButton?.focus();
+});
+
+function closeLogoutConfirmation() {
+    logoutConfirmOverlay?.classList.add("hidden");
+    logoutButton?.focus();
+}
+
+cancelLogoutButton?.addEventListener("click", closeLogoutConfirmation);
+
+logoutConfirmOverlay?.addEventListener("click", (event) => {
+    if (event.target === logoutConfirmOverlay) closeLogoutConfirmation();
+});
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !logoutConfirmOverlay?.classList.contains("hidden")) {
+        closeLogoutConfirmation();
+    }
+});
+
+confirmLogoutButton?.addEventListener("click", () => {
+    if (!user) return;
+
     saveActiveProfileSnapshot();
     user = null;
     activeProfileId = null;
@@ -1486,6 +1517,7 @@ logoutButton?.addEventListener("click", () => {
     localStorage.removeItem("doyourstreak-user");
     localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
     localStorage.setItem("doyourstreak-stats", JSON.stringify(stats));
+    logoutConfirmOverlay?.classList.add("hidden");
     loginModal?.classList.add("hidden");
     showLogin();
 });
