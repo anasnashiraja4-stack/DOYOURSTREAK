@@ -394,7 +394,34 @@
                 </div>
 
 
-                <div class="shop-items">
+                <div class="shop-categories" role="tablist" aria-label="Shop categories">
+                    <button
+                        class="shop-category active"
+                        type="button"
+                        role="tab"
+                        id="shopCharacterTab"
+                        aria-selected="true"
+                        aria-controls="shopItems"
+                        data-shop-category="character"
+                    >
+                        <img src="iconkategoriwallpaper.png" alt="">
+                        <span>CHARACTER</span>
+                    </button>
+                    <button
+                        class="shop-category"
+                        type="button"
+                        role="tab"
+                        id="shopBackgroundTab"
+                        aria-selected="false"
+                        aria-controls="shopItems"
+                        data-shop-category="background"
+                    >
+                        <img src="iconwallpaper.png" alt="">
+                        <span>BACKGROUND</span>
+                    </button>
+                </div>
+
+                <div class="shop-items" id="shopItems" role="tabpanel" aria-labelledby="shopCharacterTab">
 
                     <!-- OYENOMALI -->
                     <div class="shop-item">

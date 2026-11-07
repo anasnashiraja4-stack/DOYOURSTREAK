@@ -2917,6 +2917,119 @@ function updateCoins() {
    DYNAMIC CHARACTER SHOP
 ===================================================== */
 
+const shopBackgrounds = [
+    { id: "room", name: "ROOM", image: "roombg.jpe", price: 1900 },
+    { id: "sea", name: "SEA", image: "seabg.jpe", price: 2000 },
+    { id: "trail", name: "TRAIL", image: "trailbg.jpe", price: 3400 }
+];
+
+function isBackgroundOwned(background) {
+    return localStorage.getItem(`doyourstreak-owned-background-${background.id}`) === "true";
+}
+
+function applySelectedShopBackground() {
+    const selectedBackgroundId = localStorage.getItem("doyourstreak-selected-background");
+    const selectedBackground = shopBackgrounds.find(background => background.id === selectedBackgroundId);
+    const homePage = document.getElementById("characterPage");
+
+    if (!homePage || !selectedBackground || !isBackgroundOwned(selectedBackground)) return;
+
+    homePage.style.backgroundImage = `url("${selectedBackground.image}")`;
+}
+
+function equipShopBackground(background) {
+    if (!isBackgroundOwned(background)) return;
+
+    localStorage.setItem("doyourstreak-selected-background", background.id);
+    applySelectedShopBackground();
+    renderBackgroundShop();
+}
+
+function buyShopBackground(background) {
+    if (isBackgroundOwned(background)) {
+        equipShopBackground(background);
+        return;
+    }
+
+    if (coins < background.price) {
+        alert("Coins kamu belum cukup!");
+        return;
+    }
+
+    coins -= background.price;
+    localStorage.setItem(`doyourstreak-owned-background-${background.id}`, "true");
+    updateCoins();
+    renderBackgroundShop();
+    alert(`${background.name} background berhasil dibeli!`);
+}
+
+function renderBackgroundShop() {
+    const shopItems = document.querySelector(".shop-items");
+
+    if (!shopItems) return;
+
+    shopItems.innerHTML = "";
+    const selectedBackgroundId = localStorage.getItem("doyourstreak-selected-background");
+
+    shopBackgrounds.forEach(background => {
+        const owned = isBackgroundOwned(background);
+        const equipped = selectedBackgroundId === background.id && owned;
+        const item = document.createElement("div");
+        item.className = "shop-item shop-background-item";
+        item.innerHTML = `
+            <img src="${background.image}" alt="${background.name} background preview">
+            <h3>${background.name}</h3>
+            <p class="character-price">
+                <img src="koinngawi.png" alt="Coin" class="coin-icon">
+                ${background.price}
+            </p>
+            <button
+                class="buy-character buy-background"
+                type="button"
+                ${equipped ? "disabled" : ""}
+            >
+                ${equipped ? "DIPAKAI" : owned ? "PASANG" : "BELI"}
+            </button>
+        `;
+
+        item.querySelector(".buy-background").addEventListener("click", () => {
+            if (owned) {
+                equipShopBackground(background);
+            } else {
+                buyShopBackground(background);
+            }
+        });
+
+        shopItems.appendChild(item);
+    });
+}
+
+document.querySelectorAll(".shop-category").forEach(button => {
+    button.addEventListener("click", () => {
+        const category = button.dataset.shopCategory;
+
+        document.querySelectorAll(".shop-category").forEach(categoryButton => {
+            const isSelected = categoryButton === button;
+            categoryButton.classList.toggle("active", isSelected);
+            categoryButton.setAttribute("aria-selected", String(isSelected));
+        });
+
+        const shopItems = document.querySelector(".shop-items");
+        if (shopItems) {
+            shopItems.setAttribute(
+                "aria-labelledby",
+                button.id
+            );
+        }
+
+        if (category === "background") {
+            renderBackgroundShop();
+        } else {
+            renderCharacterShop();
+        }
+    });
+});
+
 function renderCharacterShop() {
 
     const shopItems =
@@ -5171,6 +5284,7 @@ drawDino();
 updateCoins();
 
 renderCharacterShop();
+applySelectedShopBackground();
 
 
 /* INITIAL COINS */

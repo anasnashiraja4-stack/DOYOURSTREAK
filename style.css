@@ -8764,6 +8764,39 @@ body::before {
 #shopPage .shop-coins img { width: 27px; height: 27px; animation: coinSpin 2.2s linear infinite; transform-style: preserve-3d; filter: drop-shadow(0 2px 4px rgba(255, 211, 79, .28)); }
 #shopPage .shop-coins strong { font-size: 17px; }
 
+#shopPage .shop-categories {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+#shopPage .shop-category {
+    display: inline-flex;
+    min-width: 175px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 11px 18px;
+    border: 1px solid #e3e3ed;
+    border-radius: 14px;
+    background: #fff;
+    color: #555572;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+}
+
+#shopPage .shop-category img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+}
+
+#shopPage .shop-category:hover { transform: translateY(-2px); border-color: #bdbcf0; }
+#shopPage .shop-category.active { border-color: #514fc1; background: #514fc1; color: #fff; }
+
 #shopPage .shop-items {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
     align-items: stretch;
@@ -8808,10 +8841,19 @@ body::before {
     filter: drop-shadow(0 9px 10px rgba(34, 34, 64, .14));
 }
 
-#shopPage .shop-item:hover > img { animation: shopCharacterPlayful 1.25s ease-in-out infinite; }
+#shopPage .shop-item:not(.shop-background-item):hover > img { animation: shopCharacterPlayful 1.25s ease-in-out infinite; }
 #shopPage .shop-item h3 { margin: 4px 0 0; font-size: 16px; letter-spacing: .6px; }
 #shopPage .shop-item .character-price { gap: 6px; margin: 8px 0 13px; color: #595986; font-size: 13px; }
 #shopPage .shop-item .character-price .coin-icon { width: 19px; height: 19px; animation: coinSpin 2.8s linear infinite; transform-style: preserve-3d; }
+
+#shopPage .shop-background-item { align-items: stretch; }
+#shopPage .shop-background-item > img {
+    width: 100%;
+    height: 160px;
+    margin: 0 0 8px;
+    border-radius: 12px;
+    object-fit: cover;
+}
 
 @keyframes shopCharacterPlayful {
     0%, 100% { transform: translateY(0) rotate(0) scale(1); }
@@ -8848,10 +8890,14 @@ body::before {
     #shopPage .shop-coins { min-width: 0; padding: 7px 9px; }
     #shopPage .shop-coins img { width: 23px; height: 23px; }
     #shopPage .shop-coins strong { font-size: 15px; }
+    #shopPage .shop-categories { gap: 8px; margin-bottom: 15px; }
+    #shopPage .shop-category { min-width: 0; flex: 1; gap: 7px; padding: 9px 10px; font-size: 10px; }
+    #shopPage .shop-category img { width: 28px; height: 28px; }
     #shopPage .shop-items { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
     #shopPage .shop-item { min-height: 245px; padding: 14px 10px 12px; border-radius: 16px; }
     #shopPage .shop-item::before { width: 120px; height: 120px; top: 27px; }
     #shopPage .shop-item > img { width: min(100%, 125px); height: 125px; }
+    #shopPage .shop-background-item > img { width: 100%; height: 125px; }
     #shopPage .shop-item h3 { font-size: 12px; }
     #shopPage .shop-item .character-price { font-size: 11px; }
     #shopPage .buy-character { padding: 9px 8px; font-size: 10px; }
