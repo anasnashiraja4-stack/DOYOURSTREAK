@@ -846,6 +846,20 @@
 
                 <div id="habitList" class="habit-list"></div>
 
+                <section class="feature-panel" aria-labelledby="streakProtectionTitle">
+                    <div class="feature-panel-heading">
+                        <div>
+                            <small>JAGA RUTINITAS</small>
+                            <h2 id="streakProtectionTitle">Pengingat &amp; Streak Freeze</h2>
+                        </div>
+                        <p>Streak Freeze tersedia: <strong id="freezeCount">0</strong></p>
+                    </div>
+                    <p class="feature-status">1 Freeze melindungi 1 hari kalender yang terlewat. Hari yang terlewat diperiksa saat aplikasi dibuka; jika stok habis, streak direset. Freeze pertama didapat dari pencapaian 7 hari.</p>
+                    <div id="reminderList" class="reminder-list"></div>
+                    <p id="reminderStatus" class="feature-status" role="status" aria-live="polite">
+                        Pengingat hanya berjalan saat aplikasi terbuka.
+                    </p>
+                </section>
 
                 <div id="emptyState" class="empty-state">
 
@@ -1127,6 +1141,29 @@
                     <div id="localLeaderboard" class="local-leaderboard" aria-live="polite"></div>
                 </section>
 
+                <section class="feature-panel friend-challenge-panel" aria-labelledby="friendChallengeTitle">
+                    <div class="feature-panel-heading">
+                        <div>
+                            <small>PROFIL DI PERANGKAT INI</small>
+                            <h2 id="friendChallengeTitle">Tantangan Teman</h2>
+                        </div>
+                    </div>
+                    <p class="feature-status">Teman adalah profil lokal di browser ini. Progres tidak tersinkron ke perangkat lain.</p>
+                    <div class="friend-challenge-controls">
+                        <label for="friendProfileSelect">Pilih profil teman</label>
+                        <select id="friendProfileSelect"></select>
+                        <button id="addFriendButton" type="button" class="secondary-button">Tambah teman</button>
+                        <label for="challengeTypeSelect">Jenis tantangan</label>
+                        <select id="challengeTypeSelect">
+                            <option value="streak">Streak 3 hari</option>
+                            <option value="weekly">Konsistensi mingguan</option>
+                        </select>
+                        <button id="createFriendChallenge" type="button" class="main-button">Buat tantangan</button>
+                    </div>
+                    <div id="friendList" class="friend-list" aria-live="polite"></div>
+                    <div id="friendChallengeList" class="friend-challenge-list" aria-live="polite"></div>
+                </section>
+
                 <!-- CALENDAR -->
                 <div class="calendar-card">
 
@@ -1255,14 +1292,15 @@
             <section class="achievements-page">
                 <header class="achievements-header">
                     <small>DOYOURSTREAK</small>
-                    <h1>ACHIEVEMENTS</h1>
-                    <p>Celebrate every milestone on your journey.</p>
+                    <h1>PENCAPAIAN &amp; QUEST</h1>
+                    <p>Pantau progres, raih hadiah, dan bangun rutinitas.</p>
                 </header>
                 <div id="awardsMenu" class="award-option-grid" aria-label="Choose an awards section">
-                    <button class="award-option" type="button" data-award-section="achievement"><small>YOUR MILESTONES</small><strong>Achievement</strong><span>Track long-term goals and progress.</span></button>
-                    <button class="award-option" type="button" data-award-section="weekly"><small>REFRESHES WEEKLY</small><strong>Weekly Quests</strong><span>Medium goals with medium rewards.</span></button>
-                    <button class="award-option" type="button" data-award-section="monthly"><small>REFRESHES MONTHLY</small><strong>Monthly Quests</strong><span>Hard goals with high rewards.</span></button>
-                    <button class="award-option" type="button" data-award-section="annual"><small>REFRESHES ANNUALLY</small><strong>Annual Quests</strong><span>Near-impossible goals with very high rewards.</span></button>
+                    <button class="award-option" type="button" data-award-section="achievement"><small>PERJALANANMU</small><strong>Pencapaian</strong><span>Buka badge dari pencapaian jangka panjang.</span></button>
+                    <button class="award-option" type="button" data-award-section="daily"><small>DIULANG HARIAN</small><strong>Quest Harian</strong><span>Selesaikan target habit harian.</span></button>
+                    <button class="award-option" type="button" data-award-section="weekly"><small>DIULANG MINGGUAN</small><strong>Quest Mingguan</strong><span>Jaga konsistensi setiap minggu.</span></button>
+                    <button class="award-option" type="button" data-award-section="monthly"><small>DIULANG BULANAN</small><strong>Quest Bulanan</strong><span>Bangun progres habit jangka panjang.</span></button>
+                    <button class="award-option" type="button" data-award-section="annual"><small>QUEST LAMA</small><strong>Quest Tahunan</strong><span>Lanjutkan tantangan tahunan yang tersedia.</span></button>
                 </div>
                 <section id="awardDetail" class="award-detail" hidden>
                     <button id="awardBackButton" class="secondary-button award-back-button" type="button">← BACK TO AWARDS</button>
@@ -1400,6 +1438,7 @@
 
 
     <!-- JAVASCRIPT -->
+    <script src="features.js"></script>
     <script src="app.js"></script>
     <script src="premium.js"></script>
 

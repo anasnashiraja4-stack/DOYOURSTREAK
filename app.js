@@ -33,11 +33,16 @@ let stats = JSON.parse(
     streak: 0,
     lastCompletedDate: null
 };
-stats.habitsCompletedTotal = Math.max(0, Number(stats.habitsCompletedTotal) || 0);
+normalizeStats(stats);
 let achievements = JSON.parse(localStorage.getItem("doyourstreak-achievements") || "{}") || {};
 let questProgress = JSON.parse(localStorage.getItem("doyourstreak-quests") || "{}") || {};
 let localProfiles = JSON.parse(localStorage.getItem("doyourstreak-profiles") || "[]");
 let activeProfileId = user?.profileId || null;
+
+function normalizeStats(value) {
+    value.habitsCompletedTotal = Math.max(0, Number(value.habitsCompletedTotal) || 0);
+    return value;
+}
 
 let selectedEmoji = "belajaricon.png";
 let selectedPriority = "Normal";
@@ -269,6 +274,10 @@ if (espConnectButton) espConnectButton.addEventListener("click", connectESP32);
 document.addEventListener("DOMContentLoaded", () => {
 
     initializeLocalProfiles();
+    window.DYSFeatures?.setProfile(activeProfileId, stats);
+    window.DYSFeatures?.setProfiles(localProfiles, activeProfileId);
+    window.DYSFeatures?.updateCurrentHabits(habits);
+    saveStats();
     renderDailyTask();
     setupCharacterFallback();
     setupPriorityButtons();
@@ -320,6 +329,8 @@ function showApp() {
     renderHabits();
 
     updateStats();
+    window.DYSFeatures?.updateCurrentHabits(habits);
+    window.DYSFeatures?.syncProgress(stats);
     syncWindowsDesktopWidget();
 
     if (!localStorage.getItem("doyourstreak-tutorial-seen")) {
@@ -946,6 +957,7 @@ function renderHabits() {
 
         habitFilters.hidden = true;
         emptyState.classList.remove("hidden");
+        window.DYSFeatures?.updateCurrentHabits(habits);
 
         return;
 
@@ -961,6 +973,7 @@ function renderHabits() {
 
     if (visibleHabits.length === 0) {
         habitList.innerHTML = `<div class="habit-filter-empty">No ${escapeHTML(habitCategories[activeHabitCategory]?.label || "matching")} habits yet.</div>`;
+        window.DYSFeatures?.updateCurrentHabits(habits);
         return;
     }
 
@@ -972,6 +985,7 @@ function renderHabits() {
 
         card.className =
             "habit-card";
+        card.dataset.featureHabitId = String(habit.id);
 
 
         if (habit.completed) {
@@ -1082,6 +1096,7 @@ function renderHabits() {
 
     });
 
+    window.DYSFeatures?.updateCurrentHabits(habits);
 }
 
 function getHabitCategory(habit) {
@@ -1130,6 +1145,7 @@ function deleteHabit(id) {
 
     if (!confirmDelete) return;
 
+    window.DYSFeatures?.removeHabitReminder(id);
     habits = habits.filter(h => h.id !== id);
 
     saveHabits();
@@ -1256,6 +1272,7 @@ function toggleHabit(id) {
     stats.xp += 10;
 
     updateDailyStreak();
+    window.DYSFeatures?.recordHabitCompletion(habit.id, stats);
     careForCharacterToday();
 
     const newLevel =
@@ -1317,53 +1334,29 @@ function toggleHabit(id) {
 ===================================================== */
 
 function updateDailyStreak() {
-
-    const today =
-        new Date().toISOString().split("T")[0];
-
-
-    if (stats.lastCompletedDate === today) {
-        return;
-    }
-
+    const today = getTodayDate();
+    if (stats.lastCompletedDate === today) return;
     if (stats.lastCompletedDate) {
-        const previousDay = new Date(`${stats.lastCompletedDate}T00:00:00Z`);
-        const currentDay = new Date(`${today}T00:00:00Z`);
+        const previousDay = new Date(`${stats.lastCompletedDate}T12:00:00`);
+        const currentDay = new Date(`${today}T12:00:00`);
         const daysSinceLastCompletion = Math.floor((currentDay - previousDay) / 86400000);
         if (daysSinceLastCompletion >= 30) {
             achievements.comebackDays = Math.max(Number(achievements.comebackDays) || 0, daysSinceLastCompletion);
         }
     }
-
-
-    const yesterdayDate = new Date();
-
-    yesterdayDate.setDate(
-        yesterdayDate.getDate() - 1
-    );
-
-
-    const yesterday =
-        yesterdayDate.toISOString().split("T")[0];
-
-
-    if (
-        stats.lastCompletedDate === yesterday
-    ) {
-
-        stats.streak++;
-
-    } else {
-
-        stats.streak = 1;
-
+    if (window.DYSFeatures) {
+        window.DYSFeatures.recordStreakCompletion(stats, today);
+        return;
     }
-
-
+    stats.streak = stats.lastCompletedDate === getPreviousDate(today) ? stats.streak + 1 : 1;
     stats.lastCompletedDate = today;
-
 }
 
+function getPreviousDate(dateKey) {
+    const date = new Date(`${dateKey}T12:00:00`);
+    date.setDate(date.getDate() - 1);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
 
 /* =====================================================
    STATS
@@ -1440,6 +1433,7 @@ function saveStats() {
     );
 
     saveActiveProfileSnapshot();
+    window.DYSFeatures?.syncProgress(stats);
 
 }
 
@@ -1468,6 +1462,7 @@ function saveActiveProfileSnapshot() {
     if (index >= 0) localProfiles[index] = snapshot;
     else localProfiles.push(snapshot);
     localStorage.setItem("doyourstreak-profiles", JSON.stringify(localProfiles));
+    window.DYSFeatures?.setProfiles(localProfiles, activeProfileId);
     renderLocalLeaderboard();
 }
 
@@ -1606,10 +1601,13 @@ function activateLocalProfile(profileId) {
     if (playerImageElement) playerImageElement.src = selectedCharacter;
     habits = JSON.parse(JSON.stringify(profile.habits || []));
     stats = { xp: 0, streak: 0, lastCompletedDate: null, ...(profile.stats || {}) };
+    normalizeStats(stats);
+    window.DYSFeatures?.setProfile(activeProfileId, stats);
     localStorage.setItem("doyourstreak-user", JSON.stringify(user));
     localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
     localStorage.setItem("doyourstreak-stats", JSON.stringify(stats));
     showApp();
+    saveStats();
     renderDailyTask();
     updateCoins();
     renderLocalLeaderboard();
@@ -1629,6 +1627,8 @@ createLocalProfileButton?.addEventListener("click", () => {
     activeProfileId = id;
     habits = [];
     stats = { xp: 0, streak: 0, lastCompletedDate: null };
+    normalizeStats(stats);
+    window.DYSFeatures?.setProfile(activeProfileId, stats);
     localStorage.setItem("doyourstreak-user", JSON.stringify(user));
     localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
     localStorage.setItem("doyourstreak-stats", JSON.stringify(stats));
@@ -1637,6 +1637,7 @@ createLocalProfileButton?.addEventListener("click", () => {
     const playerImageElement = document.getElementById("playerImage");
     if (playerImageElement) playerImageElement.src = user.character;
     showApp();
+    saveStats();
     updateCoins();
     renderEventChat();
 });
@@ -1750,6 +1751,9 @@ confirmLogoutButton?.addEventListener("click", () => {
     activeProfileId = null;
     habits = [];
     stats = { xp: 0, streak: 0, lastCompletedDate: null };
+    normalizeStats(stats);
+    window.DYSFeatures?.setProfile(null, stats);
+    window.DYSFeatures?.updateCurrentHabits(habits);
 
     localStorage.removeItem("doyourstreak-user");
     localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
@@ -2001,9 +2005,12 @@ function startJourney() {
         selectedCharacter = user.character || selectedCharacter;
         habits = JSON.parse(JSON.stringify(savedProfile.habits || []));
         stats = { xp: 0, streak: 0, lastCompletedDate: null, ...(savedProfile.stats || {}) };
+        normalizeStats(stats);
         localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
         localStorage.setItem("doyourstreak-stats", JSON.stringify(stats));
     }
+
+    window.DYSFeatures?.setProfile(activeProfileId, stats);
 
 
     localStorage.setItem(
@@ -2123,6 +2130,10 @@ function getQuestResetText(periodId) {
 function renderQuestBoard() {
     const list = questList;
     if (!list) return;
+    if (window.DYSFeatures && ["daily", "weekly", "monthly"].includes(currentAwardSection)) {
+        window.DYSFeatures.renderQuestList(list, currentAwardSection);
+        return;
+    }
     const selectedPeriod = questPeriods.find(period => period.id === currentAwardSection);
     list.innerHTML = (selectedPeriod ? [selectedPeriod] : []).map(period => {
         const state = getQuestPeriodState(period.id);
@@ -2216,6 +2227,7 @@ function renderAchievements() {
             </div>
         </article>`;
     }).join("");
+    window.DYSFeatures?.renderAchievementCards();
 }
 
 function showAwardsMenu() {
@@ -2226,7 +2238,7 @@ function showAwardsMenu() {
 }
 
 function openAwardSection(section) {
-    const titles = { achievement: "ACHIEVEMENTS", weekly: "WEEKLY QUESTS", monthly: "MONTHLY QUESTS", annual: "ANNUAL QUESTS" };
+    const titles = { achievement: "PENCAPAIAN", daily: "QUEST HARIAN", weekly: "QUEST MINGGUAN", monthly: "QUEST BULANAN", annual: "QUEST TAHUNAN" };
     if (!titles[section]) return;
     currentAwardSection = section;
     awardsMenu.hidden = true;
@@ -2234,7 +2246,10 @@ function openAwardSection(section) {
     document.getElementById("awardDetailTitle").textContent = titles[section];
     achievementList.hidden = section !== "achievement";
     questList.hidden = section === "achievement";
-    if (section === "achievement") renderAchievements();
+    if (section === "achievement") {
+        renderAchievements();
+        window.DYSFeatures?.renderAchievementCards();
+    }
     else renderQuestBoard();
     window.scrollTo(0, 0);
 }
@@ -2369,6 +2384,7 @@ function showInfoPage() {
     renderCalendar();
     renderLocalLeaderboard();
     renderEventChat();
+    window.DYSFeatures?.renderChallengeBoard();
 
     window.scrollTo(0, 0);
 }
@@ -3056,6 +3072,18 @@ function updateCoins() {
         coins
     );
 }
+
+window.addEventListener("dys-feature-reward", event => {
+    const reward = event.detail || {};
+    stats.xp += Math.max(0, Number(reward.xp) || 0);
+    coins += Math.max(0, Number(reward.coins) || 0);
+    if (reward.freezes) {
+        window.DYSFeatures?.addStreakFreezes?.(Number(reward.freezes));
+    }
+    saveStats();
+    updateStats();
+    updateCoins();
+});
 
 
 /* =====================================================
