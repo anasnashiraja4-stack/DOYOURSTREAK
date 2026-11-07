@@ -1375,20 +1375,39 @@ body::before {
 }
 
 .friend-challenge-panel {
-    border: 1px solid rgba(255, 255, 255, .86);
-    background:
-        radial-gradient(ellipse at 92% 0%, rgba(201, 194, 255, .48), transparent 44%),
-        linear-gradient(135deg, rgba(255, 255, 255, .88), rgba(235, 239, 255, .78));
-    box-shadow:
-        0 16px 38px rgba(58, 60, 110, .13),
-        inset 0 1px 0 rgba(255, 255, 255, .95);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
-    backdrop-filter: blur(18px) saturate(140%);
+    border: 3px solid #111;
+    border-radius: 18px;
+    background: #fffdf5;
+    box-shadow: 6px 6px 0 #111;
+}
+
+.friend-challenge-panel .feature-panel-heading {
+    margin: -18px -18px 16px;
+    padding: 16px 18px;
+    border-radius: 14px 14px 0 0;
+    background: #111;
+    color: #fff;
+}
+
+.friend-challenge-panel .feature-panel-heading small {
+    color: #ffe083;
 }
 
 .friend-challenge-panel .feature-panel-heading p {
     max-width: 620px;
-    margin-top: 5px;
+    margin: 5px 0 0;
+    color: #e5e5e5;
+    line-height: 1.45;
+}
+
+.friend-challenge-panel .feature-status {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border: 1px solid #171717;
+    border-radius: 9px;
+    background: #fff1b8;
+    color: #34302a;
+    font-size: 12px;
     line-height: 1.45;
 }
 
@@ -1527,61 +1546,119 @@ body::before {
 
 .friend-challenge-controls {
     display: grid;
-    grid-template-columns: minmax(0, 1.1fr) auto minmax(0, 1.3fr) minmax(150px, .7fr);
-    align-items: center;
-    gap: 10px 12px;
-    margin: 18px 0 14px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 12px;
+    margin: 16px 0;
 }
 
 .friend-challenge-field {
     display: grid;
     gap: 5px;
     min-width: 0;
+    align-content: start;
 }
 
 .friend-challenge-controls label { font-size: 13px; font-weight: 800; }
-.friend-challenge-controls select { width: 100%; }
-.friend-challenge-controls button { white-space: nowrap; }
+.friend-challenge-controls select {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    padding: 8px 10px;
+    border: 2px solid #111;
+    border-radius: 8px;
+    background: #fff;
+    color: #111;
+    font: inherit;
+}
+
+.friend-challenge-controls button {
+    min-height: 42px;
+    padding: 8px 14px;
+    border: 2px solid #111;
+    border-radius: 8px;
+    background: #111;
+    color: #fff;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .16s ease, color .16s ease, transform .16s ease;
+}
+
+.friend-challenge-controls button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: #ffe083;
+    color: #111;
+}
+
+.friend-challenge-controls button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
 #createFriendChallenge { width: auto; }
 
 .friend-list,
 .friend-challenge-list {
     display: grid;
-    gap: 9px;
-    margin-top: 12px;
+    gap: 10px;
+    margin-top: 14px;
     color: #555;
     font-size: 14px;
 }
 
-.friend-list h3 { color: #171717; }
+.friend-list h3 {
+    margin: 0;
+    color: #171717;
+    font-size: 14px;
+}
+
 .friend-list p,
+.friend-challenge-list > p,
 .friend-challenge-card {
+    min-width: 0;
+    margin: 0;
     padding: 12px 14px;
-    border: 1px solid rgba(255, 255, 255, .88);
-    border-radius: 14px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, .82), rgba(245, 246, 255, .68));
-    box-shadow: 0 8px 20px rgba(58, 60, 110, .08), inset 0 1px 0 #fff;
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
+    border: 2px solid #171717;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 3px 3px 0 #171717;
+    overflow-wrap: anywhere;
 }
 
 .friend-challenge-card h3 {
+    margin: 0;
     color: #171717;
     font-size: 16px;
 }
 
-.friend-challenge-card p { margin: 4px 0 6px; }
-.friend-challenge-card strong { color: #5542b4; }
+.friend-challenge-card p {
+    margin: 6px 0 9px;
+    line-height: 1.45;
+}
+
+.friend-challenge-card strong {
+    display: inline-block;
+    padding: 4px 8px;
+    border: 1px solid #171717;
+    border-radius: 999px;
+    background: #ffe083;
+    color: #171717;
+    font-size: 11px;
+}
 
 .friend-challenge-controls button:focus-visible,
 .friend-challenge-controls select:focus-visible {
-    outline: 3px solid rgba(107, 82, 216, .45);
+    outline: 3px solid rgba(255, 224, 131, .85);
     outline-offset: 2px;
 }
 
 @media (max-width: 600px) {
     .feature-panel { width: calc(100% - 24px); padding: 14px; }
     .feature-panel-heading { align-items: flex-start; }
+    .friend-challenge-panel .feature-panel-heading { margin: -14px -14px 14px; padding: 14px; }
     .feature-panel-actions { align-items: flex-end; flex-direction: column; gap: 6px; }
     .reminder-panel-toggle { min-height: 32px; padding: 6px 8px; font-size: 9px; }
     .habit-reminder-controls { align-items: flex-start; flex-direction: column; }
@@ -5224,7 +5301,7 @@ body::before {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         column-gap: clamp(18px, 2.5vw, 32px);
-        row-gap: 4px;
+        row-gap: 18px;
         align-items: start;
     }
 
@@ -5239,6 +5316,7 @@ body::before {
         width: 100%;
         margin: 0 0 22px;
         padding: 16px;
+        align-self: stretch;
         box-sizing: border-box;
     }
 
@@ -5261,6 +5339,27 @@ body::before {
         margin: 0 0 22px;
         padding: 16px;
         box-sizing: border-box;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 12px;
+        align-content: start;
+    }
+
+    .friend-challenge-panel .feature-panel-heading {
+        grid-column: 1 / -1;
+        margin: -16px -16px 16px;
+        padding: 14px 16px;
+    }
+
+    .friend-challenge-panel .feature-status,
+    .friend-challenge-controls {
+        grid-column: 1 / -1;
+    }
+
+    .friend-list,
+    .friend-challenge-list {
+        min-width: 0;
+        align-content: start;
     }
 
     .friend-challenge-panel .feature-panel-heading h2 {
@@ -5311,11 +5410,53 @@ body::before {
     .events-section {
         width: 100%;
         min-width: 0;
-        margin: 0 0 25px;
+        margin: 0 0 22px;
     }
 
-    .calendar-card { grid-column: 1; }
-    .events-section { grid-column: 2; }
+    .calendar-card {
+        grid-column: 1;
+        width: 100%;
+        max-width: none;
+    }
+
+    .events-section {
+        grid-column: 2;
+        align-self: start;
+    }
+
+    .admin-events {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .event-card {
+        min-height: 104px;
+        gap: 10px;
+        padding-right: 10px;
+        border-radius: 14px;
+        box-shadow: 3px 3px 0 #171717;
+    }
+
+    .event-date {
+        width: 54px;
+        min-width: 54px;
+    }
+
+    .event-date strong {
+        font-size: 23px;
+    }
+
+    .event-content { padding: 9px 0; }
+
+    .event-tag { font-size: 8px; }
+
+    .event-content h3 { font-size: 13px; }
+
+    .event-content p {
+        font-size: 11px;
+        line-height: 1.35;
+    }
 }
 
 
@@ -5611,52 +5752,16 @@ body::before {
 }
 
 @media (min-width: 980px) {
+    .events-section {
+        width: 100%;
+    }
+
     .events-title {
-        margin-bottom: 16px;
+        margin-bottom: 12px;
     }
 
     .events-title h2 {
-        font-size: clamp(25px, 2.2vw, 31px);
-    }
-
-    .admin-events {
-        gap: 14px;
-    }
-
-    .event-card {
-        min-height: 124px;
-        gap: 16px;
-        padding-right: 16px;
-        border-radius: 18px;
-        box-shadow: 5px 5px 0 #171717;
-    }
-
-    .event-date {
-        width: 72px;
-        min-width: 72px;
-    }
-
-    .event-date strong {
-        font-size: 30px;
-    }
-
-    .event-content {
-        padding: 14px 0;
-    }
-
-    .event-tag {
-        margin-bottom: 5px;
-        font-size: 10px;
-    }
-
-    .event-content h3 {
-        margin-bottom: 4px;
-        font-size: 18px;
-    }
-
-    .event-content p {
-        font-size: 13px;
-        line-height: 1.5;
+        font-size: clamp(22px, 2vw, 27px);
     }
 }
 

@@ -3161,7 +3161,7 @@ function renderBackgroundShop() {
                 type="button"
                 ${equipped ? "disabled" : ""}
             >
-                ${equipped ? "DIPAKAI" : owned ? "PASANG" : "BELI"}
+                ${equipped ? "DIPAKAI" : owned ? "PASANG" : "BUY"}
             </button>
         `;
 

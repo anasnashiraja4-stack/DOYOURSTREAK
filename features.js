@@ -135,7 +135,11 @@
         } catch (error) {
             console.error("Tantangan teman gagal disimpan.", error);
             const list = document.getElementById("friendChallengeList");
-            if (list) list.textContent = "Tantangan gagal disimpan. Periksa ruang penyimpanan browser.";
+            if (list) {
+                const message = document.createElement("p");
+                message.textContent = "Tantangan gagal disimpan. Periksa ruang penyimpanan browser.";
+                list.replaceChildren(message);
+            }
             return false;
         }
     }
@@ -543,7 +547,9 @@
         list.replaceChildren();
         const friends = state.friends.map(id => profileSnapshots.find(profile => profile.id === id)).filter(Boolean);
         if (!friends.length) {
-            list.textContent = "Belum ada teman. Tambahkan profil lain dari perangkat ini.";
+            const emptyState = document.createElement("p");
+            emptyState.textContent = "Belum ada teman. Tambahkan profil lain dari perangkat ini.";
+            list.append(emptyState);
             return;
         }
         const heading = document.createElement("h3");
@@ -584,7 +590,9 @@
         list.replaceChildren();
         const challenges = readChallenges().filter(challenge => challenge.participantIds?.includes(activeProfileId));
         if (!challenges.length) {
-            list.textContent = "Belum ada tantangan aktif.";
+            const emptyState = document.createElement("p");
+            emptyState.textContent = "Belum ada tantangan aktif.";
+            list.append(emptyState);
             return;
         }
         for (const challenge of challenges) {
@@ -616,7 +624,11 @@
         const type = document.getElementById("challengeTypeSelect")?.value;
         if (!activeProfileId || !friendId || !state.friends.includes(friendId)) {
             const list = document.getElementById("friendChallengeList");
-            if (list) list.textContent = "Tambahkan profil sebagai teman sebelum membuat tantangan.";
+            if (list) {
+                const message = document.createElement("p");
+                message.textContent = "Tambahkan profil sebagai teman sebelum membuat tantangan.";
+                list.replaceChildren(message);
+            }
             return;
         }
         const start = localDate();
