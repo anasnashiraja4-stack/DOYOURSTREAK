@@ -1475,6 +1475,10 @@ body::before {
     background: #fff;
 }
 
+.habit-reminder-controls[hidden] {
+    display: none;
+}
+
 .habit-card {
     flex-wrap: wrap;
 }
@@ -9324,6 +9328,10 @@ body::before {
 .quest-claim { padding: 7px 11px; border: 1.5px solid #171717; border-radius: 9px; background: #ffe66d; font: inherit; font-size: 11px; font-weight: 900; cursor: pointer; }
 .quest-claim:disabled { background: #e7e7e7; color: #666; cursor: default; }
 .habit-filters { display: flex; flex-wrap: wrap; gap: 9px; margin: 20px 0 16px; }
+.reminder-controls-toggle { display: block; min-height: 42px; margin: 0 0 16px; padding: 7px 13px; border: 2px solid #171717; border-radius: 12px; background: #fff; color: #171717; box-shadow: 3px 3px 0 #171717; font: inherit; font-size: 12px; font-weight: 900; cursor: pointer; }
+.reminder-controls-toggle:hover { background: #f3efff; }
+.reminder-controls-toggle:focus-visible { outline: 3px solid #6b52d8; outline-offset: 2px; }
+.reminder-controls-toggle[hidden] { display: none; }
 .habit-filter,
 .category-option { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 2px solid #171717; background: #fff; color: #171717; font: inherit; font-size: 12px; font-weight: 900; cursor: pointer; transition: transform .15s ease, background .15s ease, color .15s ease; }
 .habit-filter { min-height: 42px; padding: 7px 13px; border-radius: 12px; box-shadow: 3px 3px 0 #171717; }
@@ -9353,6 +9361,19 @@ body::before {
 .finance-progress progress { width: 100%; height: 11px; accent-color: #47a76a; }
 .habit-card.finance-habit { align-items: flex-start; }
 @media (max-width: 560px) {
+    .reminder-controls-toggle {
+        min-height: 30px;
+        margin-bottom: 10px;
+        padding: 4px 8px;
+        border-width: 1px;
+        border-radius: 8px;
+        background: rgba(120, 120, 120, .12);
+        color: #666;
+        box-shadow: none;
+        font-size: 9px;
+        font-weight: 700;
+    }
+    .reminder-controls-toggle:hover { background: rgba(120, 120, 120, .2); }
     .habit-filters { gap: 7px; }
     .habit-filter { flex: 1 1 calc(50% - 7px); padding: 7px 9px; }
     .category-options { gap: 6px; }

@@ -13,6 +13,7 @@
     let profileSnapshots = [];
     let state = createState();
     let reminderTimer = null;
+    let reminderControlsHidden = false;
     let currentQuestPeriod = null;
 
     function createState() {
@@ -202,6 +203,7 @@
         const wrapper = document.createElement("section");
         wrapper.className = "habit-reminder-controls";
         wrapper.setAttribute("aria-label", `Pengingat untuk ${habit.name}`);
+        wrapper.hidden = reminderControlsHidden;
 
         const toggleLabel = document.createElement("label");
         const checkbox = document.createElement("input");
@@ -247,6 +249,10 @@
             const card = cards.get(String(habit.id));
             if (card) createReminderControl(habit, card);
         }
+        const controls = document.querySelectorAll(".habit-reminder-controls");
+        const controlsToggle = document.getElementById("reminderControlsToggle");
+        if (controlsToggle) controlsToggle.hidden = controls.length === 0;
+        setReminderControlsHidden(reminderControlsHidden);
         const enabledCount = Object.values(state.remindersByHabit).filter(reminder => reminder?.enabled).length;
         list.textContent = enabledCount
             ? `${enabledCount} pengingat aktif. Pengingat hanya berjalan saat aplikasi terbuka.`
@@ -671,6 +677,18 @@
         reminderTimer = window.setInterval(checkReminders, 30_000);
     }
 
+    function setReminderControlsHidden(hidden) {
+        reminderControlsHidden = hidden;
+        document.querySelectorAll(".habit-reminder-controls").forEach(control => {
+            control.hidden = hidden;
+        });
+        const toggle = document.getElementById("reminderControlsToggle");
+        if (toggle) {
+            toggle.setAttribute("aria-pressed", String(hidden));
+            toggle.textContent = hidden ? "TAMPILKAN PENGINGAT" : "SEMBUNYIKAN PENGINGAT";
+        }
+    }
+
     document.addEventListener("change", handleReminderChange);
     document.addEventListener("click", event => {
         handleReminderClick(event);
@@ -684,9 +702,21 @@
                 content.hidden = !expanded;
             }
         }
+        const reminderControlsToggle = event.target.closest("#reminderControlsToggle");
+        if (reminderControlsToggle) setReminderControlsHidden(!reminderControlsHidden);
         if (event.target.closest("#addFriendButton")) addFriend();
         if (event.target.closest("#createFriendChallenge")) createChallenge();
         if (event.target.closest("[data-feature-claim]")) handleQuestClaim(event);
+    });
+    document.addEventListener("keydown", event => {
+        if (event.key.toLowerCase() !== "v" || event.altKey || event.ctrlKey || event.metaKey) return;
+        const target = event.target;
+        if (target instanceof HTMLElement &&
+            (target.isContentEditable || target.matches("input, textarea, select, [role='textbox']"))) return;
+        const toggle = document.getElementById("reminderControlsToggle");
+        if (!toggle || toggle.hidden) return;
+        event.preventDefault();
+        setReminderControlsHidden(!reminderControlsHidden);
     });
     document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "visible") checkReminders();
