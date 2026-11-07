@@ -674,6 +674,16 @@
     document.addEventListener("change", handleReminderChange);
     document.addEventListener("click", event => {
         handleReminderClick(event);
+        const reminderPanelToggle = event.target.closest("#reminderPanelToggle");
+        if (reminderPanelToggle) {
+            const content = document.getElementById("reminderPanelContent");
+            if (content) {
+                const expanded = reminderPanelToggle.getAttribute("aria-expanded") !== "true";
+                reminderPanelToggle.setAttribute("aria-expanded", String(expanded));
+                reminderPanelToggle.textContent = expanded ? "SEMBUNYIKAN" : "LIHAT PENGATURAN";
+                content.hidden = !expanded;
+            }
+        }
         if (event.target.closest("#addFriendButton")) addFriend();
         if (event.target.closest("#createFriendChallenge")) createChallenge();
         if (event.target.closest("[data-feature-claim]")) handleQuestClaim(event);

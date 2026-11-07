@@ -1374,12 +1374,72 @@ body::before {
     box-shadow: 4px 4px 0 #171717;
 }
 
+.friend-challenge-panel {
+    border: 1px solid rgba(255, 255, 255, .86);
+    background:
+        radial-gradient(ellipse at 92% 0%, rgba(201, 194, 255, .48), transparent 44%),
+        linear-gradient(135deg, rgba(255, 255, 255, .88), rgba(235, 239, 255, .78));
+    box-shadow:
+        0 16px 38px rgba(58, 60, 110, .13),
+        inset 0 1px 0 rgba(255, 255, 255, .95);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(18px) saturate(140%);
+}
+
+.friend-challenge-panel .feature-panel-heading p {
+    max-width: 620px;
+    margin-top: 5px;
+    line-height: 1.45;
+}
+
 .feature-panel-heading {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 14px;
-    margin-bottom: 12px;
+    margin-bottom: 0;
+}
+
+.feature-panel-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+}
+
+.feature-panel-actions p {
+    margin: 0;
+    white-space: nowrap;
+}
+
+.reminder-panel-toggle {
+    min-height: 34px;
+    padding: 7px 10px;
+    border: 1.5px solid #171717;
+    border-radius: 9px;
+    background: #fff;
+    color: #171717;
+    font: inherit;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .3px;
+    cursor: pointer;
+}
+
+.reminder-panel-toggle:hover {
+    background: #f3efff;
+}
+
+.reminder-panel-toggle:focus-visible {
+    outline: 3px solid #6b52d8;
+    outline-offset: 2px;
+}
+
+.feature-panel-content {
+    margin-top: 12px;
+    padding-top: 1px;
+    border-top: 1px solid #e8e5ef;
 }
 
 .feature-panel-heading small {
@@ -1463,16 +1523,22 @@ body::before {
 
 .friend-challenge-controls {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1.1fr) auto minmax(0, 1.3fr) minmax(150px, .7fr);
     align-items: center;
-    gap: 9px;
-    margin: 14px 0;
+    gap: 10px 12px;
+    margin: 18px 0 14px;
 }
 
-.friend-challenge-controls label { font-weight: 800; }
+.friend-challenge-field {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+}
+
+.friend-challenge-controls label { font-size: 13px; font-weight: 800; }
 .friend-challenge-controls select { width: 100%; }
-.friend-challenge-controls label:nth-of-type(2) { grid-column: 1 / -1; }
-#createFriendChallenge { grid-column: 1 / -1; }
+.friend-challenge-controls button { white-space: nowrap; }
+#createFriendChallenge { width: auto; }
 
 .friend-list,
 .friend-challenge-list {
@@ -1486,10 +1552,13 @@ body::before {
 .friend-list h3 { color: #171717; }
 .friend-list p,
 .friend-challenge-card {
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background: #fafafa;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 255, 255, .88);
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, .82), rgba(245, 246, 255, .68));
+    box-shadow: 0 8px 20px rgba(58, 60, 110, .08), inset 0 1px 0 #fff;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
 }
 
 .friend-challenge-card h3 {
@@ -1497,15 +1566,24 @@ body::before {
     font-size: 16px;
 }
 
-.friend-challenge-card strong { color: #6b52d8; }
+.friend-challenge-card p { margin: 4px 0 6px; }
+.friend-challenge-card strong { color: #5542b4; }
+
+.friend-challenge-controls button:focus-visible,
+.friend-challenge-controls select:focus-visible {
+    outline: 3px solid rgba(107, 82, 216, .45);
+    outline-offset: 2px;
+}
 
 @media (max-width: 600px) {
     .feature-panel { width: calc(100% - 24px); padding: 14px; }
-    .feature-panel-heading { flex-direction: column; }
+    .feature-panel-heading { align-items: flex-start; }
+    .feature-panel-actions { align-items: flex-end; flex-direction: column; gap: 6px; }
+    .reminder-panel-toggle { min-height: 32px; padding: 6px 8px; font-size: 9px; }
     .habit-reminder-controls { align-items: flex-start; flex-direction: column; }
     .friend-challenge-controls { grid-template-columns: 1fr; }
-    .friend-challenge-controls label:nth-of-type(2),
-    #createFriendChallenge { grid-column: auto; }
+    .friend-challenge-controls button,
+    #createFriendChallenge { width: 100%; }
 }
 
 @media (max-width: 380px) {
@@ -5133,15 +5211,16 @@ body::before {
 
 .info-page {
     width: 100%;
-    max-width: 1120px;
+    max-width: 1360px;
     margin: 0 auto;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 980px) {
     .info-page {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        column-gap: 28px;
+        grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+        column-gap: clamp(18px, 2.5vw, 32px);
+        row-gap: 4px;
         align-items: start;
     }
 
@@ -5152,9 +5231,16 @@ body::before {
         box-sizing: border-box;
     }
 
+    .friend-challenge-panel {
+        grid-column: 1 / -1;
+        width: 100%;
+        margin: 0 0 22px;
+    }
+
     .calendar-card,
     .events-section {
         width: 100%;
+        min-width: 0;
         margin: 0 0 25px;
     }
 
@@ -5332,7 +5418,8 @@ body::before {
 /* ================= EVENTS ================= */
 
 .events-section {
-    width: min(100%, 680px);
+    width: min(100%, 760px);
+    min-width: 0;
     margin: 0 auto 25px;
 }
 
@@ -5356,20 +5443,20 @@ body::before {
     font-weight: 900;
 }
 
-
 /* EVENT CARD */
 
 .admin-events {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .event-card {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding-right: 12px;
+    min-width: 0;
+    gap: clamp(9px, 1.2vw, 14px);
+    padding-right: clamp(9px, 1.2vw, 14px);
     background: rgba(255, 255, 255, .97);
     border: 2px solid #171717;
     border-radius: 16px;
@@ -5389,8 +5476,8 @@ body::before {
 }
 
 .event-date {
-    width: 68px;
-    min-width: 68px;
+    width: clamp(54px, 5vw, 68px);
+    min-width: clamp(54px, 5vw, 68px);
     align-self: stretch;
 
     display: flex;
@@ -5418,22 +5505,25 @@ body::before {
 .event-content {
     min-width: 0;
     flex: 1;
-    padding: 12px 0;
+    padding: 11px 0;
 }
 
 .event-tag {
     display: inline-block;
+    max-width: 100%;
     margin-bottom: 3px;
     color: #6b5b20;
     font-size: 9px;
     font-weight: 900;
     letter-spacing: .8px;
+    overflow-wrap: anywhere;
 }
 
 .event-content h3 {
     margin: 0 0 2px;
     font-size: 15px;
     font-weight: 900;
+    overflow-wrap: anywhere;
 }
 
 .event-content p {
@@ -5441,12 +5531,63 @@ body::before {
     font-size: 12px;
     line-height: 1.4;
     color: #555;
+    overflow-wrap: anywhere;
 }
 
 .event-arrow {
     color: #777;
     font-size: 18px;
     font-weight: 900;
+}
+
+@media (min-width: 980px) {
+    .events-title {
+        margin-bottom: 16px;
+    }
+
+    .events-title h2 {
+        font-size: clamp(25px, 2.2vw, 31px);
+    }
+
+    .admin-events {
+        gap: 14px;
+    }
+
+    .event-card {
+        min-height: 124px;
+        gap: 16px;
+        padding-right: 16px;
+        border-radius: 18px;
+        box-shadow: 5px 5px 0 #171717;
+    }
+
+    .event-date {
+        width: 72px;
+        min-width: 72px;
+    }
+
+    .event-date strong {
+        font-size: 30px;
+    }
+
+    .event-content {
+        padding: 14px 0;
+    }
+
+    .event-tag {
+        margin-bottom: 5px;
+        font-size: 10px;
+    }
+
+    .event-content h3 {
+        margin-bottom: 4px;
+        font-size: 18px;
+    }
+
+    .event-content p {
+        font-size: 13px;
+        line-height: 1.5;
+    }
 }
 
 .event-chat-launch {
@@ -5792,29 +5933,40 @@ body::before {
         font-size: 17px;
     }
 
+    .events-section { width: 100%; }
+    .events-title h2 { font-size: clamp(20px, 6vw, 24px); }
+    .admin-events { gap: 9px; }
+    .event-card {
+        gap: 9px;
+        padding-right: 9px;
+        border-radius: 13px;
+        box-shadow: 3px 3px 0 #171717;
+    }
+
     .event-date {
-        width: 54px;
-        min-width: 54px;
+        width: 48px;
+        min-width: 48px;
     }
 
     .event-date strong {
-        font-size: 19px;
+        font-size: 18px;
     }
 
     .event-content {
-        padding: 10px 0;
+        padding: 9px 0;
     }
 
     .event-content h3 {
-        font-size: 13px;
+        font-size: 12px;
     }
 
     .event-content p {
-        font-size: 11px;
+        font-size: 10px;
     }
 
     .event-arrow {
-        font-size: 15px;
+        flex: 0 0 auto;
+        font-size: 14px;
     }
 
     .event-chat {
@@ -5865,6 +6017,21 @@ body::before {
         margin-left: 0;
     }
 
+}
+
+@media (min-width: 601px) and (max-width: 979px) {
+    .friend-challenge-controls {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .friend-challenge-field:nth-of-type(2) {
+        grid-column: 1;
+    }
+
+    #createFriendChallenge {
+        grid-column: 2;
+        width: 100%;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -852,13 +852,20 @@
                             <small>JAGA RUTINITAS</small>
                             <h2 id="streakProtectionTitle">Pengingat &amp; Streak Freeze</h2>
                         </div>
-                        <p>Streak Freeze tersedia: <strong id="freezeCount">0</strong></p>
+                        <div class="feature-panel-actions">
+                            <p>Freeze: <strong id="freezeCount">0</strong></p>
+                            <button id="reminderPanelToggle" class="reminder-panel-toggle" type="button" aria-controls="reminderPanelContent" aria-expanded="false">
+                                LIHAT PENGATURAN
+                            </button>
+                        </div>
                     </div>
-                    <p class="feature-status">1 Freeze melindungi 1 hari kalender yang terlewat. Hari yang terlewat diperiksa saat aplikasi dibuka; jika stok habis, streak direset. Freeze pertama didapat dari pencapaian 7 hari.</p>
-                    <div id="reminderList" class="reminder-list"></div>
-                    <p id="reminderStatus" class="feature-status" role="status" aria-live="polite">
-                        Pengingat hanya berjalan saat aplikasi terbuka.
-                    </p>
+                    <div id="reminderPanelContent" class="feature-panel-content" hidden>
+                        <p class="feature-status">1 Freeze melindungi 1 hari kalender yang terlewat. Hari yang terlewat diperiksa saat aplikasi dibuka; jika stok habis, streak direset. Freeze pertama didapat dari pencapaian 7 hari.</p>
+                        <div id="reminderList" class="reminder-list"></div>
+                        <p id="reminderStatus" class="feature-status" role="status" aria-live="polite">
+                            Pengingat hanya berjalan saat aplikasi terbuka.
+                        </p>
+                    </div>
                 </section>
 
                 <div id="emptyState" class="empty-state">
@@ -1146,18 +1153,23 @@
                         <div>
                             <small>PROFIL DI PERANGKAT INI</small>
                             <h2 id="friendChallengeTitle">Tantangan Teman</h2>
+                            <p>Ajak profil lain berlomba menjaga rutinitas. Hari dihitung jika minimal satu habit selesai.</p>
                         </div>
                     </div>
                     <p class="feature-status">Teman adalah profil lokal di browser ini. Progres tidak tersinkron ke perangkat lain.</p>
                     <div class="friend-challenge-controls">
-                        <label for="friendProfileSelect">Pilih profil teman</label>
-                        <select id="friendProfileSelect"></select>
+                        <div class="friend-challenge-field">
+                            <label for="friendProfileSelect">Profil teman</label>
+                            <select id="friendProfileSelect"></select>
+                        </div>
                         <button id="addFriendButton" type="button" class="secondary-button">Tambah teman</button>
-                        <label for="challengeTypeSelect">Jenis tantangan</label>
-                        <select id="challengeTypeSelect">
-                            <option value="streak">Streak 3 hari</option>
-                            <option value="weekly">Konsistensi mingguan</option>
-                        </select>
+                        <div class="friend-challenge-field">
+                            <label for="challengeTypeSelect">Pilih tantangan</label>
+                            <select id="challengeTypeSelect">
+                                <option value="streak">Streak 3 hari · berturut-turut</option>
+                                <option value="weekly">Mingguan · target 5 dari 7 hari</option>
+                            </select>
+                        </div>
                         <button id="createFriendChallenge" type="button" class="main-button">Buat tantangan</button>
                     </div>
                     <div id="friendList" class="friend-list" aria-live="polite"></div>
