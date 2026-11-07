@@ -41,6 +41,14 @@ let activeProfileId = user?.profileId || null;
 
 let selectedEmoji = "belajaricon.png";
 let selectedPriority = "Normal";
+let selectedHabitCategory = "health";
+let activeHabitCategory = "all";
+
+const habitCategories = {
+    health: { label: "Health", icon: "iconhealt.png" },
+    happy: { label: "Happy", icon: "iconhappy.png" },
+    finance: { label: "Finance", icon: "iconfinance.png" }
+};
 
 
 /* =====================================================
@@ -96,6 +104,7 @@ window.setInterval(updateHeaderClock, 1000);
 
 const habitList = document.getElementById("habitList");
 const emptyState = document.getElementById("emptyState");
+const habitFilters = document.getElementById("habitFilters");
 
 const addHabitButton = document.getElementById("addHabitButton");
 const emptyAddButton = document.getElementById("emptyAddButton");
@@ -111,6 +120,12 @@ const saveHabitButton = document.getElementById("saveHabitButton");
 const habitTime = document.getElementById("habitTime");
 const habitResetValue = document.getElementById("habitResetValue");
 const habitResetUnit = document.getElementById("habitResetUnit");
+const financeFields = document.getElementById("financeFields");
+const financeTarget = document.getElementById("financeTarget");
+const financeInitialSaved = document.getElementById("financeInitialSaved");
+const financeDailyDeposit = document.getElementById("financeDailyDeposit");
+const habitResetHelp = document.getElementById("habitResetHelp");
+const habitResetSettings = document.getElementById("habitResetSettings");
 
 const levelElement = document.getElementById("level");
 const xpText = document.getElementById("xpText");
@@ -494,9 +509,14 @@ function openHabitModal() {
     }
     if (habitResetValue) habitResetValue.value = "1";
     if (habitResetUnit) habitResetUnit.value = "day";
+    if (financeTarget) financeTarget.value = "";
+    if (financeInitialSaved) financeInitialSaved.value = "0";
+    if (financeDailyDeposit) financeDailyDeposit.value = "";
 
     selectedPriority = "Normal";
     selectedEmoji = "belajaricon.png";
+    selectedHabitCategory = "health";
+    updateHabitCategorySelection();
 
     /* RESET PRIORITY */
 
@@ -535,6 +555,67 @@ function openHabitModal() {
 
 }
 
+function updateHabitCategorySelection() {
+    document.querySelectorAll(".category-option").forEach(button => {
+        const selected = button.dataset.category === selectedHabitCategory;
+        button.classList.toggle("selected", selected);
+        button.setAttribute("aria-pressed", String(selected));
+    });
+
+    const isFinance = selectedHabitCategory === "finance";
+    financeFields?.classList.toggle("hidden", !isFinance);
+    if (habitResetSettings) habitResetSettings.hidden = isFinance;
+    if (habitResetHelp) {
+        habitResetHelp.textContent = isFinance
+            ? "Finance habits reset every day so you can log one deposit daily."
+            : "Choose how long until this habit can be completed again.";
+    }
+
+    if (isFinance) {
+        if (habitResetUnit) habitResetUnit.value = "day";
+        if (habitResetValue) habitResetValue.value = "1";
+    }
+}
+
+document.querySelectorAll(".category-option").forEach(button => {
+    button.addEventListener("click", () => {
+        selectedHabitCategory = button.dataset.category;
+        updateHabitCategorySelection();
+    });
+});
+
+function getFinanceAmount(input, allowZero = false) {
+    const amount = Number(input.value);
+    const minimum = allowZero ? 0 : 1;
+    if (!Number.isSafeInteger(amount) || amount < minimum) {
+        input.setCustomValidity(`Enter a whole amount of at least ${minimum.toLocaleString("id-ID")} IDR.`);
+        input.reportValidity();
+        input.focus();
+        return null;
+    }
+    input.setCustomValidity("");
+    return amount;
+}
+
+[financeTarget, financeInitialSaved, financeDailyDeposit].forEach(input => {
+    input?.addEventListener("input", () => input.setCustomValidity(""));
+});
+
+function setActiveHabitCategory(category) {
+    activeHabitCategory = category;
+    document.querySelectorAll(".habit-filter").forEach(filter => {
+        const selected = filter.dataset.category === activeHabitCategory;
+        filter.classList.toggle("active", selected);
+        filter.setAttribute("aria-pressed", String(selected));
+    });
+}
+
+habitFilters?.addEventListener("click", event => {
+    const button = event.target.closest(".habit-filter");
+    if (!button) return;
+    setActiveHabitCategory(button.dataset.category || "all");
+    renderHabits();
+});
 
 function closeHabitModal() {
 
@@ -763,7 +844,8 @@ function createHabit() {
         habitTime.value;
 
     const resetUnit = habitResetUnit?.value || "day";
-    const resetValue = resetUnit === "halfday" ? 1 : Math.max(1, Math.min(365, Number(habitResetValue?.value) || 1));
+    const finalResetUnit = selectedHabitCategory === "finance" ? "day" : resetUnit;
+    const resetValue = finalResetUnit === "halfday" ? 1 : selectedHabitCategory === "finance" ? 1 : Math.max(1, Math.min(365, Number(habitResetValue?.value) || 1));
 
 
     /* CHECK NAME */
@@ -785,6 +867,17 @@ function createHabit() {
         return;
     }
 
+    let financeGoal = 0;
+    let financeSaved = 0;
+    let financeDeposit = 0;
+    if (selectedHabitCategory === "finance") {
+        financeGoal = getFinanceAmount(financeTarget);
+        if (financeGoal === null) return;
+        financeSaved = getFinanceAmount(financeInitialSaved, true);
+        if (financeSaved === null) return;
+        financeDeposit = getFinanceAmount(financeDailyDeposit);
+        if (financeDeposit === null) return;
+    }
 
     const newHabit = {
 
@@ -797,19 +890,27 @@ function createHabit() {
         priority: selectedPriority,
 
         emoji: selectedEmoji,
+        category: selectedHabitCategory,
 
         completed: false,
 
-        resetUnit,
+        resetUnit: finalResetUnit,
         resetValue,
         completedAt: null,
 
-        streak: 0
+        streak: 0,
+        ...(selectedHabitCategory === "finance" ? {
+            financeGoal,
+            financeSaved,
+            financeDailyDeposit: financeDeposit,
+            financeContributionDate: null
+        } : {})
 
     };
 
 
     habits.push(newHabit);
+    setActiveHabitCategory("all");
 
     saveHabits();
     saveStats();
@@ -843,6 +944,7 @@ function renderHabits() {
 
     if (habits.length === 0) {
 
+        habitFilters.hidden = true;
         emptyState.classList.remove("hidden");
 
         return;
@@ -851,9 +953,18 @@ function renderHabits() {
 
 
     emptyState.classList.add("hidden");
+    habitFilters.hidden = false;
 
+    const visibleHabits = activeHabitCategory === "all"
+        ? habits
+        : habits.filter(habit => getHabitCategory(habit) === activeHabitCategory);
 
-    habits.forEach(habit => {
+    if (visibleHabits.length === 0) {
+        habitList.innerHTML = `<div class="habit-filter-empty">No ${escapeHTML(habitCategories[activeHabitCategory]?.label || "matching")} habits yet.</div>`;
+        return;
+    }
+
+    visibleHabits.forEach(habit => {
 
         const card =
             document.createElement("div");
@@ -868,6 +979,9 @@ function renderHabits() {
         }
 
         const notes = Array.isArray(habit.notes) ? habit.notes : [];
+        const category = getHabitCategory(habit);
+        const categoryInfo = habitCategories[category];
+        if (category === "finance") card.classList.add("finance-habit");
         const recentNotes = notes.slice(-3).reverse();
         const resetLabel = habit.resetUnit === "halfday"
             ? "12 hours"
@@ -875,6 +989,10 @@ function renderHabits() {
         const noteHistory = recentNotes.length
             ? recentNotes.map(note => `<div class="habit-note-entry"><strong>${escapeHTML(note.date || "Recent")}${note.mood ? ` · ${escapeHTML(note.mood)}` : ""}${note.duration ? ` · ${Number(note.duration)} min` : ""}</strong>${note.text ? `<p>${escapeHTML(note.text)}</p>` : ""}</div>`).join("")
             : '<p class="habit-note-empty">No notes yet. Add duration, mood, or a quick thought.</p>';
+        const financeGoal = Math.max(0, Number(habit.financeGoal) || 0);
+        const financeSaved = Math.max(0, Number(habit.financeSaved) || 0);
+        const financeDailyDeposit = Math.max(0, Number(habit.financeDailyDeposit) || 0);
+        const financeProgress = financeGoal ? Math.min(100, Math.round(financeSaved / financeGoal * 100)) : 0;
 
 
         card.innerHTML = `
@@ -897,6 +1015,7 @@ function renderHabits() {
 
                   <div class="habit-details">
 
+    <span class="habit-category-label"><img src="${categoryInfo.icon}" alt=""> ${categoryInfo.label}</span>
     <span class="habit-time">
         ⏰ ${habit.time || "--:--"}
     </span>
@@ -909,6 +1028,13 @@ function renderHabits() {
     <span class="habit-reset-label">Reset: every ${resetLabel}</span>
 
                </div>
+
+              ${category === "finance" ? `
+              <div class="finance-progress">
+                <div><strong>${formatRupiah(financeSaved)}</strong><span> / ${formatRupiah(financeGoal)} saved</span></div>
+                <progress value="${financeProgress}" max="100" aria-label="Savings goal progress"></progress>
+                <small>Daily deposit: ${formatRupiah(financeDailyDeposit)} · added when checked</small>
+              </div>` : ""}
 
               <div class="habit-streak">
     🔥 ${habit.streak} day streak
@@ -956,6 +1082,18 @@ function renderHabits() {
 
     });
 
+}
+
+function getHabitCategory(habit) {
+    return Object.hasOwn(habitCategories, habit?.category) ? habit.category : "health";
+}
+
+function formatRupiah(amount) {
+    return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0
+    }).format(amount);
 }
 
 function saveHabitNote(id, card) {
@@ -1102,6 +1240,13 @@ function toggleHabit(id) {
 
     habit.completed = true;
     habit.completedAt = Date.now();
+    if (getHabitCategory(habit) === "finance") {
+        const today = getTodayDate();
+        if (habit.financeContributionDate !== today) {
+            habit.financeSaved = Math.max(0, Number(habit.financeSaved) || 0) + Math.max(0, Number(habit.financeDailyDeposit) || 0);
+            habit.financeContributionDate = today;
+        }
+    }
     stats.habitsCompletedTotal++;
     recordRoutineFinisherDay();
     recordQuestProgress("habitsCompleted");

@@ -831,6 +831,18 @@
 
                 </div>
 
+                <div id="habitFilters" class="habit-filters" role="group" aria-label="Filter habits by category" hidden>
+                    <button class="habit-filter active" type="button" data-category="all" aria-pressed="true">ALL</button>
+                    <button class="habit-filter" type="button" data-category="health" aria-pressed="false">
+                        <img src="iconhealt.png" alt=""> HEALTH
+                    </button>
+                    <button class="habit-filter" type="button" data-category="happy" aria-pressed="false">
+                        <img src="iconhappy.png" alt=""> HAPPY
+                    </button>
+                    <button class="habit-filter" type="button" data-category="finance" aria-pressed="false">
+                        <img src="iconfinance.png" alt=""> FINANCE
+                    </button>
+                </div>
 
                 <div id="habitList" class="habit-list"></div>
 
@@ -982,8 +994,40 @@
 
                     <h2>Choose your type</h2>
 
-                    <p>Pick an icon for your habit.</p>
+                    <p>Choose a category, then pick an icon for your habit.</p>
 
+                    <div class="category-options" role="group" aria-label="Habit category">
+                        <button type="button" class="category-option selected" data-category="health" aria-pressed="true">
+                            <img src="iconhealt.png" alt="">
+                            <span>HEALTH</span>
+                        </button>
+                        <button type="button" class="category-option" data-category="happy" aria-pressed="false">
+                            <img src="iconhappy.png" alt="">
+                            <span>HAPPY</span>
+                        </button>
+                        <button type="button" class="category-option" data-category="finance" aria-pressed="false">
+                            <img src="iconfinance.png" alt="">
+                            <span>FINANCE</span>
+                        </button>
+                    </div>
+
+                    <div id="financeFields" class="finance-fields hidden">
+                        <p>Set your savings goal and usual daily deposit. Checking this habit adds the deposit automatically.</p>
+                        <div class="finance-field-grid">
+                            <div class="input-group">
+                                <label for="financeTarget">SAVINGS GOAL (IDR)</label>
+                                <input id="financeTarget" type="number" min="1" step="1" inputmode="numeric" placeholder="e.g. 1000000">
+                            </div>
+                            <div class="input-group">
+                                <label for="financeInitialSaved">ALREADY SAVED (IDR)</label>
+                                <input id="financeInitialSaved" type="number" min="0" step="1" inputmode="numeric" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="financeDailyDeposit">DAILY DEPOSIT (IDR)</label>
+                                <input id="financeDailyDeposit" type="number" min="1" step="1" inputmode="numeric" placeholder="e.g. 10000">
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="emoji-options">
 
@@ -1023,8 +1067,8 @@
                 <div class="habit-step" id="habitStep5">
                     <div class="step-number">05</div>
                     <h2>When should it reset?</h2>
-                    <p>Choose how long until this habit can be completed again.</p>
-                    <div class="input-group">
+                    <p id="habitResetHelp">Choose how long until this habit can be completed again.</p>
+                    <div id="habitResetSettings" class="input-group">
                         <label for="habitResetValue">RESET EVERY</label>
                         <div class="habit-reset-controls">
                             <input type="number" id="habitResetValue" min="1" max="365" value="1">
