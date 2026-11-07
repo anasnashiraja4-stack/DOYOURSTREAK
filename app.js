@@ -33,11 +33,22 @@ let stats = JSON.parse(
     streak: 0,
     lastCompletedDate: null
 };
+stats.habitsCompletedTotal = Math.max(0, Number(stats.habitsCompletedTotal) || 0);
+let achievements = JSON.parse(localStorage.getItem("doyourstreak-achievements") || "{}") || {};
+let questProgress = JSON.parse(localStorage.getItem("doyourstreak-quests") || "{}") || {};
 let localProfiles = JSON.parse(localStorage.getItem("doyourstreak-profiles") || "[]");
 let activeProfileId = user?.profileId || null;
 
 let selectedEmoji = "belajaricon.png";
 let selectedPriority = "Normal";
+let selectedHabitCategory = "health";
+let activeHabitCategory = "all";
+
+const habitCategories = {
+    health: { label: "Health", icon: "iconhealt.png" },
+    happy: { label: "Happy", icon: "iconhappy.png" },
+    finance: { label: "Finance", icon: "iconfinance.png" }
+};
 
 
 /* =====================================================
@@ -70,19 +81,51 @@ const nameError =
 
 const playerName = document.getElementById("playerName");
 const headerName = document.getElementById("headerName");
+const headerClockTime = document.getElementById("headerClockTime");
+const headerClockDate = document.getElementById("headerClockDate");
+
+function updateHeaderClock() {
+    const now = new Date();
+    if (headerClockTime) {
+        headerClockTime.textContent = new Intl.DateTimeFormat(undefined, {
+            hour: "2-digit", minute: "2-digit"
+        }).format(now);
+        headerClockTime.dateTime = now.toISOString();
+    }
+    if (headerClockDate) {
+        headerClockDate.textContent = new Intl.DateTimeFormat(undefined, {
+            weekday: "short", month: "short", day: "numeric", year: "numeric"
+        }).format(now);
+    }
+}
+
+updateHeaderClock();
+window.setInterval(updateHeaderClock, 1000);
 
 const habitList = document.getElementById("habitList");
 const emptyState = document.getElementById("emptyState");
+const habitFilters = document.getElementById("habitFilters");
 
 const addHabitButton = document.getElementById("addHabitButton");
 const emptyAddButton = document.getElementById("emptyAddButton");
 
 const habitModal = document.getElementById("habitModal");
 const closeModal = document.getElementById("closeModal");
+const minimizeModal = document.getElementById("minimizeModal");
+const restoreHabitModal = document.getElementById("restoreHabitModal");
+const habitProgressFill = document.getElementById("habitProgressFill");
 
 const habitName = document.getElementById("habitName");
 const saveHabitButton = document.getElementById("saveHabitButton");
 const habitTime = document.getElementById("habitTime");
+const habitResetValue = document.getElementById("habitResetValue");
+const habitResetUnit = document.getElementById("habitResetUnit");
+const financeFields = document.getElementById("financeFields");
+const financeTarget = document.getElementById("financeTarget");
+const financeInitialSaved = document.getElementById("financeInitialSaved");
+const financeDailyDeposit = document.getElementById("financeDailyDeposit");
+const habitResetHelp = document.getElementById("habitResetHelp");
+const habitResetSettings = document.getElementById("habitResetSettings");
 
 const levelElement = document.getElementById("level");
 const xpText = document.getElementById("xpText");
@@ -95,6 +138,16 @@ const localLeaderboard = document.getElementById("localLeaderboard");
 const localProfileSelect = document.getElementById("localProfileSelect");
 const localProfileName = document.getElementById("localProfileName");
 const createLocalProfileButton = document.getElementById("createLocalProfile");
+const eventChatLaunchButton = document.getElementById("eventChatLaunch");
+const eventChatBackButton = document.getElementById("eventChatBackButton");
+const eventChatMessagesElement = document.getElementById("eventChatMessages");
+const eventChatForm = document.getElementById("eventChatForm");
+const eventChatInput = document.getElementById("eventChatInput");
+const eventChatAvatar = document.getElementById("eventChatAvatar");
+const eventChatProfileName = document.getElementById("eventChatProfileName");
+const eventChatFeedback = document.getElementById("eventChatFeedback");
+let eventChatHistory = JSON.parse(localStorage.getItem("doyourstreak-event-chat") || "[]");
+if (!Array.isArray(eventChatHistory)) eventChatHistory = [];
 
 
 /* =====================================================
@@ -269,7 +322,140 @@ function showApp() {
     updateStats();
     syncWindowsDesktopWidget();
 
+    if (!localStorage.getItem("doyourstreak-tutorial-seen")) {
+        window.setTimeout(startWebsiteTutorial, 350);
+    }
+
 }
+
+/* =====================================================
+   FIRST VISIT TUTORIAL
+===================================================== */
+const tutorialOverlay = document.getElementById("tutorialOverlay");
+const tutorialTitle = document.getElementById("tutorialTitle");
+const tutorialDescription = document.getElementById("tutorialDescription");
+const tutorialStepCount = document.getElementById("tutorialStepCount");
+const tutorialNextButton = document.getElementById("nextTutorialButton");
+const tutorialCard = tutorialOverlay?.querySelector(".tutorial-card");
+let activeTutorialStep = 0;
+let tutorialFocus = null;
+
+const websiteTutorialSteps = [
+    {
+        page: showCharacterPage,
+        target: "#characterPage .character-stats",
+        title: "Your streak starts here",
+        description: "Your character page shows your current streak, total XP, and how many habits you have completed today."
+    },
+    {
+        page: showExercisePage,
+        target: "#addHabitButton",
+        title: "Build your daily routine",
+        description: "Open Habit and choose + ADD HABIT. Give your habit a name and set it up for your routine."
+    },
+    {
+        page: showExercisePage,
+        target: "#habitList",
+        title: "Check off what you finish",
+        description: "When you complete a habit, mark it done here. Completed habits add XP and help grow your streak."
+    },
+    {
+        page: showInfoPage,
+        target: "#infoPage .info-header",
+        title: "Look back and keep going",
+        description: "Visit Events to review your calendar and updates. Come back each day to keep your routine moving."
+    },
+    {
+        page: showShopPage,
+        target: "#shopPage .shop-page-header",
+        title: "Spend coins on characters",
+        description: "Earn coins as you play, then visit Catalog to explore characters. You can replay this guide anytime with HOW TO PLAY."
+    },
+    {
+        page: showAchievementsPage,
+        target: "#achievementsPage .achievements-header",
+        title: "Explore your Awards",
+        description: "Choose Achievement, Weekly Quests, Monthly Quests, or Annual Quests. Open a section, then use BACK TO AWARDS to return. Quests refresh automatically, and completed quests can be claimed for coins and XP."
+    }
+];
+
+function renderWebsiteTutorialStep() {
+    const step = websiteTutorialSteps[activeTutorialStep];
+    if (!step || !tutorialOverlay) return;
+    if (tutorialFocus) tutorialFocus.classList.remove("tutorial-focus");
+    step.page();
+    tutorialFocus = document.querySelector(step.target);
+    tutorialFocus?.classList.add("tutorial-focus");
+    tutorialStepCount.textContent = `STEP ${activeTutorialStep + 1} OF ${websiteTutorialSteps.length}`;
+    tutorialTitle.textContent = step.title;
+    tutorialDescription.textContent = step.description;
+    tutorialNextButton.textContent = activeTutorialStep === websiteTutorialSteps.length - 1 ? "FINISH ✓" : "NEXT →";
+    requestAnimationFrame(positionTutorialCard);
+}
+
+function positionTutorialCard() {
+    if (!tutorialOverlay) return;
+    tutorialOverlay.classList.remove("tutorial-card-top", "tutorial-card-bottom");
+    if (
+        tutorialOverlay.classList.contains("hidden") ||
+        !tutorialCard ||
+        !tutorialFocus ||
+        !window.matchMedia("(max-width: 600px)").matches
+    ) return;
+
+    const targetRect = tutorialFocus.getBoundingClientRect();
+    const cardRect = tutorialCard.getBoundingClientRect();
+    const overlapsCard =
+        targetRect.left < cardRect.right &&
+        targetRect.right > cardRect.left &&
+        targetRect.top < cardRect.bottom &&
+        targetRect.bottom > cardRect.top;
+    if (!overlapsCard) return;
+
+    const overlayPadding = 22;
+    const spaceAbove = targetRect.top - overlayPadding;
+    const spaceBelow = window.innerHeight - targetRect.bottom - overlayPadding;
+    const placement = spaceAbove >= cardRect.height || spaceAbove >= spaceBelow
+        ? "tutorial-card-top"
+        : "tutorial-card-bottom";
+    tutorialOverlay.classList.add(placement);
+}
+
+function startWebsiteTutorial() {
+    if (!tutorialOverlay || appScreen.classList.contains("hidden")) return;
+    activeTutorialStep = 0;
+    tutorialOverlay.classList.remove("hidden");
+    renderWebsiteTutorialStep();
+}
+
+function closeWebsiteTutorial() {
+    tutorialOverlay?.classList.add("hidden");
+    tutorialOverlay?.classList.remove("tutorial-card-top", "tutorial-card-bottom");
+    tutorialFocus?.classList.remove("tutorial-focus");
+    tutorialFocus = null;
+    localStorage.setItem("doyourstreak-tutorial-seen", "true");
+}
+
+document.getElementById("openTutorialButton")?.addEventListener("click", startWebsiteTutorial);
+document.getElementById("closeTutorialButton")?.addEventListener("click", closeWebsiteTutorial);
+document.getElementById("skipTutorialButton")?.addEventListener("click", closeWebsiteTutorial);
+window.addEventListener("resize", positionTutorialCard);
+tutorialNextButton?.addEventListener("click", () => {
+    if (activeTutorialStep >= websiteTutorialSteps.length - 1) {
+        closeWebsiteTutorial();
+        return;
+    }
+    activeTutorialStep += 1;
+    renderWebsiteTutorialStep();
+});
+tutorialOverlay?.addEventListener("click", event => {
+    if (event.target === tutorialOverlay) closeWebsiteTutorial();
+});
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && tutorialOverlay && !tutorialOverlay.classList.contains("hidden")) {
+        closeWebsiteTutorial();
+    }
+});
 
 
 /* =====================================================
@@ -291,6 +477,14 @@ closeModal?.addEventListener(
     closeHabitModal
 );
 
+minimizeModal?.addEventListener("click", () => {
+    habitModal?.classList.add("minimized");
+});
+
+restoreHabitModal?.addEventListener("click", () => {
+    habitModal?.classList.remove("minimized");
+});
+
 habitModal?.addEventListener("click", (event) => {
 
     if (event.target === habitModal) {
@@ -304,6 +498,7 @@ habitModal?.addEventListener("click", (event) => {
 function openHabitModal() {
 
     habitModal?.classList.remove("hidden");
+    habitModal?.classList.remove("minimized");
 
     if (habitName) {
         habitName.value = "";
@@ -312,9 +507,16 @@ function openHabitModal() {
     if (habitTime) {
         habitTime.value = "";
     }
+    if (habitResetValue) habitResetValue.value = "1";
+    if (habitResetUnit) habitResetUnit.value = "day";
+    if (financeTarget) financeTarget.value = "";
+    if (financeInitialSaved) financeInitialSaved.value = "0";
+    if (financeDailyDeposit) financeDailyDeposit.value = "";
 
     selectedPriority = "Normal";
     selectedEmoji = "belajaricon.png";
+    selectedHabitCategory = "health";
+    updateHabitCategorySelection();
 
     /* RESET PRIORITY */
 
@@ -348,17 +550,125 @@ function openHabitModal() {
         });
 
 
-    habitName?.focus();
     showHabitStep(1);
+    habitName?.focus();
 
 }
 
+function updateHabitCategorySelection() {
+    document.querySelectorAll(".category-option").forEach(button => {
+        const selected = button.dataset.category === selectedHabitCategory;
+        button.classList.toggle("selected", selected);
+        button.setAttribute("aria-pressed", String(selected));
+    });
+
+    const isFinance = selectedHabitCategory === "finance";
+    financeFields?.classList.toggle("hidden", !isFinance);
+    if (habitResetSettings) habitResetSettings.hidden = isFinance;
+    if (habitResetHelp) {
+        habitResetHelp.textContent = isFinance
+            ? "Finance habits reset every day so you can log one deposit daily."
+            : "Choose how long until this habit can be completed again.";
+    }
+
+    if (isFinance) {
+        if (habitResetUnit) habitResetUnit.value = "day";
+        if (habitResetValue) habitResetValue.value = "1";
+    }
+}
+
+document.querySelectorAll(".category-option").forEach(button => {
+    button.addEventListener("click", () => {
+        selectedHabitCategory = button.dataset.category;
+        updateHabitCategorySelection();
+    });
+});
+
+function getFinanceAmount(input, allowZero = false) {
+    const amount = Number(input.value);
+    const minimum = allowZero ? 0 : 1;
+    if (!Number.isSafeInteger(amount) || amount < minimum) {
+        input.setCustomValidity(`Enter a whole amount of at least ${minimum.toLocaleString("id-ID")} IDR.`);
+        input.reportValidity();
+        input.focus();
+        return null;
+    }
+    input.setCustomValidity("");
+    return amount;
+}
+
+[financeTarget, financeInitialSaved, financeDailyDeposit].forEach(input => {
+    input?.addEventListener("input", () => input.setCustomValidity(""));
+});
+
+function setActiveHabitCategory(category) {
+    activeHabitCategory = category;
+    document.querySelectorAll(".habit-filter").forEach(filter => {
+        const selected = filter.dataset.category === activeHabitCategory;
+        filter.classList.toggle("active", selected);
+        filter.setAttribute("aria-pressed", String(selected));
+    });
+}
+
+habitFilters?.addEventListener("click", event => {
+    const button = event.target.closest(".habit-filter");
+    if (!button) return;
+    setActiveHabitCategory(button.dataset.category || "all");
+    renderHabits();
+});
 
 function closeHabitModal() {
 
     habitModal.classList.add("hidden");
+    habitModal.classList.remove("minimized");
 
 }
+
+function getHabitResetDuration(habit) {
+    const unit = habit.resetUnit || "day";
+    const value = Math.max(1, Number(habit.resetValue) || 1);
+    if (unit === "halfday") return 12 * 60 * 60 * 1000;
+    if (unit === "week") return value * 7 * 24 * 60 * 60 * 1000;
+    return value * 24 * 60 * 60 * 1000;
+}
+
+function resetExpiredHabits() {
+    const now = Date.now();
+    const todayKey = getTodayDate();
+    let changed = false;
+    habits.forEach(habit => {
+        if (!habit?.completed) return;
+        // Preserve the prior calendar-day reset behavior for existing habits.
+        if (!habit.completedAt) {
+            const today = new Date();
+            habit.completedAt = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+            changed = true;
+        }
+        const isDailyReset = (habit.resetUnit || "day") === "day" && Math.max(1, Number(habit.resetValue) || 1) === 1;
+        const completedDate = new Date(habit.completedAt);
+        const completedDay = `${completedDate.getFullYear()}-${String(completedDate.getMonth() + 1).padStart(2, "0")}-${String(completedDate.getDate()).padStart(2, "0")}`;
+        if ((isDailyReset && completedDay !== todayKey) || (!isDailyReset && now - habit.completedAt >= getHabitResetDuration(habit))) {
+            habit.completed = false;
+            habit.completedAt = null;
+            changed = true;
+        }
+    });
+    if (changed) saveHabits();
+    return changed;
+}
+
+function refreshHabitsForNewDay() {
+    if (!resetExpiredHabits()) return;
+    renderHabits();
+    updateStats();
+    renderDailyTask();
+}
+
+// Check periodically so an already-open tab also refreshes after local midnight.
+window.setInterval(refreshHabitsForNewDay, 30_000);
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) refreshHabitsForNewDay();
+});
 
 /* =====================================================
    ADD HABIT STEPS
@@ -369,10 +679,15 @@ const habitSteps = [
     document.getElementById("habitStep1"),
     document.getElementById("habitStep2"),
     document.getElementById("habitStep3"),
-    document.getElementById("habitStep4")
+    document.getElementById("habitStep4"),
+    document.getElementById("habitStep5")
 ];
 
 function showHabitStep(step) {
+
+    if (habitProgressFill) {
+        habitProgressFill.style.width = `${Math.max(1, Math.min(5, step)) * 20}%`;
+    }
 
     habitSteps.forEach((element, index) => {
 
@@ -455,6 +770,9 @@ document.getElementById("habitBack4")?.addEventListener(
     () => showHabitStep(3)
 );
 
+document.getElementById("habitNext4")?.addEventListener("click", () => showHabitStep(5));
+document.getElementById("habitBack5")?.addEventListener("click", () => showHabitStep(4));
+
 
 
 /* =====================================================
@@ -525,6 +843,10 @@ function createHabit() {
     const time =
         habitTime.value;
 
+    const resetUnit = habitResetUnit?.value || "day";
+    const finalResetUnit = selectedHabitCategory === "finance" ? "day" : resetUnit;
+    const resetValue = finalResetUnit === "halfday" ? 1 : selectedHabitCategory === "finance" ? 1 : Math.max(1, Math.min(365, Number(habitResetValue?.value) || 1));
+
 
     /* CHECK NAME */
 
@@ -545,6 +867,17 @@ function createHabit() {
         return;
     }
 
+    let financeGoal = 0;
+    let financeSaved = 0;
+    let financeDeposit = 0;
+    if (selectedHabitCategory === "finance") {
+        financeGoal = getFinanceAmount(financeTarget);
+        if (financeGoal === null) return;
+        financeSaved = getFinanceAmount(financeInitialSaved, true);
+        if (financeSaved === null) return;
+        financeDeposit = getFinanceAmount(financeDailyDeposit);
+        if (financeDeposit === null) return;
+    }
 
     const newHabit = {
 
@@ -557,15 +890,27 @@ function createHabit() {
         priority: selectedPriority,
 
         emoji: selectedEmoji,
+        category: selectedHabitCategory,
 
         completed: false,
 
-        streak: 0
+        resetUnit: finalResetUnit,
+        resetValue,
+        completedAt: null,
+
+        streak: 0,
+        ...(selectedHabitCategory === "finance" ? {
+            financeGoal,
+            financeSaved,
+            financeDailyDeposit: financeDeposit,
+            financeContributionDate: null
+        } : {})
 
     };
 
 
     habits.push(newHabit);
+    setActiveHabitCategory("all");
 
     saveHabits();
     saveStats();
@@ -573,6 +918,7 @@ function createHabit() {
     renderHabits();
     updateStats();
     renderDailyTask();
+    closeHabitModal();
 
 }
 
@@ -583,13 +929,22 @@ function createHabit() {
 
 function renderHabits() {
 
+    resetExpiredHabits();
     habitList.innerHTML = "";
+
+    // The companion wakes as soon as the user completes one of today's habits.
+    const characterMain = document.querySelector("#characterPage .character-main");
+    characterMain?.classList.toggle(
+        "character-sleeping",
+        !habits.some(habit => habit && habit.completed)
+    );
 
     syncWindowsDesktopWidget();
 
 
     if (habits.length === 0) {
 
+        habitFilters.hidden = true;
         emptyState.classList.remove("hidden");
 
         return;
@@ -598,9 +953,18 @@ function renderHabits() {
 
 
     emptyState.classList.add("hidden");
+    habitFilters.hidden = false;
 
+    const visibleHabits = activeHabitCategory === "all"
+        ? habits
+        : habits.filter(habit => getHabitCategory(habit) === activeHabitCategory);
 
-    habits.forEach(habit => {
+    if (visibleHabits.length === 0) {
+        habitList.innerHTML = `<div class="habit-filter-empty">No ${escapeHTML(habitCategories[activeHabitCategory]?.label || "matching")} habits yet.</div>`;
+        return;
+    }
+
+    visibleHabits.forEach(habit => {
 
         const card =
             document.createElement("div");
@@ -615,10 +979,20 @@ function renderHabits() {
         }
 
         const notes = Array.isArray(habit.notes) ? habit.notes : [];
+        const category = getHabitCategory(habit);
+        const categoryInfo = habitCategories[category];
+        if (category === "finance") card.classList.add("finance-habit");
         const recentNotes = notes.slice(-3).reverse();
+        const resetLabel = habit.resetUnit === "halfday"
+            ? "12 hours"
+            : `${Math.max(1, Number(habit.resetValue) || 1)} ${habit.resetUnit === "week" ? "week(s)" : "day(s)"}`;
         const noteHistory = recentNotes.length
             ? recentNotes.map(note => `<div class="habit-note-entry"><strong>${escapeHTML(note.date || "Recent")}${note.mood ? ` · ${escapeHTML(note.mood)}` : ""}${note.duration ? ` · ${Number(note.duration)} min` : ""}</strong>${note.text ? `<p>${escapeHTML(note.text)}</p>` : ""}</div>`).join("")
             : '<p class="habit-note-empty">No notes yet. Add duration, mood, or a quick thought.</p>';
+        const financeGoal = Math.max(0, Number(habit.financeGoal) || 0);
+        const financeSaved = Math.max(0, Number(habit.financeSaved) || 0);
+        const financeDailyDeposit = Math.max(0, Number(habit.financeDailyDeposit) || 0);
+        const financeProgress = financeGoal ? Math.min(100, Math.round(financeSaved / financeGoal * 100)) : 0;
 
 
         card.innerHTML = `
@@ -641,6 +1015,7 @@ function renderHabits() {
 
                   <div class="habit-details">
 
+    <span class="habit-category-label"><img src="${categoryInfo.icon}" alt=""> ${categoryInfo.label}</span>
     <span class="habit-time">
         ⏰ ${habit.time || "--:--"}
     </span>
@@ -650,8 +1025,16 @@ function renderHabits() {
             ).toLowerCase()}">
         ${habit.priority || "Normal"}
     </span>
+    <span class="habit-reset-label">Reset: every ${resetLabel}</span>
 
                </div>
+
+              ${category === "finance" ? `
+              <div class="finance-progress">
+                <div><strong>${formatRupiah(financeSaved)}</strong><span> / ${formatRupiah(financeGoal)} saved</span></div>
+                <progress value="${financeProgress}" max="100" aria-label="Savings goal progress"></progress>
+                <small>Daily deposit: ${formatRupiah(financeDailyDeposit)} · added when checked</small>
+              </div>` : ""}
 
               <div class="habit-streak">
     🔥 ${habit.streak} day streak
@@ -701,6 +1084,18 @@ function renderHabits() {
 
 }
 
+function getHabitCategory(habit) {
+    return Object.hasOwn(habitCategories, habit?.category) ? habit.category : "health";
+}
+
+function formatRupiah(amount) {
+    return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
 function saveHabitNote(id, card) {
     const habit = habits.find(item => item.id === id);
     if (!habit) return;
@@ -717,6 +1112,9 @@ function saveHabitNote(id, card) {
     if (!Array.isArray(habit.notes)) habit.notes = [];
     habit.notes.push({ date, duration, mood, text, createdAt: Date.now() });
     saveHabits();
+    achievements.notesWritten = (Number(achievements.notesWritten) || 0) + 1;
+    checkAchievements();
+    recordQuestProgress("notesAdded");
     renderHabits();
     renderDailyTask();
 }
@@ -795,6 +1193,7 @@ function triggerCharacterReaction(reaction) {
 
 function toggleHabit(id) {
 
+    resetExpiredHabits();
     const habit =
         habits.find(item => item.id === id);
 
@@ -809,6 +1208,7 @@ function toggleHabit(id) {
     if (habit.completed) {
 
         habit.completed = false;
+        habit.completedAt = null;
 
         stats.xp = Math.max(
             0,
@@ -839,6 +1239,17 @@ function toggleHabit(id) {
 
 
     habit.completed = true;
+    habit.completedAt = Date.now();
+    if (getHabitCategory(habit) === "finance") {
+        const today = getTodayDate();
+        if (habit.financeContributionDate !== today) {
+            habit.financeSaved = Math.max(0, Number(habit.financeSaved) || 0) + Math.max(0, Number(habit.financeDailyDeposit) || 0);
+            habit.financeContributionDate = today;
+        }
+    }
+    stats.habitsCompletedTotal++;
+    recordRoutineFinisherDay();
+    recordQuestProgress("habitsCompleted");
 
     habit.streak++;
 
@@ -854,6 +1265,8 @@ function toggleHabit(id) {
     saveHabits();
 
     saveStats();
+
+    checkAchievements();
 
     renderHabits();
 
@@ -911,6 +1324,15 @@ function updateDailyStreak() {
 
     if (stats.lastCompletedDate === today) {
         return;
+    }
+
+    if (stats.lastCompletedDate) {
+        const previousDay = new Date(`${stats.lastCompletedDate}T00:00:00Z`);
+        const currentDay = new Date(`${today}T00:00:00Z`);
+        const daysSinceLastCompletion = Math.floor((currentDay - previousDay) / 86400000);
+        if (daysSinceLastCompletion >= 30) {
+            achievements.comebackDays = Math.max(Number(achievements.comebackDays) || 0, daysSinceLastCompletion);
+        }
     }
 
 
@@ -1091,6 +1513,86 @@ function renderLocalLeaderboard() {
     }).join("");
 }
 
+function getEventChatCharacterImage() {
+    const playerImage = document.getElementById("playerImage");
+    const imageSource = playerImage?.getAttribute("src") || user?.character || "player.png";
+    const imageName = imageSource.split(/[\\/]/).pop();
+    return imageName && /^[\w-]+\.png$/i.test(imageName) ? imageName : "player.png";
+}
+
+function renderEventChat() {
+    if (!eventChatMessagesElement) return;
+
+    const characterImage = getEventChatCharacterImage();
+    if (eventChatAvatar) eventChatAvatar.src = characterImage;
+    if (eventChatProfileName) {
+        eventChatProfileName.textContent = user?.characterName || user?.name || "PLAYER";
+    }
+
+    if (!eventChatHistory.length) {
+        eventChatMessagesElement.innerHTML = '<p class="event-chat-empty">Belum ada pesan. Mulai obrolan dan kenalan dengan pemain lain!</p>';
+        return;
+    }
+
+    eventChatMessagesElement.innerHTML = eventChatHistory.slice(-100).map(message => {
+        const name = escapeHTML(String(message?.name || "PLAYER"));
+        const text = escapeHTML(String(message?.text || ""));
+        const image = message?.characterImage && /^[\w-]+\.png$/i.test(message.characterImage)
+            ? message.characterImage
+            : "player.png";
+        const date = new Date(Number(message?.createdAt));
+        const time = Number.isFinite(date.getTime())
+            ? date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
+            : "";
+        const ownMessage = message?.profileId === activeProfileId ? " is-own-message" : "";
+
+        return `<article class="event-chat-message${ownMessage}">
+            <img class="event-chat-message-avatar" src="${escapeHTML(image)}" alt="">
+            <div class="event-chat-message-body">
+                <div class="event-chat-message-meta"><strong>${name}</strong><time>${escapeHTML(time)}</time></div>
+                <p>${text}</p>
+            </div>
+        </article>`;
+    }).join("");
+
+    eventChatMessagesElement.scrollTop = eventChatMessagesElement.scrollHeight;
+}
+
+eventChatLaunchButton?.addEventListener("click", showEventChatPage);
+eventChatBackButton?.addEventListener("click", showInfoPage);
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && eventChatPage?.classList.contains("active")) {
+        showInfoPage();
+    }
+});
+
+eventChatForm?.addEventListener("submit", event => {
+    event.preventDefault();
+    const text = eventChatInput?.value.trim() || "";
+    if (!text) return;
+
+    if (!user) {
+        if (eventChatFeedback) eventChatFeedback.textContent = "Buat atau pilih profil terlebih dahulu untuk mengirim pesan.";
+        return;
+    }
+
+    const profileId = activeProfileId || getProfileIdentity(user);
+    eventChatHistory = [...eventChatHistory, {
+        profileId,
+        name: user.characterName || user.name || "PLAYER",
+        characterImage: getEventChatCharacterImage(),
+        text: text.slice(0, 280),
+        createdAt: Date.now()
+    }].slice(-100);
+    localStorage.setItem("doyourstreak-event-chat", JSON.stringify(eventChatHistory));
+    if (eventChatInput) eventChatInput.value = "";
+    if (eventChatFeedback) eventChatFeedback.textContent = "Pesan terkirim dan tersimpan di perangkat ini.";
+    renderEventChat();
+    eventChatInput?.focus();
+});
+
+renderEventChat();
+
 function activateLocalProfile(profileId) {
     if (!profileId || profileId === activeProfileId) return;
     saveActiveProfileSnapshot();
@@ -1111,6 +1613,7 @@ function activateLocalProfile(profileId) {
     renderDailyTask();
     updateCoins();
     renderLocalLeaderboard();
+    renderEventChat();
 }
 
 localProfileSelect?.addEventListener("change", () => activateLocalProfile(decodeURIComponent(localProfileSelect.value)));
@@ -1135,6 +1638,7 @@ createLocalProfileButton?.addEventListener("click", () => {
     if (playerImageElement) playerImageElement.src = user.character;
     showApp();
     updateCoins();
+    renderEventChat();
 });
 
 
@@ -1181,6 +1685,16 @@ function showPlaceholder() {
 const loginButton =
     document.getElementById("loginButton");
 
+const logoutButton =
+    document.getElementById("logoutButton");
+
+const logoutConfirmOverlay =
+    document.getElementById("logoutConfirmOverlay");
+const cancelLogoutButton =
+    document.getElementById("cancelLogoutButton");
+const confirmLogoutButton =
+    document.getElementById("confirmLogoutButton");
+
 const loginModal =
     document.getElementById("loginModal");
 
@@ -1202,6 +1716,47 @@ loginButton?.addEventListener("click", () => {
 
     }, 100);
 
+});
+
+logoutButton?.addEventListener("click", () => {
+    if (!user) return;
+
+    logoutConfirmOverlay?.classList.remove("hidden");
+    confirmLogoutButton?.focus();
+});
+
+function closeLogoutConfirmation() {
+    logoutConfirmOverlay?.classList.add("hidden");
+    logoutButton?.focus();
+}
+
+cancelLogoutButton?.addEventListener("click", closeLogoutConfirmation);
+
+logoutConfirmOverlay?.addEventListener("click", (event) => {
+    if (event.target === logoutConfirmOverlay) closeLogoutConfirmation();
+});
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !logoutConfirmOverlay?.classList.contains("hidden")) {
+        closeLogoutConfirmation();
+    }
+});
+
+confirmLogoutButton?.addEventListener("click", () => {
+    if (!user) return;
+
+    saveActiveProfileSnapshot();
+    user = null;
+    activeProfileId = null;
+    habits = [];
+    stats = { xp: 0, streak: 0, lastCompletedDate: null };
+
+    localStorage.removeItem("doyourstreak-user");
+    localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
+    localStorage.setItem("doyourstreak-stats", JSON.stringify(stats));
+    logoutConfirmOverlay?.classList.add("hidden");
+    loginModal?.classList.add("hidden");
+    showLogin();
 });
 
 /* CLOSE LOGIN */
@@ -1479,12 +2034,244 @@ const shopNav = document.getElementById("shopNav");
 const gameNav = document.getElementById("gameNav");
 const exerciseNav = document.getElementById("exerciseNav");
 const infoNav = document.getElementById("infoNav");
+const achievementsNav = document.getElementById("achievementsNav");
 
 const characterPage = document.getElementById("characterPage");
 const shopPage = document.getElementById("shopPage");
 const gamePage = document.getElementById("gamePage");
 const exercisePage = document.getElementById("exercisePage");
 const infoPage = document.getElementById("infoPage");
+const eventChatPage = document.getElementById("eventChatPage");
+const achievementsPage = document.getElementById("achievementsPage");
+const awardsMenu = document.getElementById("awardsMenu");
+const awardDetail = document.getElementById("awardDetail");
+const achievementList = document.getElementById("achievementList");
+const questList = document.getElementById("questList");
+let currentAwardSection = null;
+
+const achievementDefinitions = [
+    { id: "ten-habits", title: "Habit Centurion", description: "Complete 100 habits.", progress: () => Math.min(Number(stats.habitsCompletedTotal) || 0, 100), target: 100 },
+    { id: "first-skin", title: "Fresh Look", description: "Purchase 3 character skins.", progress: () => Math.min(getPurchasedSkinCount(), 3), target: 3 },
+    { id: "first-game", title: "Game Regular", description: "Play 10 games.", progress: () => Math.min(Number(achievements.gameSessions) || 0, 10), target: 10 },
+    { id: "seven-day-streak", title: "Month of Momentum", description: "Keep a habit streak for 30 days.", progress: () => Math.min(Number(stats.streak) || 0, 30), target: 30 },
+    { id: "routine-finisher", title: "Routine Finisher", description: "Complete every habit on 7 different days.", progress: () => Math.min(Number(achievements.routineFinisherDays) || 0, 7), target: 7 },
+    { id: "note-to-self", title: "Thoughtful Tracker", description: "Write 25 habit notes.", progress: () => Math.min(Number(achievements.notesWritten) || 0, 25), target: 25 },
+    { id: "game-explorer", title: "Arcade Devotee", description: "Play 100 games.", progress: () => Math.min(Number(achievements.gameSessions) || 0, 100), target: 100 },
+    { id: "style-collector", title: "Style Collector", description: "Purchase 15 character skins.", progress: () => Math.min(getPurchasedSkinCount(), 15), target: 15 },
+    { id: "level-five", title: "Level 25", description: "Reach level 25.", progress: () => Math.min(Math.floor((Number(stats.xp) || 0) / 100) + 1, 25), target: 25 },
+    { id: "comeback", title: "Long Road Back", description: "Return to your habits after 30 days away.", progress: () => Math.min(Number(achievements.comebackDays) || 0, 30), target: 30 },
+    { id: "daily-task-champion", title: "Daily Task Champion", description: "Claim 100 daily task rewards.", progress: () => Math.min(Number(achievements.dailyTasksClaimed) || 0, 100), target: 100 }
+];
+
+const questPeriods = [
+    { id: "weekly", title: "WEEKLY QUESTS", difficulty: "MEDIUM", quests: [
+        { id: "habits", metric: "habitsCompleted", title: "Habit Momentum", description: "Complete 15 habits this week.", target: 15, coins: 120, xp: 30 },
+        { id: "games", metric: "gamesPlayed", title: "Play Break", description: "Open and play 5 games this week.", target: 5, coins: 100, xp: 25 },
+        { id: "notes", metric: "notesAdded", title: "Weekly Reflection", description: "Write 3 habit notes this week.", target: 3, coins: 90, xp: 25 }
+    ] },
+    { id: "monthly", title: "MONTHLY QUESTS", difficulty: "HARD", quests: [
+        { id: "habits", metric: "habitsCompleted", title: "Habit Machine", description: "Complete 120 habits this month.", target: 120, coins: 1000, xp: 300 },
+        { id: "games", metric: "gamesPlayed", title: "Arcade Regular", description: "Play 30 games this month.", target: 30, coins: 800, xp: 250 },
+        { id: "tasks", metric: "dailyTasksClaimed", title: "Task Tactician", description: "Claim 20 daily task rewards this month.", target: 20, coins: 1000, xp: 350 }
+    ] },
+    { id: "annual", title: "ANNUAL QUESTS", difficulty: "NEARLY IMPOSSIBLE", quests: [
+        { id: "habits", metric: "habitsCompleted", title: "Legendary Habit Master", description: "Complete 2,500 habits this year.", target: 2500, coins: 25000, xp: 5000 },
+        { id: "games", metric: "gamesPlayed", title: "Arcade Legend", description: "Play 500 games this year.", target: 500, coins: 20000, xp: 5000 },
+        { id: "tasks", metric: "dailyTasksClaimed", title: "Year of Perfect Focus", description: "Claim 300 daily task rewards this year.", target: 300, coins: 30000, xp: 7000 }
+    ] }
+];
+
+function getQuestPeriodKey(periodId) {
+    const today = getTodayDate();
+    if (periodId === "monthly") return today.slice(0, 7);
+    if (periodId === "annual") return today.slice(0, 4);
+    const monday = new Date(`${today}T00:00:00`);
+    monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7);
+    return monday.toISOString().slice(0, 10);
+}
+
+function getQuestPeriodState(periodId) {
+    const key = getQuestPeriodKey(periodId);
+    if (!questProgress[periodId] || questProgress[periodId].key !== key) {
+        questProgress[periodId] = { key, counters: {}, claimed: [] };
+    }
+    const state = questProgress[periodId];
+    if (!state.counters || typeof state.counters !== "object") state.counters = {};
+    if (!Array.isArray(state.claimed)) state.claimed = [];
+    return state;
+}
+
+function saveQuestProgress() {
+    localStorage.setItem("doyourstreak-quests", JSON.stringify(questProgress));
+}
+
+function getQuestResetText(periodId) {
+    const today = new Date(`${getTodayDate()}T00:00:00`);
+    let resetDate;
+    if (periodId === "weekly") {
+        resetDate = new Date(today);
+        const daysUntilMonday = (8 - today.getDay()) % 7 || 7;
+        resetDate.setDate(today.getDate() + daysUntilMonday);
+    } else if (periodId === "monthly") {
+        resetDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    } else {
+        resetDate = new Date(today.getFullYear() + 1, 0, 1);
+    }
+    return `REFRESHES ${resetDate.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }).toUpperCase()}`;
+}
+
+function renderQuestBoard() {
+    const list = questList;
+    if (!list) return;
+    const selectedPeriod = questPeriods.find(period => period.id === currentAwardSection);
+    list.innerHTML = (selectedPeriod ? [selectedPeriod] : []).map(period => {
+        const state = getQuestPeriodState(period.id);
+        return `<section class="quest-period" aria-labelledby="quest-${period.id}-title">
+            <div class="quest-period-header"><div><h3 id="quest-${period.id}-title">${period.title}</h3><small>${period.difficulty}</small></div><small>${getQuestResetText(period.id)}</small></div>
+            <div class="quest-cards">${period.quests.map(quest => {
+                const progress = Math.min(Number(state.counters[quest.metric]) || 0, quest.target);
+                const isClaimed = state.claimed.includes(quest.id);
+                const canClaim = progress >= quest.target && !isClaimed;
+                return `<article class="quest-card"><div><h4>${quest.title}</h4><p>${quest.description}</p></div>
+                    <div class="quest-progress" role="progressbar" aria-label="${quest.title}" aria-valuemin="0" aria-valuemax="${quest.target}" aria-valuenow="${progress}"><span style="width:${progress / quest.target * 100}%"></span></div>
+                    <div class="quest-card-footer"><span class="quest-reward">${progress} / ${quest.target} · ${quest.coins.toLocaleString()} coins + ${quest.xp.toLocaleString()} XP</span>
+                    <button class="quest-claim" type="button" data-claim-quest="${period.id}:${quest.id}" ${canClaim ? "" : "disabled"}>${isClaimed ? "CLAIMED ✓" : canClaim ? "CLAIM REWARD" : "IN PROGRESS"}</button></div></article>`;
+            }).join("")}</div>
+        </section>`;
+    }).join("");
+    saveQuestProgress();
+}
+
+function recordQuestProgress(metric, amount = 1) {
+    questPeriods.forEach(period => {
+        const state = getQuestPeriodState(period.id);
+        state.counters[metric] = (Number(state.counters[metric]) || 0) + amount;
+    });
+    saveQuestProgress();
+    renderQuestBoard();
+}
+
+document.getElementById("questList")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-claim-quest]");
+    if (!button) return;
+    const [periodId, questId] = button.dataset.claimQuest.split(":");
+    const period = questPeriods.find(item => item.id === periodId);
+    const quest = period?.quests.find(item => item.id === questId);
+    const state = getQuestPeriodState(periodId);
+    if (!quest || state.claimed.includes(quest.id) || (Number(state.counters[quest.metric]) || 0) < quest.target) return;
+    state.claimed.push(quest.id);
+    coins += quest.coins;
+    stats.xp += quest.xp;
+    saveQuestProgress();
+    saveStats();
+    updateStats();
+    updateCoins();
+    renderQuestBoard();
+});
+
+renderQuestBoard();
+window.setInterval(renderQuestBoard, 60000);
+
+function saveAchievements() {
+    localStorage.setItem("doyourstreak-achievements", JSON.stringify(achievements));
+}
+
+function getPurchasedSkinCount() {
+    let count = 0;
+    for (let index = 0; index < localStorage.length; index++) {
+        if (localStorage.key(index)?.startsWith("doyourstreak-owned-")) count++;
+    }
+    return count;
+}
+
+function markGamePlayed(gameId) {
+    if (!Array.isArray(achievements.playedGames)) achievements.playedGames = [];
+    if (gameId && !achievements.playedGames.includes(gameId)) achievements.playedGames.push(gameId);
+    achievements.gamePlayed = true;
+    achievements.gameSessions = (Number(achievements.gameSessions) || 0) + 1;
+    checkAchievements();
+    recordQuestProgress("gamesPlayed");
+}
+
+function recordRoutineFinisherDay() {
+    if (!habits.length || !habits.every(habit => habit.completed)) return;
+    const today = getTodayDate();
+    if (achievements.lastRoutineFinisherDate === today) return;
+    achievements.lastRoutineFinisherDate = today;
+    achievements.routineFinisherDays = (Number(achievements.routineFinisherDays) || 0) + 1;
+}
+
+if (getPurchasedSkinCount() > 0) achievements.skinPurchased = true;
+
+function renderAchievements() {
+    const list = achievementList;
+    if (!list) return;
+    list.innerHTML = achievementDefinitions.map(achievement => {
+        const unlocked = Boolean(achievements[achievement.id]);
+        const progress = unlocked ? achievement.target : Math.min(achievement.progress(), achievement.target);
+        return `<article class="achievement-card${unlocked ? " unlocked" : ""}">
+            <div class="achievement-copy"><small>${unlocked ? "UNLOCKED" : "IN PROGRESS"}</small><h2>${achievement.title}</h2><p>${achievement.description}</p>
+                <div class="achievement-progress" role="progressbar" aria-label="${achievement.title}" aria-valuemin="0" aria-valuemax="${achievement.target}" aria-valuenow="${progress}"><span style="width:${progress / achievement.target * 100}%"></span></div>
+                <small class="achievement-count">${progress} / ${achievement.target}</small>
+            </div>
+        </article>`;
+    }).join("");
+}
+
+function showAwardsMenu() {
+    currentAwardSection = null;
+    if (awardsMenu) awardsMenu.hidden = false;
+    if (awardDetail) awardDetail.hidden = true;
+    window.scrollTo(0, 0);
+}
+
+function openAwardSection(section) {
+    const titles = { achievement: "ACHIEVEMENTS", weekly: "WEEKLY QUESTS", monthly: "MONTHLY QUESTS", annual: "ANNUAL QUESTS" };
+    if (!titles[section]) return;
+    currentAwardSection = section;
+    awardsMenu.hidden = true;
+    awardDetail.hidden = false;
+    document.getElementById("awardDetailTitle").textContent = titles[section];
+    achievementList.hidden = section !== "achievement";
+    questList.hidden = section === "achievement";
+    if (section === "achievement") renderAchievements();
+    else renderQuestBoard();
+    window.scrollTo(0, 0);
+}
+
+awardsMenu?.addEventListener("click", event => {
+    const option = event.target.closest("[data-award-section]");
+    if (option) openAwardSection(option.dataset.awardSection);
+});
+document.getElementById("awardBackButton")?.addEventListener("click", showAwardsMenu);
+
+let achievementToastTimer = null;
+function showAchievementToast(achievement) {
+    const toast = document.getElementById("achievementToast");
+    const title = document.getElementById("achievementToastTitle");
+    if (!toast || !title) return;
+    title.textContent = achievement.title;
+    toast.classList.add("visible");
+    clearTimeout(achievementToastTimer);
+    achievementToastTimer = setTimeout(() => toast.classList.remove("visible"), 5000);
+}
+
+function checkAchievements() {
+    achievementDefinitions.forEach(achievement => {
+        if (!achievements[achievement.id] && achievement.progress() >= achievement.target) {
+            achievements[achievement.id] = true;
+            showAchievementToast(achievement);
+        }
+    });
+    saveAchievements();
+    renderAchievements();
+}
+
+document.getElementById("closeAchievementToast")?.addEventListener("click", () => {
+    document.getElementById("achievementToast")?.classList.remove("visible");
+    clearTimeout(achievementToastTimer);
+});
+checkAchievements();
 
 
 function setActiveNav(activeButton) {
@@ -1494,6 +2281,7 @@ function setActiveNav(activeButton) {
     gameNav?.classList.remove("active");
     exerciseNav?.classList.remove("active");
     infoNav?.classList.remove("active");
+    achievementsNav?.classList.remove("active");
 
     activeButton?.classList.add("active");
 }
@@ -1507,6 +2295,8 @@ function showGamePage() {
     gamePage?.classList.add("active");
     exercisePage?.classList.remove("active");
     infoPage?.classList.remove("active");
+    achievementsPage?.classList.remove("active");
+    eventChatPage?.classList.remove("active");
 
     setActiveNav(gameNav);
 
@@ -1521,6 +2311,8 @@ function showCharacterPage() {
     exercisePage?.classList.remove("active");
     infoPage?.classList.remove("active");
     gamePage?.classList.remove("active");
+    achievementsPage?.classList.remove("active");
+    eventChatPage?.classList.remove("active");
 
     setActiveNav(characterNav);
 
@@ -1532,8 +2324,11 @@ function showShopPage() {
 
     characterPage?.classList.remove("active");
     shopPage?.classList.add("active");
+    gamePage?.classList.remove("active");
     exercisePage?.classList.remove("active");
     infoPage?.classList.remove("active");
+    achievementsPage?.classList.remove("active");
+    eventChatPage?.classList.remove("active");
 
     setActiveNav(shopNav);
 
@@ -1550,6 +2345,8 @@ function showExercisePage() {
     exercisePage?.classList.add("active");
     infoPage?.classList.remove("active");
     gamePage?.classList.remove("active");
+    achievementsPage?.classList.remove("active");
+    eventChatPage?.classList.remove("active");
 
     setActiveNav(exerciseNav);
 
@@ -1564,17 +2361,37 @@ function showInfoPage() {
     exercisePage?.classList.remove("active");
     infoPage?.classList.add("active");
     gamePage?.classList.remove("active");
+    achievementsPage?.classList.remove("active");
+    eventChatPage?.classList.remove("active");
 
     setActiveNav(infoNav);
 
     renderCalendar();
     renderLocalLeaderboard();
+    renderEventChat();
 
     window.scrollTo(0, 0);
 }
 
+function showEventChatPage() {
+    [characterPage, shopPage, gamePage, exercisePage, infoPage, achievementsPage].forEach(page => page?.classList.remove("active"));
+    eventChatPage?.classList.add("active");
+    setActiveNav(infoNav);
+    renderEventChat();
+    window.scrollTo(0, 0);
+    eventChatInput?.focus();
+}
 
-const menuButtons = [characterNav, shopNav, gameNav, exerciseNav, infoNav].filter(Boolean);
+function showAchievementsPage() {
+    [characterPage, shopPage, gamePage, exercisePage, infoPage, eventChatPage].forEach(page => page?.classList.remove("active"));
+    achievementsPage?.classList.add("active");
+    setActiveNav(achievementsNav);
+    showAwardsMenu();
+    window.scrollTo(0, 0);
+}
+
+
+const menuButtons = [characterNav, shopNav, gameNav, exerciseNav, infoNav, achievementsNav].filter(Boolean);
 let menuShuffleTimer = null;
 let menuOriginalOrder = null;
 
@@ -1644,6 +2461,7 @@ shopNav?.addEventListener("click", showShopPage);
 gameNav?.addEventListener("click", showGamePage);
 exerciseNav?.addEventListener("click", showExercisePage);
 infoNav?.addEventListener("click", showInfoPage);
+achievementsNav?.addEventListener("click", showAchievementsPage);
 
 /* =====================================================
    CALENDAR
@@ -1653,9 +2471,9 @@ let calendarDate = new Date();
 
 
 const calendarEvents = {
-    "2026-10-10": "STREAK WEEK",
-    "2026-10-15": "NEW CHARACTER UPDATE",
-    "2026-10-25": "COMMUNITY EVENT"
+    "2026-11-09": "STREAK SPRINT",
+    "2026-11-15": "CHARACTER PARADE",
+    "2026-11-22": "WEEKEND QUEST"
 };
 
 
@@ -2244,6 +3062,119 @@ function updateCoins() {
    DYNAMIC CHARACTER SHOP
 ===================================================== */
 
+const shopBackgrounds = [
+    { id: "room", name: "ROOM", image: "roombg.jpe", price: 1900 },
+    { id: "sea", name: "SEA", image: "seabg.jpe", price: 2000 },
+    { id: "trail", name: "TRAIL", image: "trailbg.jpe", price: 3400 }
+];
+
+function isBackgroundOwned(background) {
+    return localStorage.getItem(`doyourstreak-owned-background-${background.id}`) === "true";
+}
+
+function applySelectedShopBackground() {
+    const selectedBackgroundId = localStorage.getItem("doyourstreak-selected-background");
+    const selectedBackground = shopBackgrounds.find(background => background.id === selectedBackgroundId);
+    const homePage = document.getElementById("characterPage");
+
+    if (!homePage || !selectedBackground || !isBackgroundOwned(selectedBackground)) return;
+
+    homePage.style.backgroundImage = `url("${selectedBackground.image}")`;
+}
+
+function equipShopBackground(background) {
+    if (!isBackgroundOwned(background)) return;
+
+    localStorage.setItem("doyourstreak-selected-background", background.id);
+    applySelectedShopBackground();
+    renderBackgroundShop();
+}
+
+function buyShopBackground(background) {
+    if (isBackgroundOwned(background)) {
+        equipShopBackground(background);
+        return;
+    }
+
+    if (coins < background.price) {
+        alert("Coins kamu belum cukup!");
+        return;
+    }
+
+    coins -= background.price;
+    localStorage.setItem(`doyourstreak-owned-background-${background.id}`, "true");
+    updateCoins();
+    renderBackgroundShop();
+    alert(`${background.name} background berhasil dibeli!`);
+}
+
+function renderBackgroundShop() {
+    const shopItems = document.querySelector(".shop-items");
+
+    if (!shopItems) return;
+
+    shopItems.innerHTML = "";
+    const selectedBackgroundId = localStorage.getItem("doyourstreak-selected-background");
+
+    shopBackgrounds.forEach(background => {
+        const owned = isBackgroundOwned(background);
+        const equipped = selectedBackgroundId === background.id && owned;
+        const item = document.createElement("div");
+        item.className = "shop-item shop-background-item";
+        item.innerHTML = `
+            <img src="${background.image}" alt="${background.name} background preview">
+            <h3>${background.name}</h3>
+            <p class="character-price">
+                <img src="koinngawi.png" alt="Coin" class="coin-icon">
+                ${background.price}
+            </p>
+            <button
+                class="buy-character buy-background"
+                type="button"
+                ${equipped ? "disabled" : ""}
+            >
+                ${equipped ? "DIPAKAI" : owned ? "PASANG" : "BELI"}
+            </button>
+        `;
+
+        item.querySelector(".buy-background").addEventListener("click", () => {
+            if (owned) {
+                equipShopBackground(background);
+            } else {
+                buyShopBackground(background);
+            }
+        });
+
+        shopItems.appendChild(item);
+    });
+}
+
+document.querySelectorAll(".shop-category").forEach(button => {
+    button.addEventListener("click", () => {
+        const category = button.dataset.shopCategory;
+
+        document.querySelectorAll(".shop-category").forEach(categoryButton => {
+            const isSelected = categoryButton === button;
+            categoryButton.classList.toggle("active", isSelected);
+            categoryButton.setAttribute("aria-selected", String(isSelected));
+        });
+
+        const shopItems = document.querySelector(".shop-items");
+        if (shopItems) {
+            shopItems.setAttribute(
+                "aria-labelledby",
+                button.id
+            );
+        }
+
+        if (category === "background") {
+            renderBackgroundShop();
+        } else {
+            renderCharacterShop();
+        }
+    });
+});
+
 function renderCharacterShop() {
 
     const shopItems =
@@ -2348,6 +3279,9 @@ function buyCharacter(character) {
 
 
     updateCoins();
+
+    achievements.skinPurchased = true;
+    checkAchievements();
 
     renderCharacterShop();
 
@@ -2532,6 +3466,9 @@ function claimDailyTask() {
 
     // Tandai sudah claim
     savedTask.claimed = true;
+    achievements.dailyTasksClaimed = (Number(achievements.dailyTasksClaimed) || 0) + 1;
+    checkAchievements();
+    recordQuestProgress("dailyTasksClaimed");
 
     localStorage.setItem(
         "doyourstreak-daily-task",
@@ -2608,6 +3545,12 @@ const backFromDino =
 const openFlappyGame = document.getElementById("openFlappyGame");
 const flappyGame = document.getElementById("flappyGame");
 const backFromFlappy = document.getElementById("backFromFlappy");
+const openClawGame = document.getElementById("openClawGame");
+const clawGame = document.getElementById("clawGame");
+const backFromClaw = document.getElementById("backFromClaw");
+const openCatBike = document.getElementById("openCatBike");
+const catBikeGame = document.getElementById("catBikeGame");
+const backFromCatBike = document.getElementById("backFromCatBike");
 
 
 function showGameMenu() {
@@ -2619,9 +3562,15 @@ function showGameMenu() {
     dinoGame?.classList.add("hidden");
 
     flappyGame?.classList.add("hidden");
+    clawGame?.classList.add("hidden");
+    catBikeGame?.classList.add("hidden");
+    clawGame?.closest(".game-page")?.classList.remove("claw-active");
+    gamePage?.classList.remove("claw-active");
 
     stopDinoGame();
     stopFlappyGame();
+    stopClawGame();
+    stopCatBikeGame();
 
 }
 
@@ -2633,6 +3582,8 @@ function showGameMenu() {
 openFightingGame?.addEventListener(
     "click",
     () => {
+
+        markGamePlayed("fighting");
 
         gameMenu?.classList.add("hidden");
 
@@ -2655,6 +3606,8 @@ openFightingGame?.addEventListener(
 openDinoGame?.addEventListener(
     "click",
     () => {
+
+        markGamePlayed("dino");
 
         gameMenu?.classList.add("hidden");
 
@@ -2684,6 +3637,7 @@ backFromDino?.addEventListener(
 
 
 openFlappyGame?.addEventListener("click", () => {
+    markGamePlayed("flappy");
     gameMenu?.classList.add("hidden");
     fightingGame?.classList.add("hidden");
     dinoGame?.classList.add("hidden");
@@ -2693,6 +3647,32 @@ openFlappyGame?.addEventListener("click", () => {
 });
 
 backFromFlappy?.addEventListener("click", showGameMenu);
+
+openClawGame?.addEventListener("click", () => {
+    markGamePlayed("claw");
+    gameMenu?.classList.add("hidden");
+    fightingGame?.classList.add("hidden");
+    dinoGame?.classList.add("hidden");
+    flappyGame?.classList.add("hidden");
+    clawGame?.classList.remove("hidden");
+    clawGame?.closest(".game-page")?.classList.add("claw-active");
+    gamePage?.classList.add("claw-active");
+    stopDinoGame();
+    stopFlappyGame();
+    startClawGame();
+});
+
+backFromClaw?.addEventListener("click", showGameMenu);
+
+openCatBike?.addEventListener("click", () => {
+    markGamePlayed("cat-bike");
+    gameMenu?.classList.add("hidden");
+    [fightingGame, dinoGame, flappyGame, clawGame].forEach(screen => screen?.classList.add("hidden"));
+    catBikeGame?.classList.remove("hidden");
+    stopDinoGame(); stopFlappyGame(); stopClawGame();
+    startCatBikeScreen();
+});
+backFromCatBike?.addEventListener("click", showGameMenu);
 /* =====================================================
    FIGHTING GAME
 ===================================================== */
@@ -4449,6 +5429,7 @@ drawDino();
 updateCoins();
 
 renderCharacterShop();
+applySelectedShopBackground();
 
 
 /* INITIAL COINS */
@@ -4643,6 +5624,511 @@ document.addEventListener("keydown", event => {
     if (event.code !== "Space" || flappyGame?.classList.contains("hidden")) return;
     event.preventDefault();
     flapBird();
+});
+
+/* =====================================================
+   CAT BIKE — endless farm-road dodger
+===================================================== */
+const catBikeCanvas = document.getElementById("catBikeCanvas");
+const catBikeCtx = catBikeCanvas?.getContext("2d");
+const catBikeBackground = new Image();
+catBikeBackground.src = "catbikebackground.png";
+const catBikeStatus = document.getElementById("catBikeStatus");
+const catBikeDistanceLabel = document.getElementById("catBikeDistance");
+const catBikeScoreLabel = document.getElementById("catBikeScore");
+const catBikeBestLabel = document.getElementById("catBikeBest");
+const catBikePointsLabel = document.getElementById("catBikePoints");
+const catBikeBestKey = "doyourstreak-cat-bike-best";
+let catBikeBest = Number(localStorage.getItem(catBikeBestKey)) || 0;
+let catBikeDistance = 0, catBikeScore = 0, catBikePointsEarned = 0, catBikeLane = 2, catBikeTraffic = [];
+let catBikeFrame = 0, catBikeLast = 0, catBikeSpawn = 0, catBikeRunning = false;
+const catBikeRider = new Image();
+catBikeRider.src = "catbike.png";
+const catBikeObstacleImages = {};
+[["dogbike", "dogbike.png"], ["catr", "catr.png"], ["dababycar", "dababycar.png"]].forEach(([name, src]) => {
+    const image = new Image();
+    image.src = src;
+    catBikeObstacleImages[name] = image;
+});
+let daBabyObstacleCutout = null;
+if (catBikeBestLabel) catBikeBestLabel.textContent = catBikeBest;
+
+function startCatBikeScreen() {
+    stopCatBikeGame();
+    catBikeDistance = 0; catBikeScore = 0; catBikePointsEarned = 0; catBikeLane = 2; catBikeTraffic = []; catBikeSpawn = 0;
+    updateCatBikeScore();
+    if (catBikeStatus) catBikeStatus.textContent = "Dodge the traffic! Use ← → or A / D.";
+    drawCatBike();
+}
+function stopCatBikeGame() {
+    catBikeRunning = false;
+    if (catBikeFrame) cancelAnimationFrame(catBikeFrame);
+    catBikeFrame = 0;
+}
+function updateCatBikeScore() {
+    if (catBikeDistanceLabel) catBikeDistanceLabel.textContent = Math.floor(catBikeDistance);
+    if (catBikeScoreLabel) catBikeScoreLabel.textContent = catBikeScore;
+    if (catBikeBestLabel) catBikeBestLabel.textContent = catBikeBest;
+    if (catBikePointsLabel) catBikePointsLabel.textContent = catBikePointsEarned.toFixed(1).replace(/\.0$/, "");
+}
+function catBikeSteer(delta) {
+    if (!catBikeRunning) return;
+    catBikeLane = Math.max(0, Math.min(3, catBikeLane + delta));
+}
+function drawCatBike() {
+    if (!catBikeCtx || !catBikeCanvas) return;
+    const c = catBikeCtx, w = catBikeCanvas.width, h = catBikeCanvas.height;
+    c.clearRect(0, 0, w, h);
+    if (catBikeBackground.complete && catBikeBackground.naturalWidth) c.drawImage(catBikeBackground, 0, 0, w, h);
+    else { c.fillStyle="#8cc8f2";c.fillRect(0,0,w,h); }
+    // A simple, straight four-lane track sits over the path in the supplied scene.
+    c.fillStyle="rgba(35,48,46,.42)";c.fillRect(64,300,322,500);
+    c.strokeStyle="rgba(255,255,255,.95)";c.lineWidth=4;
+    c.beginPath();c.moveTo(64,300);c.lineTo(64,800);c.moveTo(386,300);c.lineTo(386,800);c.stroke();
+    const laneWidth=322/4;
+    const dashOffset=(catBikeDistance*5)%72;
+    for(let divider=1;divider<4;divider++){
+        const x=64+laneWidth*divider;
+        c.setLineDash([32,40]);c.lineDashOffset=-dashOffset;c.lineWidth=3;c.beginPath();c.moveTo(x,300);c.lineTo(x,800);c.stroke();
+    }
+    c.setLineDash([]);
+    const laneX=Array.from({length:5},(_,lane)=>64+laneWidth*(lane+.5));
+    for(const car of catBikeTraffic){
+        const y=car.y, scale=.7+(y/800)*.25, x=laneX[car.lane]; c.save();c.translate(x,y);c.scale(scale,scale);
+        if (car.type === "dogbike" || car.type === "catr" || car.type === "dababycar") {
+            const sprite = car.type === "dababycar" ? daBabyObstacleCutout : catBikeObstacleImages[car.type];
+            if (sprite && (sprite.complete === undefined || sprite.complete) && (sprite.naturalWidth === undefined || sprite.naturalWidth)) {
+                const sw = car.type === "dababycar" ? 70 : 82;
+                const sh = car.type === "dababycar" ? 122 : 82;
+                c.drawImage(sprite, -sw / 2, -sh / 2, sw, sh);
+            } else {
+                c.fillStyle = "#252a30"; c.fillRect(-24, -28, 48, 56);
+            }
+            c.restore();
+            continue;
+        }
+        c.fillStyle="#171b21";
+        if(car.type==="truck"){
+            // Box truck with a distinct cab, cargo body and paired rear wheels.
+            c.fillRect(-27,24,15,22);c.fillRect(14,24,15,22);
+            c.fillStyle=car.color;c.fillRect(-34,-40,68,57);
+            c.fillStyle="#f4ead0";c.fillRect(-27,-33,54,43);
+            c.fillStyle=car.color;c.fillRect(-34,16,68,20);
+            c.fillStyle="#bceaff";c.fillRect(-22,18,24,14);
+            c.fillStyle="#ffed9c";c.fillRect(-29,34,10,5);c.fillRect(19,34,10,5);
+        }else{
+            // Rounded car body, cabin and headlights.
+            c.fillRect(-25,13,13,20);c.fillRect(12,13,13,20);
+            c.fillStyle=car.color;c.beginPath();c.moveTo(-32,12);c.lineTo(-29,-12);c.lineTo(-17,-30);c.quadraticCurveTo(0,-38,17,-30);c.lineTo(29,-12);c.lineTo(32,12);c.closePath();c.fill();
+            c.fillStyle="#bceaff";c.beginPath();c.moveTo(-20,-12);c.lineTo(-12,-26);c.quadraticCurveTo(0,-31,12,-26);c.lineTo(20,-12);c.closePath();c.fill();
+            c.fillStyle=car.color;c.fillRect(-29,-7,58,17);
+            c.fillStyle="#fff0a0";c.fillRect(-28,5,8,5);c.fillRect(20,5,8,5);
+        }
+        c.restore();
+    }
+    // Use the supplied transparent PNG as the rider sprite.
+    const bx=laneX[catBikeLane], by=690;
+    if(catBikeRider.complete&&catBikeRider.naturalWidth){c.drawImage(catBikeRider,bx-60,by-88,120,120);}
+    else {c.font="54px sans-serif";c.textAlign="center";c.fillText("🐱",bx,by);}
+    c.save();
+    c.textAlign="center";c.font="italic 900 44px 'Arial Black', Impact, sans-serif";
+    c.lineJoin="round";c.lineWidth=9;c.strokeStyle="#173044";c.shadowColor="rgba(0,0,0,.55)";c.shadowBlur=8;c.shadowOffsetY=4;
+    c.strokeText("CAT BIKE",225,270);
+    const titleFill=c.createLinearGradient(0,225,0,270);titleFill.addColorStop(0,"#fff28a");titleFill.addColorStop(.48,"#ffb83f");titleFill.addColorStop(1,"#ff654d");
+    c.fillStyle=titleFill;c.fillText("CAT BIKE",225,270);c.restore();
+}
+catBikeBackground.addEventListener("load", drawCatBike);
+function prepareDaBabyObstacle() {
+    const image = catBikeObstacleImages.dababycar;
+    if (!image?.complete || !image.naturalWidth || daBabyObstacleCutout) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = 144; canvas.height = 256;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < pixels.data.length; i += 4) {
+        const r = pixels.data[i], g = pixels.data[i + 1], b = pixels.data[i + 2];
+        if (r >= 92 && r <= 160 && g >= 92 && g <= 160 && b >= 92 && b <= 160 && Math.max(r, g, b) - Math.min(r, g, b) <= 18) pixels.data[i + 3] = 0;
+    }
+    context.putImageData(pixels, 0, 0);
+    daBabyObstacleCutout = canvas;
+}
+catBikeObstacleImages.dababycar.addEventListener("load", prepareDaBabyObstacle);
+function startCatBikeGame() {
+    startCatBikeScreen(); catBikeRunning=true; catBikeLast=performance.now();
+    if(catBikeStatus)catBikeStatus.textContent="Ride on! Each 100 meters earns a point.";
+    catBikeFrame=requestAnimationFrame(catBikeLoop);
+}
+function endCatBikeGame() {
+    stopCatBikeGame(); catBikeBest=Math.max(catBikeBest,catBikeScore);localStorage.setItem(catBikeBestKey,String(catBikeBest));updateCatBikeScore();
+    if(catBikeStatus)catBikeStatus.textContent=`Crash! You rode ${Math.floor(catBikeDistance)} m and scored ${catBikeScore}. Press RIDE AGAIN to try again.`;
+    const button=document.getElementById("startCatBike");if(button)button.textContent="RIDE AGAIN";
+    drawCatBike();
+}
+function catBikeLoop(now) {
+    if(!catBikeRunning||catBikeGame?.classList.contains("hidden")||!gamePage?.classList.contains("active")){stopCatBikeGame();return;}
+    const dt=Math.min((now-catBikeLast)/1000,.05);catBikeLast=now;
+    catBikeDistance+=dt*34;const nextScore=Math.floor(catBikeDistance/100);if(nextScore>catBikeScore){const gained=nextScore-catBikeScore;catBikeScore=nextScore;catBikePointsEarned+=gained*.5;coins+=gained*.5;updateCoins();updateCatBikeScore();if(catBikeStatus)catBikeStatus.textContent=`+${(gained*.5).toFixed(1).replace(/\.0$/, "")} shop points! Keep riding and dodge traffic.`;}
+    catBikeSpawn+=dt;
+    if(catBikeSpawn>Math.max(.88,1.48-catBikeDistance/2600)){
+        catBikeSpawn=0;
+        const openLanes=[0,1,2].filter(lane=>!catBikeTraffic.some(car=>car.lane===lane&&car.y>-100&&car.y<880));
+        if(openLanes.length){const lane=openLanes[Math.floor(Math.random()*openLanes.length)];const kinds=["car","truck","dogbike","catr","dababycar"];const direction=Math.random()<.5?-1:1;catBikeTraffic.push({lane,y:direction<0?850:260,direction,type:kinds[Math.floor(Math.random()*kinds.length)],color:["#e45b4f","#4386d6","#f0a33b","#754fc2"][Math.floor(Math.random()*4)]});}
+    }
+    catBikeTraffic.forEach(car=>car.y+=car.direction*dt*(190+Math.min(catBikeDistance*.12,90)));
+    catBikeTraffic=catBikeTraffic.filter(car=>car.y>-140&&car.y<860);
+    if(catBikeTraffic.some(car=>car.lane===catBikeLane&&car.y>630&&car.y<750)){endCatBikeGame();return;}
+    drawCatBike();catBikeFrame=requestAnimationFrame(catBikeLoop);
+}
+document.getElementById("startCatBike")?.addEventListener("click",startCatBikeGame);
+document.getElementById("catBikeLeft")?.addEventListener("click",()=>catBikeSteer(-1));
+document.getElementById("catBikeRight")?.addEventListener("click",()=>catBikeSteer(1));
+let catBikeTouchStartX = null;
+catBikeCanvas?.addEventListener("pointerdown", event => { catBikeTouchStartX = event.clientX; });
+catBikeCanvas?.addEventListener("pointerup", event => { if (catBikeTouchStartX === null) return; const delta = event.clientX - catBikeTouchStartX; if (Math.abs(delta) > 24) catBikeSteer(delta < 0 ? -1 : 1); catBikeTouchStartX = null; });
+document.addEventListener("keydown",event=>{if(catBikeGame?.classList.contains("hidden"))return;if(["ArrowLeft","KeyA"].includes(event.code)){event.preventDefault();catBikeSteer(-1);}if(["ArrowRight","KeyD"].includes(event.code)){event.preventDefault();catBikeSteer(1);}});
+
+/* =====================================================
+   CLAW MACHINE
+===================================================== */
+
+const clawCanvas = document.getElementById("clawCanvas");
+const clawCtx = clawCanvas?.getContext("2d");
+const clawStatus = document.getElementById("clawStatus");
+const clawScoreLabel = document.getElementById("clawScore");
+const clawCoinsLabel = document.getElementById("clawCoins");
+const clawXPLabel = document.getElementById("clawXP");
+const clawLeftButton = document.getElementById("clawLeft");
+const clawRightButton = document.getElementById("clawRight");
+const clawDropButton = document.getElementById("clawDrop");
+const clawRestartButton = document.getElementById("clawRestart");
+const clawCharacterSprite = new Image();
+clawCharacterSprite.src = getGameCharacter().image;
+const clawAnomalySprite = new Image();
+clawAnomalySprite.src = "anomalis.png";
+const clawBackgroundSprite = new Image();
+clawBackgroundSprite.src = "bgclaw.jpe";
+
+const CLAW_HOME_Y = 56;
+const CLAW_BOTTOM_Y = 355;
+const CLAW_FLOOR_Y = 438;
+const CLAW_PRIZE_SIZE = 42;
+const CLAW_STACK_GAP = 38;
+const CLAW_COLLISION_X = 32;
+const CLAW_MAX_TRIES = 8;
+let clawX = 400;
+let clawY = CLAW_HOME_Y;
+let clawState = "idle";
+let clawHeldItem = null;
+let clawObjects = [];
+let clawFrameId = 0;
+let clawLastFrame = 0;
+let clawAttempts = 0;
+let clawScore = 0;
+let clawEarnedCoins = 0;
+let clawEarnedXP = 0;
+
+function createClawPrizeLayout() {
+    clawObjects = [];
+    const floorCenter = CLAW_FLOOR_Y - CLAW_PRIZE_SIZE / 2;
+    const cells = [];
+    for (let row = 0; row < 8; row += 1) {
+        const offset = row % 2 ? 21 : 0;
+        for (let column = 0; column < 17; column += 1) {
+            const x = 50 + offset + column * 42;
+            if (x <= 750) cells.push({ x, y: 76 + row * 42 });
+        }
+    }
+    for (let i = cells.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cells[i], cells[j]] = [cells[j], cells[i]];
+    }
+
+    // Randomly occupied staggered positions fill the playfield without forming straight columns.
+    const characterCellIndices = new Set();
+    while (characterCellIndices.size < 3) {
+        characterCellIndices.add(Math.floor(Math.random() * 63));
+    }
+    for (let cellIndex = 0; cellIndex < 63; cellIndex += 1) {
+        const cell = cells[cellIndex];
+        clawObjects.push({
+            x: cell.x + (Math.random() - .5) * 10,
+            y: Math.min(cell.y + (Math.random() - .5) * 2, floorCenter - 3),
+            type: characterCellIndices.has(cellIndex) ? "character" : "anomaly",
+            removed: false,
+            falling: true,
+            held: false,
+            vy: 0
+        });
+    }
+}
+
+function startClawGame() {
+    if (!clawCanvas || !clawCtx) return;
+    stopClawGame();
+    clawCharacterSprite.src = getGameCharacter().image;
+    clawX = clawCanvas.width / 2;
+    clawY = CLAW_HOME_Y;
+    clawState = "idle";
+    clawHeldItem = null;
+    clawAttempts = 0;
+    clawScore = 0;
+    clawEarnedCoins = 0;
+    clawEarnedXP = 0;
+    createClawPrizeLayout();
+    updateClawScoreboard();
+    clawDropButton.disabled = false;
+    clawDropButton.textContent = "CAPIT";
+    clawRestartButton?.classList.add("hidden");
+    setClawStatus("Geser capit dan cari 3 karakter di antara 60 anomaly yang berjatuhan.");
+    clawLastFrame = performance.now();
+    clawFrameId = requestAnimationFrame(clawLoop);
+}
+
+function stopClawGame() {
+    if (clawFrameId) cancelAnimationFrame(clawFrameId);
+    clawFrameId = 0;
+}
+
+function setClawStatus(message) {
+    if (clawStatus) clawStatus.textContent = message;
+}
+
+function updateClawScoreboard() {
+    if (clawScoreLabel) clawScoreLabel.textContent = clawScore;
+    if (clawCoinsLabel) clawCoinsLabel.textContent = `+${clawEarnedCoins}`;
+    if (clawXPLabel) clawXPLabel.textContent = `+${clawEarnedXP}`;
+}
+
+function beginClawDrop() {
+    if (clawState !== "idle" || clawAttempts >= CLAW_MAX_TRIES) return;
+    clawAttempts += 1;
+    clawHeldItem = null;
+    clawState = "down";
+    clawDropButton.disabled = true;
+    clawDropButton.textContent = "LAGI...";
+    setClawStatus(`Capit turun… percobaan ${clawAttempts}/${CLAW_MAX_TRIES}`);
+}
+
+function catchClawPrize() {
+    const candidates = clawObjects
+        .filter(item => {
+            if (item.removed || item.falling || item.held) return false;
+            if (item.type === "character") return true;
+            const covered = clawObjects.some(other =>
+                other !== item && other.type === "anomaly" && !other.removed && !other.held &&
+                Math.abs(other.x - item.x) < CLAW_COLLISION_X && other.y < item.y && item.y - other.y < CLAW_STACK_GAP + 8
+            );
+            return !covered;
+        })
+        .sort((a, b) => Math.abs(a.x - clawX) - Math.abs(b.x - clawX) || b.y - a.y);
+    const target = candidates[0];
+    if (target && Math.abs(target.x - clawX) <= 37) {
+        clawHeldItem = target;
+        target.held = true;
+        // Empty space under a pile makes the prizes above it fall under gravity.
+        for (const item of clawObjects) {
+            if (!item.removed && !item.held && item.y < target.y && Math.abs(item.x - target.x) < CLAW_COLLISION_X) {
+                item.falling = true;
+                item.vy = 0;
+            }
+        }
+        if (target.type === "anomaly") {
+            setClawStatus("ZONK! Anomaly ketangkap—tapi licin, bakal jatuh lagi!");
+        } else {
+            setClawStatus("Dapat karakter! Capit lagi naik…");
+        }
+    } else {
+        setClawStatus("Belum kena. Coba geser capit ke atas karakter.");
+    }
+    clawState = "up";
+}
+
+function releaseClawAnomaly() {
+    if (!clawHeldItem || clawHeldItem.type !== "anomaly") return;
+    clawHeldItem.held = false;
+    clawHeldItem.falling = true;
+    clawHeldItem.vy = 0;
+    clawHeldItem.y = clawY + 42;
+    clawHeldItem = null;
+}
+
+function finishClawLift() {
+    if (clawHeldItem?.type === "character") {
+        clawHeldItem.removed = true;
+        clawHeldItem.held = false;
+        clawHeldItem = null;
+        clawScore += 1;
+        clawEarnedCoins += 5;
+        clawEarnedXP += 10;
+        coins += 5;
+        stats.xp += 10;
+        updateCoins();
+        saveStats();
+        updateStats();
+        updateClawScoreboard();
+        setClawStatus("Dapat karakter! +5 koin, +10 EXP.");
+    }
+
+    clawState = "idle";
+    if (clawAttempts >= CLAW_MAX_TRIES) {
+        clawDropButton.disabled = true;
+        clawDropButton.textContent = "RONDE SELESAI";
+        clawRestartButton?.classList.remove("hidden");
+        setClawStatus(`Ronde selesai: ${clawScore} karakter, +${clawEarnedCoins} koin, +${clawEarnedXP} EXP.`);
+    } else {
+        clawDropButton.disabled = false;
+        clawDropButton.textContent = "CAPIT";
+    }
+}
+
+function drawClawSprite(sprite, centerX, centerY, maxWidth, maxHeight) {
+    if (!sprite.complete || sprite.naturalWidth === 0) return false;
+    const scale = Math.min(maxWidth / sprite.naturalWidth, maxHeight / sprite.naturalHeight);
+    const width = sprite.naturalWidth * scale;
+    const height = sprite.naturalHeight * scale;
+    clawCtx.drawImage(sprite, centerX - width / 2, centerY - height / 2, width, height);
+    return true;
+}
+
+function drawClawMachine() {
+    if (!clawCtx || !clawCanvas) return;
+    const ctx = clawCtx;
+    ctx.clearRect(0, 0, clawCanvas.width, clawCanvas.height);
+    ctx.fillStyle = "#eaf5ff";
+    ctx.fillRect(0, 0, clawCanvas.width, clawCanvas.height);
+    if (clawBackgroundSprite.complete && clawBackgroundSprite.naturalWidth > 0) {
+        ctx.globalAlpha = .4;
+        ctx.drawImage(clawBackgroundSprite, 0, 0, clawCanvas.width, clawCanvas.height);
+        ctx.globalAlpha = 1;
+    } else {
+        ctx.fillStyle = "#40315d";
+        ctx.fillRect(0, 0, clawCanvas.width, clawCanvas.height);
+    }
+
+    // Rail and cable
+    ctx.fillStyle = "#3a3a47";
+    ctx.fillRect(clawX - 18, 25, 36, 20);
+    ctx.strokeStyle = "#f4f1dc";
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(clawX, 44);
+    ctx.lineTo(clawX, clawY);
+    ctx.stroke();
+
+    // Prizes
+    const visiblePrizes = [...clawObjects].sort((a, b) =>
+        (a.type === "character" ? 1 : 0) - (b.type === "character" ? 1 : 0)
+    );
+    for (const item of visiblePrizes) {
+        if (item.removed || item === clawHeldItem || item.held) continue;
+        ctx.fillStyle = "rgba(15, 20, 28, .2)";
+        ctx.beginPath();
+        ctx.ellipse(item.x, item.y + 17, 18, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+        const sprite = item.type === "anomaly" ? clawAnomalySprite : clawCharacterSprite;
+        if (!drawClawSprite(sprite, item.x, item.y, CLAW_PRIZE_SIZE, CLAW_PRIZE_SIZE)) {
+            ctx.fillStyle = item.type === "anomaly" ? "#8a52a6" : "#ffb64d";
+            ctx.beginPath();
+            ctx.arc(item.x, item.y, CLAW_PRIZE_SIZE / 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    // Claw fingers
+    if (clawHeldItem) {
+        const sprite = clawHeldItem.type === "anomaly" ? clawAnomalySprite : clawCharacterSprite;
+        drawClawSprite(sprite, clawX, clawY + 42, CLAW_PRIZE_SIZE, CLAW_PRIZE_SIZE);
+    }
+    const closed = Boolean(clawHeldItem) || clawState === "down";
+    ctx.strokeStyle = "#171717";
+    ctx.lineWidth = 8;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(clawX - 20, clawY + 2);
+    ctx.lineTo(clawX - (closed ? 10 : 29), clawY + 36);
+    ctx.lineTo(clawX - (closed ? 5 : 21), clawY + 46);
+    ctx.moveTo(clawX + 20, clawY + 2);
+    ctx.lineTo(clawX + (closed ? 10 : 29), clawY + 36);
+    ctx.lineTo(clawX + (closed ? 5 : 21), clawY + 46);
+    ctx.stroke();
+
+    ctx.fillStyle = "#171717";
+    ctx.font = "bold 16px 'Baloo 2', sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText(`DROP ${clawAttempts}/${CLAW_MAX_TRIES}`, 18, 448);
+}
+
+function clawLoop(timestamp) {
+    if (!clawGame || clawGame.classList.contains("hidden") || !gamePage?.classList.contains("active")) {
+        clawFrameId = 0;
+        return;
+    }
+    const dt = Math.min((timestamp - clawLastFrame) / 1000, .04);
+    clawLastFrame = timestamp;
+
+    const fallingItems = [...clawObjects].sort((a, b) => b.y - a.y);
+    const floorCenter = CLAW_FLOOR_Y - CLAW_PRIZE_SIZE / 2;
+    for (const item of fallingItems) {
+        if (!item.falling) continue;
+        const nextVelocity = item.vy + 1100 * dt;
+        const nextY = item.y + nextVelocity * dt;
+        let landingY = floorCenter;
+        for (const support of clawObjects) {
+            if (support === item || support.removed || support.held) continue;
+            const centerGap = support.y - item.y;
+            if (centerGap >= CLAW_STACK_GAP && Math.abs(support.x - item.x) < CLAW_COLLISION_X) {
+                const supportTop = support.y - CLAW_STACK_GAP;
+                if (supportTop >= item.y && supportTop < landingY) landingY = supportTop;
+            }
+        }
+        if (nextY >= landingY) {
+            item.y = landingY;
+            item.vy = 0;
+            item.falling = false;
+        } else {
+            item.y = nextY;
+            item.vy = nextVelocity;
+        }
+    }
+
+    if (clawState === "down") {
+        clawY = Math.min(CLAW_BOTTOM_Y, clawY + 430 * dt);
+        if (clawY >= CLAW_BOTTOM_Y) catchClawPrize();
+    } else if (clawState === "up") {
+        clawY = Math.max(CLAW_HOME_Y, clawY - 370 * dt);
+        if (clawHeldItem?.type === "anomaly" && clawY < 205) releaseClawAnomaly();
+        if (clawY <= CLAW_HOME_Y) finishClawLift();
+    }
+
+    drawClawMachine();
+    clawFrameId = requestAnimationFrame(clawLoop);
+}
+
+function moveClaw(direction) {
+    if (clawState !== "idle") return;
+    clawX = Math.max(90, Math.min(710, clawX + direction * 42));
+}
+
+clawLeftButton?.addEventListener("click", () => moveClaw(-1));
+clawRightButton?.addEventListener("click", () => moveClaw(1));
+clawDropButton?.addEventListener("click", beginClawDrop);
+clawRestartButton?.addEventListener("click", startClawGame);
+clawCanvas?.addEventListener("pointerdown", event => {
+    if (clawState !== "idle") return;
+    const bounds = clawCanvas.getBoundingClientRect();
+    clawX = Math.max(90, Math.min(710, (event.clientX - bounds.left) / bounds.width * clawCanvas.width));
+});
+document.addEventListener("keydown", event => {
+    if (!clawGame || clawGame.classList.contains("hidden") || !gamePage?.classList.contains("active")) return;
+    if (event.code === "Escape") {
+        event.preventDefault();
+        showGameMenu();
+        return;
+    }
+    if (event.code === "ArrowLeft") { event.preventDefault(); moveClaw(-1); }
+    if (event.code === "ArrowRight") { event.preventDefault(); moveClaw(1); }
+    if (event.code === "Space" && event.target?.tagName !== "BUTTON") { event.preventDefault(); beginClawDrop(); }
 });
 
 /* Sync website data to the optional native Windows companion. */

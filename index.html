@@ -23,6 +23,16 @@
                 <img src="reallogo.png" alt="DOYOURSTREAK">
             </div>
 
+            <div class="landing-quick-info">
+                <span class="landing-player">PLAYER</span>
+                <span class="landing-level">LVL 1</span>
+                <span class="landing-esp-status">ESP OFFLINE</span>
+                <details class="landing-how-to-play">
+                    <summary>HOW TO PLAY</summary>
+                    <p>Log in, add a habit, then mark it done to earn XP and build your streak. Connect ESP in the app.</p>
+                </details>
+            </div>
+
             <button id="loginButton" class="login-button">
                 LOGIN
             </button>
@@ -61,7 +71,11 @@
                 <div class="download-buttons">
 
                     <a href="#" class="download-button windows" id="windowsDownload">
-                        <span class="download-icon">▣</span>
+                        <span class="download-icon">
+                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                <path fill="#00A4EF" d="M5 10.4 21 8v14H5zM24 7.6l19-2.8V22H24zM5 25h16v14L5 36.6zM24 25h19v17.2l-19-2.8z"/>
+                            </svg>
+                        </span>
 
                         <div>
                             <small>DOWNLOAD FOR</small>
@@ -71,7 +85,16 @@
 
 
                     <a href="#" class="download-button android" id="androidDownload">
-                        <span class="download-icon">◆</span>
+                        <span class="download-icon">
+                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                <g fill="#3DDC84">
+                                    <path d="M13.2 13.6 9.7 7.5a1 1 0 0 1 1.7-1l3.7 6.4a15 15 0 0 1 18 0l3.7-6.4a1 1 0 0 1 1.7 1L35 13.6a14 14 0 0 1 6 11.4H7.2a14 14 0 0 1 6-11.4Z"/>
+                                    <path d="M7.2 27h33.6v9.2a4 4 0 0 1-4 4h-1.6v5.1a2.8 2.8 0 0 1-5.6 0v-5.1H18.4v5.1a2.8 2.8 0 0 1-5.6 0v-5.1h-1.6a4 4 0 0 1-4-4V27Zm-5.4 0a2.8 2.8 0 0 1 5.6 0v8a2.8 2.8 0 0 1-5.6 0v-8Zm38.8 0a2.8 2.8 0 0 1 5.6 0v8a2.8 2.8 0 0 1-5.6 0v-8Z"/>
+                                    <circle cx="16.5" cy="19" r="1.5" fill="#111"/>
+                                    <circle cx="31.5" cy="19" r="1.5" fill="#111"/>
+                                </g>
+                            </svg>
+                        </span>
 
                         <div>
                             <small>DOWNLOAD FOR</small>
@@ -235,8 +258,14 @@
         <!-- HEADER -->
         <header class="topbar">
 
-            <div class="brand">
-                <img src="reallogo.png" alt="DOYOURSTREAK">
+            <div class="brand-group">
+                <div class="brand">
+                    <img src="reallogo.png" alt="DOYOURSTREAK">
+                </div>
+                <div class="header-clock" aria-label="Current local date and time">
+                    <time id="headerClockTime"></time>
+                    <span id="headerClockDate"></span>
+                </div>
             </div>
 
             <div class="user-info">
@@ -259,6 +288,8 @@
                     <strong id="level">1</strong>
                 </div>
                 <span id="espTopStatus" class="esp-top-status" role="status" aria-live="polite">ESP32 OFFLINE</span>
+                <button id="openTutorialButton" class="tutorial-open-button" type="button">HOW TO PLAY</button>
+                <button id="logoutButton" class="logout-button" type="button" aria-label="Log out">LOG OUT</button>
             </div>
 
 
@@ -280,7 +311,7 @@
                     <strong id="coinAmount">0</strong>
                 </div>
 
-                <button id="premiumOpenButton" class="premium-open-button" type="button" aria-label="Open Premium">
+                <button id="premiumOpenButton" class="premium-open-button" type="button" aria-label="Buka Premium">
                     <img src="iconpremium.png" alt="Premium">
                 </button>
 
@@ -363,7 +394,34 @@
                 </div>
 
 
-                <div class="shop-items">
+                <div class="shop-categories" role="tablist" aria-label="Shop categories">
+                    <button
+                        class="shop-category active"
+                        type="button"
+                        role="tab"
+                        id="shopCharacterTab"
+                        aria-selected="true"
+                        aria-controls="shopItems"
+                        data-shop-category="character"
+                    >
+                        <img src="iconkategoriwallpaper.png" alt="">
+                        <span>CHARACTER</span>
+                    </button>
+                    <button
+                        class="shop-category"
+                        type="button"
+                        role="tab"
+                        id="shopBackgroundTab"
+                        aria-selected="false"
+                        aria-controls="shopItems"
+                        data-shop-category="background"
+                    >
+                        <img src="iconwallpaper.png" alt="">
+                        <span>BACKGROUND</span>
+                    </button>
+                </div>
+
+                <div class="shop-items" id="shopItems" role="tabpanel" aria-labelledby="shopCharacterTab">
 
                     <!-- OYENOMALI -->
                     <div class="shop-item">
@@ -484,6 +542,18 @@
                             <h2>FLAPPY BIRD</h2>
                             <p>Terbang melewati pipa dan pecahkan skor terbaik.</p>
                         </div>
+                    </button>
+                    <button id="openClawGame" class="game-card" type="button">
+                        <div class="game-card-icon"><img class="claw-game-icon" src="iconclaw.png" alt="Claw machine"></div>
+                        <div>
+                            <small>PRIZE CRANE</small>
+                            <h2>CLAW MACHINE</h2>
+                            <p>Capit karakter untuk dapat koin dan EXP. Hindari anomaly!</p>
+                        </div>
+                    </button>
+                    <button id="openCatBike" class="game-card" type="button">
+                        <div class="game-card-icon"><img class="cat-bike-game-icon" src="iconcatbike.jpg" alt="Cat riding a motorcycle"></div>
+                        <div><small>ENDLESS RIDE</small><h2>CAT BIKE</h2><p>Ride the sunny farm road and dodge cars and trucks!</p></div>
                     </button>
                      <!-- Tombol kecil ESP32 -->
                      <div class="esp-connect-controls">
@@ -683,6 +753,40 @@
                     </div>
                 </div>
 
+                <div id="clawGame" class="game-screen hidden">
+                    <div class="game-screen-header">
+                        <button id="backFromClaw" class="secondary-button" type="button">← MENU GAME</button>
+                        <h2>CLAW MACHINE</h2>
+                    </div>
+                    <div class="claw-scoreboard">
+                        <span>DITANGKAP <strong id="clawScore">0</strong></span>
+                        <span>KOIN <strong id="clawCoins">0</strong></span>
+                        <span>EXP <strong id="clawXP">0</strong></span>
+                    </div>
+                    <div class="claw-stage">
+                        <canvas id="clawCanvas" width="800" height="460" aria-label="Claw machine game"></canvas>
+                    </div>
+                    <p id="clawStatus" class="game-status">Gerakkan capit, lalu tekan CAPIT. Karakter memberi hadiah; anomaly bikin zonk.</p>
+                    <div class="claw-controls">
+                        <button id="clawLeft" class="game-action-button" type="button" aria-label="Move claw left">◀ KIRI</button>
+                        <button id="clawDrop" class="main-button" type="button">CAPIT</button>
+                        <button id="clawRight" class="game-action-button" type="button" aria-label="Move claw right">KANAN ▶</button>
+                    </div>
+                    <button id="clawRestart" class="main-button claw-restart hidden" type="button">MAIN LAGI</button>
+                    <small class="claw-hint">Bisa pakai tombol panah kiri/kanan, lalu Spasi untuk capit.</small>
+                </div>
+
+                <div id="catBikeGame" class="game-screen hidden">
+                    <div class="game-screen-header">
+                        <button id="backFromCatBike" class="secondary-button" type="button">← MENU GAME</button>
+                        <h2>🐱 CAT BIKE</h2>
+                    </div>
+                    <div class="cat-bike-scoreboard"><span>DISTANCE <strong id="catBikeDistance">0</strong> m</span><span>SCORE <strong id="catBikeScore">0</strong></span><span>BEST <strong id="catBikeBest">0</strong></span><span>POINTS EARNED <strong id="catBikePoints">0</strong></span></div>
+                    <div class="cat-bike-stage"><canvas id="catBikeCanvas" width="450" height="800" aria-label="Cat Bike endless road game"></canvas></div>
+                    <p id="catBikeStatus" class="game-status">Four lanes! Swipe or use ← → / A / D. Traffic can come from either end.</p>
+                    <div class="cat-bike-controls"><button id="catBikeLeft" class="game-action-button" type="button" aria-label="Steer left">◀ LEFT</button><button id="startCatBike" class="main-button" type="button">START RIDE</button><button id="catBikeRight" class="game-action-button" type="button" aria-label="Steer right">RIGHT ▶</button></div>
+                </div>
+
             </section>
 
         </div>
@@ -727,6 +831,18 @@
 
                 </div>
 
+                <div id="habitFilters" class="habit-filters" role="group" aria-label="Filter habits by category" hidden>
+                    <button class="habit-filter active" type="button" data-category="all" aria-pressed="true">ALL</button>
+                    <button class="habit-filter" type="button" data-category="health" aria-pressed="false">
+                        <img src="iconhealt.png" alt=""> HEALTH
+                    </button>
+                    <button class="habit-filter" type="button" data-category="happy" aria-pressed="false">
+                        <img src="iconhappy.png" alt=""> HAPPY
+                    </button>
+                    <button class="habit-filter" type="button" data-category="finance" aria-pressed="false">
+                        <img src="iconfinance.png" alt=""> FINANCE
+                    </button>
+                </div>
 
                 <div id="habitList" class="habit-list"></div>
 
@@ -758,9 +874,18 @@
 
             <div class="habit-modal-card">
 
-                <button id="closeModal" class="close-modal">×</button>
+                <div class="habit-modal-actions">
+                    <button id="minimizeModal" class="minimize-modal" type="button" aria-label="Minimize habit form" title="Minimize">−</button>
+                    <button id="closeModal" class="close-modal" aria-label="Close habit form">×</button>
+                </div>
 
-                <div class="modal-title">ADD NEW HABIT</div>
+                <div class="habit-modal-heading">
+                    <div><div class="modal-title">ADD NEW HABIT</div>
+                    <p class="modal-subtitle">Set up a habit, one step at a time.</p></div>
+                </div>
+                <div class="habit-progress" aria-label="Habit setup progress">
+                    <span class="habit-progress-fill" id="habitProgressFill"></span>
+                </div>
 
                 <!-- STEP 1 -->
                 <div class="habit-step active" id="habitStep1">
@@ -869,8 +994,40 @@
 
                     <h2>Choose your type</h2>
 
-                    <p>Pick an icon for your habit.</p>
+                    <p>Choose a category, then pick an icon for your habit.</p>
 
+                    <div class="category-options" role="group" aria-label="Habit category">
+                        <button type="button" class="category-option selected" data-category="health" aria-pressed="true">
+                            <img src="iconhealt.png" alt="">
+                            <span>HEALTH</span>
+                        </button>
+                        <button type="button" class="category-option" data-category="happy" aria-pressed="false">
+                            <img src="iconhappy.png" alt="">
+                            <span>HAPPY</span>
+                        </button>
+                        <button type="button" class="category-option" data-category="finance" aria-pressed="false">
+                            <img src="iconfinance.png" alt="">
+                            <span>FINANCE</span>
+                        </button>
+                    </div>
+
+                    <div id="financeFields" class="finance-fields hidden">
+                        <p>Set your savings goal and usual daily deposit. Checking this habit adds the deposit automatically.</p>
+                        <div class="finance-field-grid">
+                            <div class="input-group">
+                                <label for="financeTarget">SAVINGS GOAL (IDR)</label>
+                                <input id="financeTarget" type="number" min="1" step="1" inputmode="numeric" placeholder="e.g. 1000000">
+                            </div>
+                            <div class="input-group">
+                                <label for="financeInitialSaved">ALREADY SAVED (IDR)</label>
+                                <input id="financeInitialSaved" type="number" min="0" step="1" inputmode="numeric" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="financeDailyDeposit">DAILY DEPOSIT (IDR)</label>
+                                <input id="financeDailyDeposit" type="number" min="1" step="1" inputmode="numeric" placeholder="e.g. 10000">
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="emoji-options">
 
@@ -899,15 +1056,40 @@
                             ← BACK
                         </button>
 
-                        <button type="button" id="saveHabitButton" class="main-button">
-                            ADD HABIT ✓
+                        <button type="button" id="habitNext4" class="main-button">
+                            NEXT
                         </button>
 
                     </div>
 
                 </div>
 
+                <div class="habit-step" id="habitStep5">
+                    <div class="step-number">05</div>
+                    <h2>When should it reset?</h2>
+                    <p id="habitResetHelp">Choose how long until this habit can be completed again.</p>
+                    <div id="habitResetSettings" class="input-group">
+                        <label for="habitResetValue">RESET EVERY</label>
+                        <div class="habit-reset-controls">
+                            <input type="number" id="habitResetValue" min="1" max="365" value="1">
+                            <select id="habitResetUnit" aria-label="Reset interval unit">
+                                <option value="halfday">Half day (12 hours)</option>
+                                <option value="day" selected>Day(s)</option>
+                                <option value="week">Week(s)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="step-buttons">
+                        <button type="button" id="habitBack5" class="secondary-button">BACK</button>
+                        <button type="button" id="saveHabitButton" class="main-button">ADD HABIT</button>
+                    </div>
+                </div>
+
             </div>
+
+            <button id="restoreHabitModal" class="habit-modal-restore" type="button" aria-label="Restore habit form">
+                <span><strong>Habit setup minimized</strong><small>Click to continue</small></span>
+            </button>
 
         </div>
 
@@ -921,7 +1103,7 @@
                 <div class="info-header">
                     <small>DOYOURSTREAK</small>
                     <h1>CALENDAR & EVENTS</h1>
-                    <p>Check your schedule and the latest admin updates.</p>
+                    <p>Plan your next challenge and meet the DOYOURSTREAK community.</p>
                 </div>
 
                 <section class="local-leaderboard-card" aria-labelledby="localLeaderboardTitle">
@@ -971,67 +1153,70 @@
                 </div>
 
 
-                <!-- ADMIN EVENTS -->
+                <!-- COMMUNITY EVENTS -->
                 <div class="events-section">
 
                     <div class="events-title">
-                        <small>ADMIN UPDATE</small>
-                        <h2>EVENTS</h2>
+                        <small>NOVEMBER LINEUP</small>
+                        <h2>UPCOMING EVENTS</h2>
                     </div>
 
                     <div id="adminEvents" class="admin-events">
 
                         <!-- EVENT 1 -->
-                        <div class="event-card">
+                        <article class="event-card">
                             <div class="event-date">
-                                <strong>10</strong>
-                                <span>OCT</span>
+                                <strong>09</strong>
+                                <span>NOV</span>
                             </div>
 
                             <div class="event-content">
-                                <h3>STREAK WEEK</h3>
-                                <p>
-                                    Keep your streak alive this week and complete
-                                    your exercises every day!
-                                </p>
+                                <span class="event-tag">7 DAYS · +50 XP</span>
+                                <h3>STREAK SPRINT</h3>
+                                <p>Complete one habit each day for seven days and keep your streak alive.</p>
                             </div>
-                        </div>
+                            <span class="event-arrow" aria-hidden="true">↗</span>
+                        </article>
 
 
                         <!-- EVENT 2 -->
-                        <div class="event-card">
+                        <article class="event-card">
                             <div class="event-date">
                                 <strong>15</strong>
-                                <span>OCT</span>
+                                <span>NOV</span>
                             </div>
 
                             <div class="event-content">
-                                <h3>NEW CHARACTER UPDATE</h3>
-                                <p>
-                                    A new character might be coming to the shop.
-                                    Stay tuned!
-                                </p>
+                                <span class="event-tag">COMMUNITY · SHOWCASE</span>
+                                <h3>CHARACTER PARADE</h3>
+                                <p>Show off your character in chat and cheer on other streak builders.</p>
                             </div>
-                        </div>
+                            <span class="event-arrow" aria-hidden="true">↗</span>
+                        </article>
 
 
                         <!-- EVENT 3 -->
-                        <div class="event-card">
+                        <article class="event-card">
                             <div class="event-date">
-                                <strong>25</strong>
-                                <span>OCT</span>
+                                <strong>22</strong>
+                                <span>NOV</span>
                             </div>
 
                             <div class="event-content">
-                                <h3>COMMUNITY EVENT</h3>
-                                <p>
-                                    Complete your exercises and earn extra XP
-                                    during the event.
-                                </p>
+                                <span class="event-tag">WEEKEND · +30 XP</span>
+                                <h3>WEEKEND QUEST</h3>
+                                <p>Finish three habits this weekend to earn a bonus for your progress.</p>
                             </div>
-                        </div>
+                            <span class="event-arrow" aria-hidden="true">↗</span>
+                        </article>
 
                     </div>
+
+                    <button id="eventChatLaunch" class="event-chat-launch" type="button">
+                        <img src="iconchat.jpe" alt="">
+                        <span><strong>STREAK CHAT</strong><small>Join the community conversation</small></span>
+                        <span class="event-chat-launch-arrow" aria-hidden="true">↗</span>
+                    </button>
 
                 </div>
 
@@ -1039,36 +1224,85 @@
 
         </div>
 
+        <div id="eventChatPage" class="app-page">
+            <section class="event-chat-page">
+                <button id="eventChatBackButton" class="event-chat-back" type="button">← BACK TO EVENTS</button>
+                <section class="event-chat" aria-labelledby="eventChatTitle">
+                    <div class="event-chat-heading">
+                        <div>
+                            <small>LOCAL COMMUNITY · THIS DEVICE</small>
+                            <h1 id="eventChatTitle">STREAK CHAT</h1>
+                            <p>Ngobrol sebagai karaktermu dan beri semangat ke pemain lain.</p>
+                        </div>
+                        <span class="event-chat-status"><i aria-hidden="true"></i> CHAT AKTIF</span>
+                    </div>
+                    <div id="eventChatMessages" class="event-chat-messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
+                    <form id="eventChatForm" class="event-chat-form">
+                        <div class="event-chat-profile">
+                            <img id="eventChatAvatar" src="player.png" alt="">
+                            <span id="eventChatProfileName">PLAYER</span>
+                        </div>
+                        <label class="sr-only" for="eventChatInput">Tulis pesan chat</label>
+                        <textarea id="eventChatInput" rows="2" maxlength="280" placeholder="Tulis pesan untuk komunitas..." required></textarea>
+                        <button id="eventChatSend" type="submit" aria-label="Kirim pesan">KIRIM <span aria-hidden="true">↗</span></button>
+                    </form>
+                    <p id="eventChatFeedback" class="event-chat-feedback" aria-live="polite">Pesan tersimpan di perangkat ini.</p>
+                </section>
+            </section>
+        </div>
+
+        <div id="achievementsPage" class="app-page">
+            <section class="achievements-page">
+                <header class="achievements-header">
+                    <small>DOYOURSTREAK</small>
+                    <h1>ACHIEVEMENTS</h1>
+                    <p>Celebrate every milestone on your journey.</p>
+                </header>
+                <div id="awardsMenu" class="award-option-grid" aria-label="Choose an awards section">
+                    <button class="award-option" type="button" data-award-section="achievement"><small>YOUR MILESTONES</small><strong>Achievement</strong><span>Track long-term goals and progress.</span></button>
+                    <button class="award-option" type="button" data-award-section="weekly"><small>REFRESHES WEEKLY</small><strong>Weekly Quests</strong><span>Medium goals with medium rewards.</span></button>
+                    <button class="award-option" type="button" data-award-section="monthly"><small>REFRESHES MONTHLY</small><strong>Monthly Quests</strong><span>Hard goals with high rewards.</span></button>
+                    <button class="award-option" type="button" data-award-section="annual"><small>REFRESHES ANNUALLY</small><strong>Annual Quests</strong><span>Near-impossible goals with very high rewards.</span></button>
+                </div>
+                <section id="awardDetail" class="award-detail" hidden>
+                    <button id="awardBackButton" class="secondary-button award-back-button" type="button">← BACK TO AWARDS</button>
+                    <h2 id="awardDetailTitle"></h2>
+                    <div id="achievementList" class="achievement-list" aria-live="polite"></div>
+                    <div id="questList" class="quest-period-list" aria-live="polite"></div>
+                </section>
+            </section>
+        </div>
+
         <!-- ================= PREMIUM MODAL ================= -->
-        <div id="premiumModal" class="premium-modal hidden">
+        <div id="premiumModal" class="premium-modal hidden" role="dialog" aria-modal="true" aria-labelledby="premiumTitle">
             <div class="premium-card">
 
                 <button id="premiumCloseButton" class="premium-close" type="button"
-                    aria-label="Close Premium">×</button>
+                    aria-label="Tutup Premium">×</button>
 
                 <div class="premium-heading">
                     <img src="iconpremium.png" alt="">
                     <div>
-                        <small>DOYOURSTREAK EXCLUSIVE</small>
-                        <h2>PREMIUM</h2>
-                        <p>Upgrade your streak experience.</p>
+                        <small>FITUR EKSTRA</small>
+                        <h2 id="premiumTitle">Premium</h2>
+                        <p>Buka karakter spesial dan lihat progres kebiasaanmu.</p>
                     </div>
                 </div>
 
                 <div class="premium-tabs">
                     <button type="button" class="premium-tab active" data-premium-tab="characters">
-                        CHARACTERS
+                        Karakter
                     </button>
 
                     <button type="button" class="premium-tab" data-premium-tab="statistics">
-                        STATISTICS
+                        Statistik
                     </button>
                 </div>
 
                 <div id="premiumCharactersPanel" class="premium-panel">
                     <div class="premium-section-heading">
-                        <h3>Character Collection</h3>
-                        <p>Unlock exclusive characters and skins.</p>
+                        <h3>Koleksi karakter</h3>
+                        <p>Pilih karakter spesial untuk menemani streak-mu.</p>
                     </div>
 
                     <div id="premiumCharacterGrid" class="premium-character-grid"></div>
@@ -1076,23 +1310,21 @@
 
                 <div id="premiumStatisticsPanel" class="premium-panel hidden">
                     <div class="premium-section-heading">
-                        <h3>Priority Statistics</h3>
-                        <p>Understand your habits and completion progress.</p>
+                        <h3>Statistik kebiasaan</h3>
+                        <p>Lihat jumlah kebiasaan dan progres penyelesaiannya.</p>
                     </div>
 
                     <div id="premiumStatisticsContent"></div>
                 </div>
 
                 <div class="premium-demo-area">
-                    <p id="premiumStatusText">Premium Demo is currently locked.</p>
+                    <p id="premiumStatusText">Demo Premium belum aktif.</p>
 
                     <button id="premiumDemoButton" class="premium-demo-button" type="button">
-                        ACTIVATE PREMIUM DEMO
+                        Aktifkan demo gratis
                     </button>
 
-                    <small>
-                        Demo only — no real payment is made.
-                    </small>
+                    <small>Mode demo saja — gratis, tidak ada pembayaran. Status tersimpan di browser ini.</small>
                 </div>
 
             </div>
@@ -1100,27 +1332,69 @@
 
         <nav class="bottom-navbar">
 
-            <button class="bottom-nav-image" id="characterNav" type="button">
-                <img src="buttonkarakter.png" alt="Character">
+            <button class="bottom-nav-image" id="characterNav" type="button" aria-label="Home">
+                <img src="buttonkarakter.png" alt="">
+                <small>HOME</small>
             </button>
 
-            <button class="bottom-nav-image" id="shopNav" type="button">
-                <img src="shopbutton.png" alt="Shop">
+            <button class="bottom-nav-image" id="shopNav" type="button" aria-label="Catalog">
+                <img src="shopbutton.png" alt="">
+                <small>CATALOG</small>
             </button>
 
-            <button class="bottom-nav-image" id="exerciseNav" type="button">
-                <img src="buku.png" alt="Exercise">
+            <button class="bottom-nav-image" id="exerciseNav" type="button" aria-label="Habit">
+                <img src="buku.png" alt="">
+                <small>HABIT</small>
             </button>
 
-            <button class="bottom-nav-image" id="infoNav" type="button">
-                <img src="infobutton.png" alt="Info">
+            <button class="bottom-nav-image" id="infoNav" type="button" aria-label="Events">
+                <img src="infobutton.png" alt="">
+                <small>EVENTS</small>
             </button>
 
-            <button class="bottom-nav-image" id="gameNav" type="button">
-                <img src="gameicon.png" alt="Game">
+            <button class="bottom-nav-image" id="gameNav" type="button" aria-label="Games">
+                <img src="gameicon.png" alt="">
+                <small>GAMES</small>
+            </button>
+
+            <button class="bottom-nav-image achievement-nav" id="achievementsNav" type="button" aria-label="Achievements">
+                <img src="iconawardcat.png" alt="Achievements">
+                <small>AWARDS</small>
             </button>
 
         </nav>
+
+        <div id="achievementToast" class="achievement-toast" role="status" aria-live="polite" aria-atomic="true">
+            <span class="achievement-toast-icon" aria-hidden="true">🏆</span>
+            <span><small>ACHIEVEMENT UNLOCKED</small><strong id="achievementToastTitle"></strong></span>
+            <button id="closeAchievementToast" type="button" aria-label="Dismiss notification">×</button>
+        </div>
+
+        <div id="tutorialOverlay" class="tutorial-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
+            <section class="tutorial-card">
+                <div class="tutorial-card-top">
+                    <span id="tutorialStepCount">STEP 1 OF 6</span>
+                    <button id="closeTutorialButton" class="tutorial-close" type="button" aria-label="Close tutorial">×</button>
+                </div>
+                <h2 id="tutorialTitle"></h2>
+                <p id="tutorialDescription"></p>
+                <div class="tutorial-actions">
+                    <button id="skipTutorialButton" class="tutorial-skip" type="button">SKIP</button>
+                    <button id="nextTutorialButton" class="main-button" type="button">NEXT →</button>
+                </div>
+            </section>
+        </div>
+
+        <div id="logoutConfirmOverlay" class="logout-confirm-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="logoutConfirmTitle" aria-describedby="logoutConfirmDescription">
+            <section class="logout-confirm-card">
+                <h2 id="logoutConfirmTitle">Anda ingin log out?</h2>
+                <p id="logoutConfirmDescription">Progress Anda akan disimpan sebelum keluar.</p>
+                <div class="logout-confirm-actions">
+                    <button id="cancelLogoutButton" class="secondary-button" type="button">Cancel</button>
+                    <button id="confirmLogoutButton" class="main-button" type="button">Save and logout</button>
+                </div>
+            </section>
+        </div>
 
     </section>
 
