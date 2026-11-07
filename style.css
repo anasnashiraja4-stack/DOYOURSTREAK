@@ -5222,23 +5222,89 @@ body::before {
 @media (min-width: 980px) {
     .info-page {
         display: grid;
-        grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         column-gap: clamp(18px, 2.5vw, 32px);
         row-gap: 4px;
         align-items: start;
     }
 
-    .info-header,
-    .local-leaderboard-card {
+    .info-header {
         grid-column: 1 / -1;
         width: 100%;
         box-sizing: border-box;
     }
 
-    .friend-challenge-panel {
-        grid-column: 1 / -1;
+    .local-leaderboard-card {
+        grid-column: 1;
         width: 100%;
         margin: 0 0 22px;
+        padding: 16px;
+        box-sizing: border-box;
+    }
+
+    .local-leaderboard-heading {
+        margin: -16px -16px 16px;
+        padding: 14px 16px;
+        gap: 8px;
+    }
+
+    .local-leaderboard-heading h2 {
+        font-size: clamp(20px, 2.2vw, 27px);
+    }
+
+    .local-leaderboard-heading p { font-size: 12px; }
+    .leaderboard-champion { flex-basis: 64px; width: 64px; height: 64px; }
+
+    .friend-challenge-panel {
+        grid-column: 2;
+        width: 100%;
+        margin: 0 0 22px;
+        padding: 16px;
+        box-sizing: border-box;
+    }
+
+    .friend-challenge-panel .feature-panel-heading h2 {
+        font-size: clamp(20px, 2.2vw, 27px);
+    }
+
+    .friend-challenge-panel .feature-status {
+        font-size: 12px;
+    }
+
+    .friend-challenge-controls {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        margin: 14px 0 12px;
+    }
+
+    .friend-challenge-controls button {
+        padding: 7px 8px;
+        font-size: 11px;
+    }
+
+    .friend-challenge-controls label {
+        font-size: 12px;
+    }
+
+    .friend-challenge-controls select {
+        font-size: 12px;
+    }
+
+    .friend-list,
+    .friend-challenge-list {
+        font-size: 12px;
+    }
+
+    .friend-challenge-card {
+        padding: 10px 12px;
+    }
+
+    .friend-challenge-card h3 {
+        font-size: 14px;
+    }
+
+    .friend-challenge-controls #createFriendChallenge {
+        width: auto;
     }
 
     .calendar-card,
