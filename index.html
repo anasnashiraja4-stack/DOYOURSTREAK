@@ -421,6 +421,81 @@
 
         </div>
 
+        <section id="settingsPage" class="app-page settings-page" aria-labelledby="settingsTitle">
+            <header class="settings-heading">
+                <div class="settings-heading-copy">
+                    <img src="settingicon.png" alt="">
+                    <div>
+                        <p>DOYOURSTREAK</p>
+                        <h1 id="settingsTitle">Settings</h1>
+                    </div>
+                </div>
+                <button id="settingsEtcButton" class="settings-etc-trigger" type="button" aria-label="More options" aria-haspopup="dialog" aria-controls="settingsEtcPopup" aria-expanded="false">
+                    <img src="etcicon.png" alt="">
+                </button>
+            </header>
+
+            <section class="settings-card" aria-labelledby="languageTitle">
+                <div class="settings-section-heading">
+                    <img src="bahasa icon.png" alt="">
+                    <div>
+                        <h2 id="languageTitle">Language</h2>
+                        <p>Choose the language used throughout the app.</p>
+                    </div>
+                </div>
+                <div class="settings-language-options" role="group" aria-label="Choose language">
+                    <button type="button" class="settings-language-option" data-language="zh" aria-pressed="false">中文</button>
+                    <button type="button" class="settings-language-option" data-language="id" aria-pressed="false">Indonesia</button>
+                    <button type="button" class="settings-language-option" data-language="en" aria-pressed="false">English</button>
+                </div>
+            </section>
+
+            <section class="settings-card" aria-labelledby="profileSettingsTitle">
+                <div class="settings-section-heading settings-profile-heading">
+                    <div class="settings-profile-avatar-wrap">
+                        <img id="settingsProfileAvatar" class="settings-profile-avatar hidden" alt="Profile photo">
+                        <span id="settingsProfileInitials" class="settings-profile-initials" aria-hidden="true">P</span>
+                    </div>
+                    <div>
+                        <h2 id="profileSettingsTitle">Profile</h2>
+                        <p>Your current player details.</p>
+                        <div class="settings-avatar-actions">
+                            <input id="settingsAvatarInput" class="hidden" type="file" accept="image/*" aria-label="Choose a profile photo">
+                            <button id="settingsAvatarChoose" class="settings-avatar-button" type="button">Attach photo</button>
+                            <button id="settingsAvatarRemove" class="settings-avatar-remove hidden" type="button">Remove</button>
+                        </div>
+                        <p id="settingsAvatarFeedback" class="settings-avatar-feedback" role="status" aria-live="polite"></p>
+                    </div>
+                </div>
+                <dl class="settings-profile-details">
+                    <div><dt>Name</dt><dd id="settingsProfileName">Player</dd></div>
+                    <div><dt>Streak</dt><dd><span id="settingsProfileStreak">0</span> days</dd></div>
+                    <div>
+                        <dt>Password</dt>
+                        <dd class="settings-password-note">Not saved — secure sign-in is not connected yet.</dd>
+                    </div>
+                </dl>
+            </section>
+
+        </section>
+
+        <div id="settingsEtcPopup" class="settings-popup hidden" role="dialog" aria-modal="true" aria-labelledby="settingsEtcTitle">
+            <section class="settings-popup-card">
+                <header class="settings-popup-heading">
+                    <div>
+                        <p>DOYOURSTREAK</p>
+                        <h2 id="settingsEtcTitle">More options</h2>
+                    </div>
+                    <button id="settingsEtcClose" class="settings-popup-close" type="button" aria-label="Close more options">×</button>
+                </header>
+                <details class="settings-help">
+                    <summary>How to play</summary>
+                    <p>Add a habit, then mark it done to earn XP and build your streak. Your progress is saved in this browser.</p>
+                </details>
+                <button id="settingsLogoutButton" class="settings-logout-button" type="button">Log out</button>
+            </section>
+        </div>
+
         <!-- ================= SHOP PAGE ================= -->
 
         <div id="shopPage" class="app-page">
@@ -1438,6 +1513,11 @@
         </div>
 
         <nav class="bottom-navbar">
+
+            <button class="bottom-nav-image" id="settingsNav" type="button" aria-label="Settings">
+                <img src="settingicon.png" alt="">
+                <small>SETTING</small>
+            </button>
 
             <button class="bottom-nav-image" id="characterNav" type="button" aria-label="Home">
                 <img src="buttonkarakter.png" alt="">
