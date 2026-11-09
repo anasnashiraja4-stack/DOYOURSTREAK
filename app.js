@@ -65,6 +65,10 @@ const appScreen = document.getElementById("appScreen");
 
 const emailInput = document.getElementById("emailInput");
 const emailNext = document.getElementById("emailNext");
+const loginProviderMessage = document.getElementById("loginProviderMessage");
+const passwordInput = document.getElementById("passwordInput");
+const passwordConfirmInput = document.getElementById("passwordConfirmInput");
+const passwordError = document.getElementById("passwordError");
 
 const characterPlayer =
     document.getElementById("characterPlayer");
@@ -1789,6 +1793,23 @@ const loginModal =
 const closeLogin =
     document.getElementById("closeLogin");
 
+function clearLoginPasswords() {
+    if (passwordInput) passwordInput.value = "";
+    if (passwordConfirmInput) passwordConfirmInput.value = "";
+    if (passwordError) passwordError.textContent = "";
+    document.querySelectorAll("[data-password-toggle]").forEach((toggle) => {
+        const input = document.getElementById(toggle.dataset.passwordToggle);
+        if (input) input.type = "password";
+        toggle.textContent = "Show";
+        toggle.setAttribute("aria-pressed", "false");
+        toggle.setAttribute(
+            "aria-label",
+            toggle.dataset.passwordToggle === "passwordInput"
+                ? "Show password"
+                : "Show password confirmation"
+        );
+    });
+}
 
 /* OPEN LOGIN */
 
@@ -1855,6 +1876,7 @@ confirmLogoutButton?.addEventListener("click", () => {
 closeLogin?.addEventListener("click", () => {
 
     loginModal.classList.add("hidden");
+    clearLoginPasswords();
 
 });
 
@@ -1866,6 +1888,7 @@ loginModal?.addEventListener("click", (event) => {
     if (event.target === loginModal) {
 
         loginModal.classList.add("hidden");
+        clearLoginPasswords();
 
     }
 
@@ -1882,6 +1905,7 @@ document.addEventListener("keydown", (event) => {
     ) {
 
         loginModal.classList.add("hidden");
+        clearLoginPasswords();
 
     }
 
@@ -1931,6 +1955,8 @@ emailNext?.addEventListener("click", () => {
     const email =
         emailInput.value.trim();
 
+    const password = passwordInput?.value || "";
+    const passwordConfirmation = passwordConfirmInput?.value || "";
 
     if (!email) {
 
@@ -1956,11 +1982,53 @@ emailNext?.addEventListener("click", () => {
         return;
     }
 
+    if (password.length < 8) {
+        passwordError.textContent = "Use at least 8 characters for your password.";
+        passwordInput.focus();
+        return;
+    }
+
+    if (password !== passwordConfirmation) {
+        passwordError.textContent = "Your passwords do not match.";
+        passwordConfirmInput.focus();
+        return;
+    }
 
     emailError.textContent = "";
+    passwordError.textContent = "";
+    clearLoginPasswords();
 
     showLoginStep(2);
 
+});
+
+document.querySelectorAll("[data-password-toggle]").forEach((toggle) => {
+    toggle.addEventListener("click", () => {
+        const input = document.getElementById(toggle.dataset.passwordToggle);
+        if (!input) return;
+
+        const isVisible = input.type === "text";
+        input.type = isVisible ? "password" : "text";
+        toggle.textContent = isVisible ? "Show" : "Hide";
+        toggle.setAttribute("aria-pressed", String(!isVisible));
+        toggle.setAttribute(
+            "aria-label",
+            `${isVisible ? "Show" : "Hide"} ${
+                toggle.dataset.passwordToggle === "passwordInput"
+                    ? "password"
+                    : "password confirmation"
+            }`
+        );
+    });
+});
+
+["googleLoginButton", "gmailLoginButton"].forEach((buttonId) => {
+    document.getElementById(buttonId)?.addEventListener("click", () => {
+        if (loginProviderMessage) {
+            loginProviderMessage.textContent =
+                "Google/Gmail sign-in is not configured yet. Use email to continue.";
+        }
+    });
 });
 
 
@@ -1976,6 +2044,18 @@ emailInput?.addEventListener(
 
     }
 );
+
+passwordConfirmInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") emailNext?.click();
+});
+
+passwordInput?.addEventListener("input", () => {
+    if (passwordError) passwordError.textContent = "";
+});
+
+passwordConfirmInput?.addEventListener("input", () => {
+    if (passwordError) passwordError.textContent = "";
+});
 
 
 /* =====================================================

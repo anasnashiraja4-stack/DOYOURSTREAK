@@ -110,14 +110,14 @@
 
 
         <!-- LOGIN MODAL -->
-        <div id="loginModal" class="landing-login-modal hidden">
+        <div id="loginModal" class="landing-login-modal hidden" role="dialog" aria-modal="true" aria-label="Create your account">
 
             <div class="landing-login-card">
 
                 <!-- ================= STEP 1 : EMAIL ================= -->
                 <div class="login-step active" id="loginStep1">
 
-                    <button id="closeLogin" class="close-login">
+                    <button id="closeLogin" class="close-login" type="button" aria-label="Close sign up">
                         ×
                     </button>
 
@@ -129,29 +129,69 @@
                         01 / 03
                     </div>
 
-                    <h2>
-                        Welcome!
-                    </h2>
+                    <h2>Welcome!</h2>
 
-                    <p>
-                        Enter your email to start your journey.
-                    </p>
+                    <p class="login-description">Create your account and start your journey.</p>
 
                     <div class="input-group">
 
-                        <label for="emailInput">
-                            YOUR EMAIL
-                        </label>
+                        <label for="emailInput">YOUR EMAIL</label>
 
-                        <input type="email" id="emailInput" placeholder="Enter your email..." autocomplete="email">
+                        <input type="email" id="emailInput" placeholder="Enter your email..." autocomplete="email" required>
 
                     </div>
 
                     <p id="emailError" class="login-error"></p>
 
-                    <button id="emailNext" class="main-button">
-                        CONTINUE →
+                    <div class="input-group">
+                        <label for="passwordInput">PASSWORD</label>
+                        <div class="login-password-field">
+                            <input type="password" id="passwordInput" placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required>
+                            <button class="login-password-toggle" type="button" data-password-toggle="passwordInput" aria-label="Show password" aria-pressed="false">Show</button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="passwordConfirmInput">CONFIRM PASSWORD</label>
+                        <div class="login-password-field">
+                            <input type="password" id="passwordConfirmInput" placeholder="Enter your password again" autocomplete="new-password" required>
+                            <button class="login-password-toggle" type="button" data-password-toggle="passwordConfirmInput" aria-label="Show password confirmation" aria-pressed="false">Show</button>
+                        </div>
+                    </div>
+
+                    <p id="passwordError" class="login-error" role="alert"></p>
+                    <p class="login-security-note">Secure sign-in is not connected yet. Passwords are checked here but never saved.</p>
+
+                    <button id="emailNext" class="main-button" type="button">
+                        CONTINUE <span aria-hidden="true">→</span>
                     </button>
+
+                    <div class="login-provider-divider" aria-hidden="true">
+                        <span>OR CONTINUE WITH</span>
+                    </div>
+
+                    <div class="login-provider-buttons">
+                        <button id="googleLoginButton" class="login-provider-button" type="button">
+                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                <path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2l6.3 4.9c3.7-3.4 6.4-8.5 6.4-14.8Z"/>
+                                <path fill="#34A853" d="M24 44c5.4 0 10-1.8 13.3-4.8L31 34.3c-1.8 1.2-4.1 2-7 2-5.3 0-9.8-3.6-11.4-8.4l-6.5 5A20 20 0 0 0 24 44Z"/>
+                                <path fill="#FBBC05" d="M12.6 27.9a12 12 0 0 1 0-7.8l-6.5-5a20 20 0 0 0 0 17.8l6.5-5Z"/>
+                                <path fill="#EA4335" d="M24 12.1c3 0 5.6 1 7.7 3l5.8-5.8C34 6 29.4 4 24 4A20 20 0 0 0 6.1 15.1l6.5 5C14.2 15.7 18.7 12.1 24 12.1Z"/>
+                            </svg>
+                            <span>Google</span>
+                        </button>
+
+                        <button id="gmailLoginButton" class="login-provider-button" type="button">
+                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                <rect x="6" y="9" width="36" height="30" rx="4" fill="#ffffff" stroke="#EA4335" stroke-width="4"/>
+                                <path d="m8 13 16 13 16-13" fill="none" stroke="#EA4335" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Gmail</span>
+                        </button>
+                    </div>
+                    <p id="loginProviderMessage" class="login-provider-message" role="status" aria-live="polite">
+                        Google/Gmail sign-in is not enabled yet. Use email to continue.
+                    </p>
 
                 </div>
 
