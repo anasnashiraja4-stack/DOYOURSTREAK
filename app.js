@@ -150,6 +150,7 @@ const eventChatForm = document.getElementById("eventChatForm");
 const eventChatInput = document.getElementById("eventChatInput");
 const eventChatAvatar = document.getElementById("eventChatAvatar");
 const eventChatProfileName = document.getElementById("eventChatProfileName");
+const eventChatPremiumBadge = document.getElementById("eventChatPremiumBadge");
 const eventChatFeedback = document.getElementById("eventChatFeedback");
 let eventChatHistory = JSON.parse(localStorage.getItem("doyourstreak-event-chat") || "[]");
 if (!Array.isArray(eventChatHistory)) eventChatHistory = [];
@@ -1599,10 +1600,12 @@ function renderEventChat() {
     if (!eventChatMessagesElement) return;
 
     const characterImage = getEventChatCharacterImage();
+    const hasPremium = localStorage.getItem("doyourstreak-premium-demo") === "true";
     if (eventChatAvatar) eventChatAvatar.src = characterImage;
     if (eventChatProfileName) {
         eventChatProfileName.textContent = user?.characterName || user?.name || "PLAYER";
     }
+    eventChatPremiumBadge?.classList.toggle("hidden", !hasPremium);
 
     if (!eventChatHistory.length) {
         eventChatMessagesElement.innerHTML = '<p class="event-chat-empty">Belum ada pesan. Mulai obrolan dan kenalan dengan pemain lain!</p>';
@@ -1620,11 +1623,14 @@ function renderEventChat() {
             ? date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
             : "";
         const ownMessage = message?.profileId === activeProfileId ? " is-own-message" : "";
+        const premiumBadge = message?.isPremium === true
+            ? '<small class="event-chat-premium-badge">PRO</small>'
+            : "";
 
         return `<article class="event-chat-message${ownMessage}">
             <img class="event-chat-message-avatar" src="${escapeHTML(image)}" alt="">
             <div class="event-chat-message-body">
-                <div class="event-chat-message-meta"><strong>${name}</strong><time>${escapeHTML(time)}</time></div>
+                <div class="event-chat-message-meta"><div class="event-chat-author">${premiumBadge}<strong>${name}</strong></div><time>${escapeHTML(time)}</time></div>
                 <p>${text}</p>
             </div>
         </article>`;
@@ -1656,6 +1662,7 @@ eventChatForm?.addEventListener("submit", event => {
         profileId,
         name: user.characterName || user.name || "PLAYER",
         characterImage: getEventChatCharacterImage(),
+        isPremium: localStorage.getItem("doyourstreak-premium-demo") === "true",
         text: text.slice(0, 280),
         createdAt: Date.now()
     }].slice(-100);
@@ -2805,6 +2812,36 @@ const characters = [
         name: "CARET",
         image: "caret.png",
         price: 400
+    },
+    {
+        id: "armycat",
+        name: "ARMYCAT",
+        image: "armycat.png",
+        price: 230
+    },
+    {
+        id: "burgirengcat",
+        name: "BURGIRENGCAT",
+        image: "burgirengcat.png",
+        price: 250
+    },
+    {
+        id: "duriancat",
+        name: "DURIANCAT",
+        image: "duriancat.png",
+        price: 280
+    },
+    {
+        id: "gofoodcat",
+        name: "GOFOODCAT",
+        image: "gofoodcat.png",
+        price: 300
+    },
+    {
+        id: "officecat",
+        name: "OFFICECAT",
+        image: "officecat.png",
+        price: 330
     },
 
     // PREMIUM CHARACTERS

@@ -118,6 +118,10 @@ premiumDemoButton?.addEventListener("click", () => {
         renderCharacterShop();
     }
 
+    if (typeof renderEventChat === "function") {
+        renderEventChat();
+    }
+
 });
 
 
