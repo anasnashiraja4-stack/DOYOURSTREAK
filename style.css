@@ -8726,17 +8726,22 @@ body::before {
 .character-reaction-bubble {
     position: absolute;
     z-index: 4;
-    top: 4px;
+    top: 8px;
     left: 50%;
+    box-sizing: border-box;
+    max-width: calc(100% - 24px);
     transform: translateX(-50%);
-    white-space: nowrap;
-    padding: 7px 12px;
-    border: 2px solid #111;
-    border-radius: 14px;
+    padding: 6px 12px;
+    border: 1px solid rgba(20, 20, 20, .09);
+    border-radius: 12px;
     background: #fff;
-    box-shadow: 3px 3px 0 #111;
-    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(20, 20, 20, .12);
+    color: #252525;
+    font-size: 12px;
     font-weight: 900;
+    line-height: 1.25;
+    text-align: center;
+    overflow-wrap: anywhere;
     animation: bubblePop .22s cubic-bezier(.2, 1.5, .4, 1);
 }
 .character-main { position: relative; }
@@ -8981,6 +8986,118 @@ body::before {
 
 #characterPage .character-main img { width: 225px; filter: drop-shadow(0 10px 16px rgba(0, 0, 0, .16)); }
 #characterPage .character-main h2 { margin-top: 5px; font-size: 21px; text-shadow: 0 1px 0 #fff; }
+#characterPage .character-main .character-food {
+    position: absolute;
+    z-index: 4;
+    top: 54%;
+    left: calc(50% + 30px);
+    width: 72px !important;
+    height: 72px !important;
+    opacity: 0;
+    pointer-events: none;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .18));
+}
+#characterPage .character-main.character-feeding .character-food {
+    animation: characterFoodBite .7s ease-in both;
+}
+#characterPage .character-main.character-feeding img#playerImage,
+#characterPage .character-main.character-feeding .character-fallback {
+    animation: characterFeedChew .7s ease-in-out;
+}
+#characterPage .character-main.character-celebrating img#playerImage,
+#characterPage .character-main.character-celebrating .character-fallback {
+    animation: characterFeedHappy 1.5s cubic-bezier(.25, .75, .35, 1);
+}
+#characterPage .character-main .character-feed-hint {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 9px;
+}
+#characterPage .feed-hint-step {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 104px;
+    padding: 5px 7px;
+    border: 1px solid rgba(41, 47, 66, .1);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .78);
+    box-shadow: 0 2px 6px rgba(20, 20, 20, .04);
+}
+#characterPage .feed-hint-platform {
+    color: #777987;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .8px;
+}
+#characterPage .feed-hint-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #333642;
+    font-size: 9px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+#characterPage .feed-hint-count {
+    display: inline-flex;
+    min-width: 20px;
+    height: 18px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(41, 47, 66, .15);
+    border-radius: 6px;
+    background: #f3f4f8;
+    color: #303442;
+    font-size: 9px;
+    font-weight: 900;
+}
+#characterPage .character-feed-hint kbd {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(41, 47, 66, .2);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    background: #fff;
+    color: #303442;
+    font-family: inherit;
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 1;
+    text-align: center;
+}
+
+@keyframes characterFoodBite {
+    0% { opacity: 0; transform: translate(22px, 30px) scale(.55) rotate(18deg); }
+    35% { opacity: 1; }
+    75% { opacity: 1; transform: translate(-13px, -20px) scale(1) rotate(-8deg); }
+    100% { opacity: 0; transform: translate(-24px, -12px) scale(.7) rotate(8deg); }
+}
+
+@keyframes characterFeedChew {
+    0%, 100% { transform: translateY(0) scale(1); }
+    25%, 75% { transform: translateY(-2px) scale(1.035, .97); }
+    50% { transform: translateY(1px) scale(.98, 1.03); }
+}
+
+@keyframes characterFeedHappy {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    18% { transform: translateY(-22px) rotate(-5deg); }
+    36% { transform: translateY(0) rotate(0); }
+    54% { transform: translateY(-28px) rotate(5deg); }
+    72% { transform: translateY(0) rotate(0); }
+    86% { transform: translateY(-14px) rotate(-3deg); }
+}
 
 #characterPage .character-arrow {
     width: 42px;
@@ -9020,6 +9137,14 @@ body::before {
     #characterPage .character-display { min-height: 270px; margin-bottom: 10px; gap: 8px; border-radius: 18px; }
     #characterPage .character-main img { width: 185px; max-width: 55vw; }
     #characterPage .character-main h2 { font-size: 18px; }
+    #characterPage .character-main .character-food { width: 58px !important; height: 58px !important; }
+    #characterPage .character-main .character-feed-hint { gap: 4px; margin-top: 6px; }
+    #characterPage .feed-hint-step { min-width: 0; padding: 4px 5px; border-radius: 8px; }
+    #characterPage .feed-hint-platform { font-size: 6px; letter-spacing: .6px; }
+    #characterPage .feed-hint-action { gap: 4px; font-size: 8px; }
+    #characterPage .feed-hint-count { min-width: 16px; height: 16px; border-radius: 5px; font-size: 8px; }
+    #characterPage .character-feed-hint kbd { width: 16px; height: 16px; font-size: 8px; }
+    #characterPage .character-reaction-bubble { top: 5px; padding: 5px 10px; font-size: 11px; }
     #characterPage .character-arrow { width: 36px; height: 36px; border-radius: 11px; font-size: 20px; }
     #characterPage .character-xp { padding: 10px 12px; }
 }

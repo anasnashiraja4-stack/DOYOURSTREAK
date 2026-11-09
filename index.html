@@ -344,10 +344,21 @@
 
                 <div class="character-main">
                     <div id="characterReactionBubble" class="character-reaction-bubble hidden" aria-live="polite"></div>
+                    <img id="characterFood" class="character-food hidden" src="" alt="" aria-hidden="true">
                     <img id="playerImage" src="player.png" alt="Player">
                     <div id="characterFallback" class="character-fallback hidden" role="img" aria-label="Karakter anjing">🐶</div>
 
                     <h2 id="playerName">Player</h2>
+                    <div class="character-feed-hint" aria-label="Feeding controls">
+                        <span class="feed-hint-step">
+                            <span class="feed-hint-platform">MOBILE</span>
+                            <span class="feed-hint-action"><b class="feed-hint-count">×3</b>Tap character</span>
+                        </span>
+                        <span class="feed-hint-step">
+                            <span class="feed-hint-platform">DESKTOP</span>
+                            <span class="feed-hint-action"><kbd>E</kbd>Press to feed</span>
+                        </span>
+                    </div>
                 </div>
 
                 <button class="character-arrow" id="nextCharacter" type="button">

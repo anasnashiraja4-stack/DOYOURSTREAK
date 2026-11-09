@@ -1206,6 +1206,86 @@ function triggerCharacterReaction(reaction) {
     window.setTimeout(() => target.classList.remove(className), 1400);
 }
 
+function setupCharacterFeeding() {
+    const characterPage = document.getElementById("characterPage");
+    const characterMain = characterPage?.querySelector(".character-main");
+    const playerImage = document.getElementById("playerImage");
+    const fallback = document.getElementById("characterFallback");
+    const foodImage = document.getElementById("characterFood");
+    const bubble = document.getElementById("characterReactionBubble");
+    if (!characterPage || !characterMain || !playerImage || !fallback || !foodImage) return;
+
+    const foods = ["makanan1.png", "makanan2.png", "makanan3.png"];
+    const feedingReactions = ["Yay! So tasty!", "Mmm, so delicious!", "That was yummy!"];
+    let tapCount = 0;
+    let tapResetTimer;
+    let feeding = false;
+    let bubbleTimer;
+
+    const showBubble = message => {
+        if (!bubble) return;
+        bubble.textContent = message;
+        bubble.classList.remove("hidden");
+        window.clearTimeout(bubbleTimer);
+        bubbleTimer = window.setTimeout(() => bubble.classList.add("hidden"), 2200);
+    };
+
+    const feedCharacter = () => {
+        if (!characterPage.classList.contains("active") || feeding) return;
+        feeding = true;
+        foodImage.src = foods[Math.floor(Math.random() * foods.length)];
+        foodImage.classList.remove("hidden");
+        characterMain.classList.remove("character-feeding", "character-celebrating");
+        playerImage.classList.remove("character-feed-chewing", "character-feed-happy");
+        fallback.classList.remove("character-feed-chewing", "character-feed-happy");
+        void foodImage.offsetWidth;
+        characterMain.classList.add("character-feeding");
+        playerImage.classList.add("character-feed-chewing");
+        fallback.classList.add("character-feed-chewing");
+        window.setTimeout(() => {
+            foodImage.classList.add("hidden");
+            characterMain.classList.remove("character-feeding");
+            playerImage.classList.remove("character-feed-chewing");
+            fallback.classList.remove("character-feed-chewing");
+            characterMain.classList.add("character-celebrating");
+            playerImage.classList.add("character-feed-happy");
+            fallback.classList.add("character-feed-happy");
+            showBubble(feedingReactions[Math.floor(Math.random() * feedingReactions.length)]);
+
+            window.setTimeout(() => {
+                characterMain.classList.remove("character-celebrating");
+                playerImage.classList.remove("character-feed-happy");
+                fallback.classList.remove("character-feed-happy");
+                feeding = false;
+            }, 1500);
+        }, 700);
+    };
+
+    characterMain.addEventListener("pointerup", event => {
+        if (event.pointerType !== "touch" || !(playerImage.contains(event.target) || fallback.contains(event.target))) return;
+        tapCount += 1;
+        window.clearTimeout(tapResetTimer);
+        if (tapCount >= 3) {
+            tapCount = 0;
+            feedCharacter();
+            return;
+        }
+        tapResetTimer = window.setTimeout(() => {
+            tapCount = 0;
+        }, 700);
+    });
+
+    document.addEventListener("keydown", event => {
+        const target = event.target;
+        const isTyping = target instanceof HTMLElement
+            && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
+        if (event.code !== "KeyE" || event.repeat || event.ctrlKey || event.metaKey || event.altKey || isTyping) return;
+        feedCharacter();
+    });
+}
+
+setupCharacterFeeding();
+
 
 function toggleHabit(id) {
 
@@ -3093,7 +3173,10 @@ window.addEventListener("dys-feature-reward", event => {
 const shopBackgrounds = [
     { id: "room", name: "ROOM", image: "roombg.jpe", price: 1900 },
     { id: "sea", name: "SEA", image: "seabg.jpe", price: 2000 },
-    { id: "trail", name: "TRAIL", image: "trailbg.jpe", price: 3400 }
+    { id: "trail", name: "TRAIL", image: "trailbg.jpe", price: 3400 },
+    { id: "lawson", name: "LAWSON", image: "Lawsonbg.jpe", price: 2200 },
+    { id: "park", name: "PARK", image: "parkbg.jpe", price: 2500 },
+    { id: "station", name: "STATION", image: "stationbg.jpe", price: 2800 }
 ];
 
 function isBackgroundOwned(background) {
