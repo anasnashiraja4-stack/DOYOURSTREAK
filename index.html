@@ -110,14 +110,14 @@
 
 
         <!-- LOGIN MODAL -->
-        <div id="loginModal" class="landing-login-modal hidden">
+        <div id="loginModal" class="landing-login-modal hidden" role="dialog" aria-modal="true" aria-label="Create your account">
 
             <div class="landing-login-card">
 
                 <!-- ================= STEP 1 : EMAIL ================= -->
                 <div class="login-step active" id="loginStep1">
 
-                    <button id="closeLogin" class="close-login">
+                    <button id="closeLogin" class="close-login" type="button" aria-label="Close sign up">
                         ×
                     </button>
 
@@ -129,29 +129,69 @@
                         01 / 03
                     </div>
 
-                    <h2>
-                        Welcome!
-                    </h2>
+                    <h2>Welcome!</h2>
 
-                    <p>
-                        Enter your email to start your journey.
-                    </p>
+                    <p class="login-description">Create your account and start your journey.</p>
 
                     <div class="input-group">
 
-                        <label for="emailInput">
-                            YOUR EMAIL
-                        </label>
+                        <label for="emailInput">YOUR EMAIL</label>
 
-                        <input type="email" id="emailInput" placeholder="Enter your email..." autocomplete="email">
+                        <input type="email" id="emailInput" placeholder="Enter your email..." autocomplete="email" required>
 
                     </div>
 
                     <p id="emailError" class="login-error"></p>
 
-                    <button id="emailNext" class="main-button">
-                        CONTINUE →
+                    <div class="input-group">
+                        <label for="passwordInput">PASSWORD</label>
+                        <div class="login-password-field">
+                            <input type="password" id="passwordInput" placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required>
+                            <button class="login-password-toggle" type="button" data-password-toggle="passwordInput" aria-label="Show password" aria-pressed="false">Show</button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="passwordConfirmInput">CONFIRM PASSWORD</label>
+                        <div class="login-password-field">
+                            <input type="password" id="passwordConfirmInput" placeholder="Enter your password again" autocomplete="new-password" required>
+                            <button class="login-password-toggle" type="button" data-password-toggle="passwordConfirmInput" aria-label="Show password confirmation" aria-pressed="false">Show</button>
+                        </div>
+                    </div>
+
+                    <p id="passwordError" class="login-error" role="alert"></p>
+                    <p class="login-security-note">Secure sign-in is not connected yet. Passwords are checked here but never saved.</p>
+
+                    <button id="emailNext" class="main-button" type="button">
+                        CONTINUE <span aria-hidden="true">→</span>
                     </button>
+
+                    <div class="login-provider-divider" aria-hidden="true">
+                        <span>OR CONTINUE WITH</span>
+                    </div>
+
+                    <div class="login-provider-buttons">
+                        <button id="googleLoginButton" class="login-provider-button" type="button">
+                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                <path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2l6.3 4.9c3.7-3.4 6.4-8.5 6.4-14.8Z"/>
+                                <path fill="#34A853" d="M24 44c5.4 0 10-1.8 13.3-4.8L31 34.3c-1.8 1.2-4.1 2-7 2-5.3 0-9.8-3.6-11.4-8.4l-6.5 5A20 20 0 0 0 24 44Z"/>
+                                <path fill="#FBBC05" d="M12.6 27.9a12 12 0 0 1 0-7.8l-6.5-5a20 20 0 0 0 0 17.8l6.5-5Z"/>
+                                <path fill="#EA4335" d="M24 12.1c3 0 5.6 1 7.7 3l5.8-5.8C34 6 29.4 4 24 4A20 20 0 0 0 6.1 15.1l6.5 5C14.2 15.7 18.7 12.1 24 12.1Z"/>
+                            </svg>
+                            <span>Google</span>
+                        </button>
+
+                        <button id="gmailLoginButton" class="login-provider-button" type="button">
+                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                <rect x="6" y="9" width="36" height="30" rx="4" fill="#ffffff" stroke="#EA4335" stroke-width="4"/>
+                                <path d="m8 13 16 13 16-13" fill="none" stroke="#EA4335" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Gmail</span>
+                        </button>
+                    </div>
+                    <p id="loginProviderMessage" class="login-provider-message" role="status" aria-live="polite">
+                        Google/Gmail sign-in is not enabled yet. Use email to continue.
+                    </p>
 
                 </div>
 
@@ -344,10 +384,21 @@
 
                 <div class="character-main">
                     <div id="characterReactionBubble" class="character-reaction-bubble hidden" aria-live="polite"></div>
+                    <img id="characterFood" class="character-food hidden" src="" alt="" aria-hidden="true">
                     <img id="playerImage" src="player.png" alt="Player">
                     <div id="characterFallback" class="character-fallback hidden" role="img" aria-label="Karakter anjing">🐶</div>
 
                     <h2 id="playerName">Player</h2>
+                    <div class="character-feed-hint" aria-label="Feeding controls">
+                        <span class="feed-hint-step">
+                            <span class="feed-hint-platform">MOBILE</span>
+                            <span class="feed-hint-action"><b class="feed-hint-count">×3</b>Tap character</span>
+                        </span>
+                        <span class="feed-hint-step">
+                            <span class="feed-hint-platform">DESKTOP</span>
+                            <span class="feed-hint-action"><kbd>E</kbd>Press to feed</span>
+                        </span>
+                    </div>
                 </div>
 
                 <button class="character-arrow" id="nextCharacter" type="button">
@@ -368,6 +419,81 @@
                 </div>
             </section>
 
+        </div>
+
+        <section id="settingsPage" class="app-page settings-page" aria-labelledby="settingsTitle">
+            <header class="settings-heading">
+                <div class="settings-heading-copy">
+                    <img src="settingicon.png" alt="">
+                    <div>
+                        <p>DOYOURSTREAK</p>
+                        <h1 id="settingsTitle">Settings</h1>
+                    </div>
+                </div>
+                <button id="settingsEtcButton" class="settings-etc-trigger" type="button" aria-label="More options" aria-haspopup="dialog" aria-controls="settingsEtcPopup" aria-expanded="false">
+                    <img src="etcicon.png" alt="">
+                </button>
+            </header>
+
+            <section class="settings-card" aria-labelledby="languageTitle">
+                <div class="settings-section-heading">
+                    <img src="bahasa icon.png" alt="">
+                    <div>
+                        <h2 id="languageTitle">Language</h2>
+                        <p>Choose the language used throughout the app.</p>
+                    </div>
+                </div>
+                <div class="settings-language-options" role="group" aria-label="Choose language">
+                    <button type="button" class="settings-language-option" data-language="zh" aria-pressed="false">中文</button>
+                    <button type="button" class="settings-language-option" data-language="id" aria-pressed="false">Indonesia</button>
+                    <button type="button" class="settings-language-option" data-language="en" aria-pressed="false">English</button>
+                </div>
+            </section>
+
+            <section class="settings-card" aria-labelledby="profileSettingsTitle">
+                <div class="settings-section-heading settings-profile-heading">
+                    <div class="settings-profile-avatar-wrap">
+                        <img id="settingsProfileAvatar" class="settings-profile-avatar hidden" alt="Profile photo">
+                        <span id="settingsProfileInitials" class="settings-profile-initials" aria-hidden="true">P</span>
+                    </div>
+                    <div>
+                        <h2 id="profileSettingsTitle">Profile</h2>
+                        <p>Your current player details.</p>
+                        <div class="settings-avatar-actions">
+                            <input id="settingsAvatarInput" class="hidden" type="file" accept="image/*" aria-label="Choose a profile photo">
+                            <button id="settingsAvatarChoose" class="settings-avatar-button" type="button">Attach photo</button>
+                            <button id="settingsAvatarRemove" class="settings-avatar-remove hidden" type="button">Remove</button>
+                        </div>
+                        <p id="settingsAvatarFeedback" class="settings-avatar-feedback" role="status" aria-live="polite"></p>
+                    </div>
+                </div>
+                <dl class="settings-profile-details">
+                    <div><dt>Name</dt><dd id="settingsProfileName">Player</dd></div>
+                    <div><dt>Streak</dt><dd><span id="settingsProfileStreak">0</span> days</dd></div>
+                    <div>
+                        <dt>Password</dt>
+                        <dd class="settings-password-note">Not saved — secure sign-in is not connected yet.</dd>
+                    </div>
+                </dl>
+            </section>
+
+        </section>
+
+        <div id="settingsEtcPopup" class="settings-popup hidden" role="dialog" aria-modal="true" aria-labelledby="settingsEtcTitle">
+            <section class="settings-popup-card">
+                <header class="settings-popup-heading">
+                    <div>
+                        <p>DOYOURSTREAK</p>
+                        <h2 id="settingsEtcTitle">More options</h2>
+                    </div>
+                    <button id="settingsEtcClose" class="settings-popup-close" type="button" aria-label="Close more options">×</button>
+                </header>
+                <details class="settings-help">
+                    <summary>How to play</summary>
+                    <p>Add a habit, then mark it done to earn XP and build your streak. Your progress is saved in this browser.</p>
+                </details>
+                <button id="settingsLogoutButton" class="settings-logout-button" type="button">Log out</button>
+            </section>
         </div>
 
         <!-- ================= SHOP PAGE ================= -->
@@ -844,8 +970,32 @@
                     </button>
                 </div>
 
+                <button id="reminderControlsToggle" class="reminder-controls-toggle" type="button" aria-pressed="false" hidden>
+                    SEMBUNYIKAN PENGINGAT
+                </button>
                 <div id="habitList" class="habit-list"></div>
 
+                <section class="feature-panel" aria-labelledby="streakProtectionTitle">
+                    <div class="feature-panel-heading">
+                        <div>
+                            <small>JAGA RUTINITAS</small>
+                            <h2 id="streakProtectionTitle">Pengingat &amp; Streak Freeze</h2>
+                        </div>
+                        <div class="feature-panel-actions">
+                            <p>Freeze: <strong id="freezeCount">0</strong></p>
+                            <button id="reminderPanelToggle" class="reminder-panel-toggle" type="button" aria-controls="reminderPanelContent" aria-expanded="false">
+                                LIHAT PENGATURAN
+                            </button>
+                        </div>
+                    </div>
+                    <div id="reminderPanelContent" class="feature-panel-content" hidden>
+                        <p class="feature-status">1 Freeze melindungi 1 hari kalender yang terlewat. Hari yang terlewat diperiksa saat aplikasi dibuka; jika stok habis, streak direset. Freeze pertama didapat dari pencapaian 7 hari.</p>
+                        <div id="reminderList" class="reminder-list"></div>
+                        <p id="reminderStatus" class="feature-status" role="status" aria-live="polite">
+                            Pengingat hanya berjalan saat aplikasi terbuka.
+                        </p>
+                    </div>
+                </section>
 
                 <div id="emptyState" class="empty-state">
 
@@ -1127,6 +1277,34 @@
                     <div id="localLeaderboard" class="local-leaderboard" aria-live="polite"></div>
                 </section>
 
+                <section class="feature-panel friend-challenge-panel" aria-labelledby="friendChallengeTitle">
+                    <div class="feature-panel-heading">
+                        <div>
+                            <small>PROFIL DI PERANGKAT INI</small>
+                            <h2 id="friendChallengeTitle">Tantangan Teman</h2>
+                            <p>Ajak profil lain berlomba menjaga rutinitas. Hari dihitung jika minimal satu habit selesai.</p>
+                        </div>
+                    </div>
+                    <p class="feature-status">Teman adalah profil lokal di browser ini. Progres tidak tersinkron ke perangkat lain.</p>
+                    <div class="friend-challenge-controls">
+                        <div class="friend-challenge-field">
+                            <label for="friendProfileSelect">Profil teman</label>
+                            <select id="friendProfileSelect"></select>
+                        </div>
+                        <button id="addFriendButton" type="button" class="secondary-button">Tambah teman</button>
+                        <div class="friend-challenge-field">
+                            <label for="challengeTypeSelect">Pilih tantangan</label>
+                            <select id="challengeTypeSelect">
+                                <option value="streak">Streak 3 hari · berturut-turut</option>
+                                <option value="weekly">Mingguan · target 5 dari 7 hari</option>
+                            </select>
+                        </div>
+                        <button id="createFriendChallenge" type="button" class="main-button">Buat tantangan</button>
+                    </div>
+                    <div id="friendList" class="friend-list" aria-live="polite"></div>
+                    <div id="friendChallengeList" class="friend-challenge-list" aria-live="polite"></div>
+                </section>
+
                 <!-- CALENDAR -->
                 <div class="calendar-card">
 
@@ -1240,7 +1418,10 @@
                     <form id="eventChatForm" class="event-chat-form">
                         <div class="event-chat-profile">
                             <img id="eventChatAvatar" src="player.png" alt="">
-                            <span id="eventChatProfileName">PLAYER</span>
+                            <div class="event-chat-profile-copy">
+                                <small id="eventChatPremiumBadge" class="event-chat-premium-badge hidden">PRO</small>
+                                <span id="eventChatProfileName">PLAYER</span>
+                            </div>
                         </div>
                         <label class="sr-only" for="eventChatInput">Tulis pesan chat</label>
                         <textarea id="eventChatInput" rows="2" maxlength="280" placeholder="Tulis pesan untuk komunitas..." required></textarea>
@@ -1255,14 +1436,15 @@
             <section class="achievements-page">
                 <header class="achievements-header">
                     <small>DOYOURSTREAK</small>
-                    <h1>ACHIEVEMENTS</h1>
-                    <p>Celebrate every milestone on your journey.</p>
+                    <h1>PENCAPAIAN &amp; QUEST</h1>
+                    <p>Pantau progres, raih hadiah, dan bangun rutinitas.</p>
                 </header>
                 <div id="awardsMenu" class="award-option-grid" aria-label="Choose an awards section">
-                    <button class="award-option" type="button" data-award-section="achievement"><small>YOUR MILESTONES</small><strong>Achievement</strong><span>Track long-term goals and progress.</span></button>
-                    <button class="award-option" type="button" data-award-section="weekly"><small>REFRESHES WEEKLY</small><strong>Weekly Quests</strong><span>Medium goals with medium rewards.</span></button>
-                    <button class="award-option" type="button" data-award-section="monthly"><small>REFRESHES MONTHLY</small><strong>Monthly Quests</strong><span>Hard goals with high rewards.</span></button>
-                    <button class="award-option" type="button" data-award-section="annual"><small>REFRESHES ANNUALLY</small><strong>Annual Quests</strong><span>Near-impossible goals with very high rewards.</span></button>
+                    <button class="award-option" type="button" data-award-section="achievement"><small>PERJALANANMU</small><strong>Pencapaian</strong><span>Buka badge dari pencapaian jangka panjang.</span></button>
+                    <button class="award-option" type="button" data-award-section="daily"><small>DIULANG HARIAN</small><strong>Quest Harian</strong><span>Selesaikan target habit harian.</span></button>
+                    <button class="award-option" type="button" data-award-section="weekly"><small>DIULANG MINGGUAN</small><strong>Quest Mingguan</strong><span>Jaga konsistensi setiap minggu.</span></button>
+                    <button class="award-option" type="button" data-award-section="monthly"><small>DIULANG BULANAN</small><strong>Quest Bulanan</strong><span>Bangun progres habit jangka panjang.</span></button>
+                    <button class="award-option" type="button" data-award-section="annual"><small>QUEST LAMA</small><strong>Quest Tahunan</strong><span>Lanjutkan tantangan tahunan yang tersedia.</span></button>
                 </div>
                 <section id="awardDetail" class="award-detail" hidden>
                     <button id="awardBackButton" class="secondary-button award-back-button" type="button">← BACK TO AWARDS</button>
@@ -1332,6 +1514,11 @@
 
         <nav class="bottom-navbar">
 
+            <button class="bottom-nav-image" id="settingsNav" type="button" aria-label="Settings">
+                <img src="settingicon.png" alt="">
+                <small>SETTING</small>
+            </button>
+
             <button class="bottom-nav-image" id="characterNav" type="button" aria-label="Home">
                 <img src="buttonkarakter.png" alt="">
                 <small>HOME</small>
@@ -1400,6 +1587,7 @@
 
 
     <!-- JAVASCRIPT -->
+    <script src="features.js"></script>
     <script src="app.js"></script>
     <script src="premium.js"></script>
 

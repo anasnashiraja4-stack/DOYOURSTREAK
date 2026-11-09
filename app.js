@@ -33,11 +33,645 @@ let stats = JSON.parse(
     streak: 0,
     lastCompletedDate: null
 };
-stats.habitsCompletedTotal = Math.max(0, Number(stats.habitsCompletedTotal) || 0);
+normalizeStats(stats);
 let achievements = JSON.parse(localStorage.getItem("doyourstreak-achievements") || "{}") || {};
 let questProgress = JSON.parse(localStorage.getItem("doyourstreak-quests") || "{}") || {};
 let localProfiles = JSON.parse(localStorage.getItem("doyourstreak-profiles") || "[]");
 let activeProfileId = user?.profileId || null;
+
+const appTranslations = {
+    id: {
+        "Welcome!": "Selamat datang!",
+        "Create your account and start your journey.": "Buat akun dan mulai perjalananmu.",
+        "YOUR EMAIL": "EMAIL KAMU",
+        "PASSWORD": "KATA SANDI",
+        "CONFIRM PASSWORD": "KONFIRMASI KATA SANDI",
+        "CONTINUE": "LANJUTKAN",
+        "OR CONTINUE WITH": "ATAU LANJUTKAN DENGAN",
+        "Enter your email...": "Masukkan email...",
+        "At least 8 characters": "Minimal 8 karakter",
+        "Enter your password again": "Masukkan ulang kata sandi",
+        "Show": "Tampilkan",
+        "Hide": "Sembunyikan",
+        "CHARACTER NAME": "NAMA KARAKTER",
+        "Enter character name...": "Masukkan nama karakter...",
+        "START JOURNEY 🚀": "MULAI PERJALANAN 🚀",
+        "HOW TO PLAY": "CARA BERMAIN",
+        "Log in, add a habit, then mark it done to earn XP and build your streak. Connect ESP in the app.": "Masuk, tambahkan kebiasaan, lalu tandai selesai untuk mendapat XP dan membangun streak. Hubungkan ESP di aplikasi.",
+        "PLAYER": "PEMAIN",
+        "LOG OUT": "KELUAR",
+        "STREAK": "STREAK",
+        "TOTAL XP": "TOTAL XP",
+        "TODAY": "HARI INI",
+        "Tap character": "Ketuk karakter",
+        "Press to feed": "Tekan untuk memberi makan",
+        "CHARACTER STORE": "TOKO KARAKTER",
+        "CHARACTER SHOP": "TOKO KARAKTER",
+        "CHARACTER": "KARAKTER",
+        "BACKGROUND": "LATAR",
+        "BUY": "BELI",
+        "HOME": "BERANDA",
+        "CATALOG": "KATALOG",
+        "HABIT": "KEBIASAAN",
+        "EVENTS": "ACARA",
+        "GAMES": "PERMAINAN",
+        "AWARDS": "PENGHARGAAN",
+        "ACHIEVEMENT UNLOCKED": "PENCAPAIAN TERBUKA",
+        "SKIP": "LEWATI",
+        "NEXT →": "LANJUT →",
+        "Anda ingin log out?": "Anda ingin keluar?",
+        "Progress Anda akan disimpan sebelum keluar.": "Progres Anda akan disimpan sebelum keluar.",
+        "Cancel": "Batal",
+        "Save and logout": "Simpan dan keluar",
+        "Please enter a valid email.": "Masukkan alamat email yang valid.",
+        "Use at least 8 characters for your password.": "Gunakan kata sandi minimal 8 karakter.",
+        "Your passwords do not match.": "Kata sandi tidak cocok.",
+        "Please give your character a name.": "Beri nama untuk karaktermu.",
+        "Name must be at least 2 characters.": "Nama harus minimal 2 karakter.",
+        "Add a habit, then mark it done to earn XP and build your streak. Your progress is saved in this browser.": "Tambahkan kebiasaan, lalu tandai selesai untuk mendapat XP dan membangun streak. Progres tersimpan di browser ini.",
+        "Secure sign-in is not connected yet. Passwords are checked here but never saved.": "Login aman belum terhubung. Kata sandi hanya diperiksa dan tidak pernah disimpan.",
+        "No profiles yet": "Belum ada profil",
+        "New player name": "Nama pemain baru",
+        "Switch local profile": "Ganti profil lokal",
+        "Example: Read a book": "Contoh: Membaca buku",
+        "Mark done": "Tandai selesai",
+        "Add habit": "Tambah kebiasaan",
+        "No habits yet": "Belum ada kebiasaan",
+        "All": "Semua",
+        "Health": "Kesehatan",
+        "Happy": "Bahagia",
+        "Finance": "Keuangan",
+        "Normal": "Normal",
+        "High": "Tinggi",
+        "Low": "Rendah",
+        "Daily": "Harian",
+        "Weekly": "Mingguan",
+        "Monthly": "Bulanan",
+        "Close": "Tutup",
+        "Save": "Simpan",
+        "Delete": "Hapus",
+        "Edit": "Ubah",
+        "Back": "Kembali",
+        "Search": "Cari",
+        "Loading...": "Memuat...",
+        "No events yet.": "Belum ada acara.",
+        "Send": "Kirim",
+        "Message": "Pesan",
+        "Achievements": "Pencapaian",
+        "Quests": "Misi",
+        "Daily tasks": "Tugas harian",
+        "Your habits": "Kebiasaanmu",
+        "Add your first habit": "Tambahkan kebiasaan pertamamu",
+        "LOGIN": "MASUK",
+        "BUILD YOUR STREAK": "BANGUN STREAK-MU",
+        "MAKE YOUR": "JADIKAN",
+        "HABITS A": "KEBIASAANMU",
+        "GAME.": "SEBUAH PERMAINAN.",
+        "Build better habits, keep your streak, earn XP and become the best version of yourself.": "Bangun kebiasaan baik, jaga streak, dapatkan XP, dan jadi versi terbaik dirimu.",
+        "DOWNLOAD FOR": "UNDUH UNTUK",
+        "WINDOWS": "WINDOWS",
+        "ANDROID": "ANDROID",
+        "Choose Your": "Pilih",
+        "Character": "Karakter",
+        "This character will accompany you on your streak journey.": "Karakter ini akan menemanimu membangun streak.",
+        "SELECTED": "DIPILIH",
+        "Name Your": "Beri Nama",
+        "Give your character a name before starting your journey.": "Beri nama karaktermu sebelum memulai perjalanan.",
+        "MOBILE": "SELULER",
+        "DESKTOP": "KOMPUTER",
+        "MINIGAME": "MINIGAME",
+        "PLAY & EARN": "MAIN & DAPATKAN HADIAH",
+        "BATTLE": "BERTARUNG",
+        "FIGHTING": "PERTARUNGAN",
+        "RUN": "LARI",
+        "DINO RUN": "LARI DINO",
+        "ARCADE": "ARCADE",
+        "FLAPPY BIRD": "FLAPPY BIRD",
+        "PRIZE CRANE": "MESIN CAPIT HADIAH",
+        "CLAW MACHINE": "MESIN CAPIT",
+        "ENDLESS RIDE": "BALAP TANPA AKHIR",
+        "CAT BIKE": "SEPEDA KUCING",
+        "Ride the sunny farm road and dodge cars and trucks!": "Susuri jalan pertanian dan hindari mobil serta truk!",
+        "MONSTER": "MONSTER",
+        "Ready to fight!": "Siap bertarung!",
+        "ATTACK": "SERANG",
+        "SPECIAL": "SPESIAL",
+        "HEAVY": "BERAT",
+        "DEFEND": "BERTAHAN",
+        "RECOVER": "PULIHKAN",
+        "PLAY AGAIN": "MAIN LAGI",
+        "SCORE:": "SKOR:",
+        "BEST:": "TERBAIK:",
+        "Press SPACE or click to jump!": "Tekan SPASI atau klik untuk melompat!",
+        "START RUN": "MULAI LARI",
+        "JUMP": "LOMPAT",
+        "MENU GAME": "MENU PERMAINAN",
+        "DISTANCE": "JARAK",
+        "POINTS EARNED": "POIN DIDAPAT",
+        "Four lanes! Swipe or use ← → / A / D. Traffic can come from either end.": "Empat jalur! Geser atau gunakan ← → / A / D. Kendaraan bisa datang dari kedua arah.",
+        "LEFT": "KIRI",
+        "START RIDE": "MULAI BERKENDARA",
+        "RIGHT": "KANAN",
+        "DAILY TASK": "TUGAS HARIAN",
+        "Loading daily task...": "Memuat tugas harian...",
+        "CLAIM": "KLAIM",
+        "YOUR ROUTINE": "RUTINITASMU",
+        "Today's Habits": "Kebiasaan Hari Ini",
+        "+ ADD HABIT": "+ TAMBAH KEBIASAAN",
+        "ALL": "SEMUA",
+        "HEALTH": "KESEHATAN",
+        "HAPPY": "BAHAGIA",
+        "FINANCE": "KEUANGAN",
+        "HIDE REMINDERS": "SEMBUNYIKAN PENGINGAT",
+        "KEEP YOUR ROUTINE": "JAGA RUTINITASMU",
+        "Reminders & Streak Freeze": "Pengingat & Pelindung Streak",
+        "Freeze:": "Pelindung:",
+        "VIEW SETTINGS": "LIHAT PENGATURAN",
+        "1 Freeze protects 1 missed calendar day. Missed days are checked when the app opens; if you run out, your streak resets. The first Freeze is earned at a 7-day streak.": "1 pelindung menjaga 1 hari kalender yang terlewat. Hari yang terlewat diperiksa saat aplikasi dibuka; jika habis, streak direset. Pelindung pertama didapat setelah streak 7 hari.",
+        "Reminders only run while the app is open.": "Pengingat hanya berjalan saat aplikasi terbuka.",
+        "Add your first habit and start your streak.": "Tambahkan kebiasaan pertamamu dan mulai streak.",
+        "CREATE HABIT": "BUAT KEBIASAAN",
+        "ADD NEW HABIT": "TAMBAH KEBIASAAN BARU",
+        "Set up a habit, one step at a time.": "Atur kebiasaanmu, satu langkah demi satu langkah.",
+        "What is your habit?": "Apa kebiasaanmu?",
+        "Give your habit a name.": "Beri nama untuk kebiasaanmu.",
+        "HABIT NAME": "NAMA KEBIASAAN",
+        "When will you do it?": "Kapan kamu akan melakukannya?",
+        "Choose your habit time.": "Pilih waktu kebiasaanmu.",
+        "TIME": "WAKTU",
+        "How important is it?": "Seberapa penting?",
+        "Choose your priority.": "Pilih tingkat prioritas.",
+        "Choose your type": "Pilih jenis kebiasaan",
+        "Choose a category, then pick an icon for your habit.": "Pilih kategori, lalu pilih ikon untuk kebiasaanmu.",
+        "Set your savings goal and usual daily deposit. Checking this habit adds the deposit automatically.": "Atur target tabungan dan setoran harian. Menyelesaikan kebiasaan ini akan menambahkan setoran secara otomatis.",
+        "SAVINGS GOAL (IDR)": "TARGET TABUNGAN (IDR)",
+        "ALREADY SAVED (IDR)": "SUDAH DITABUNG (IDR)",
+        "DAILY DEPOSIT (IDR)": "SETORAN HARIAN (IDR)",
+        "When should it reset?": "Kapan kebiasaan diulang?",
+        "Choose how long until this habit can be completed again.": "Pilih jeda sebelum kebiasaan ini bisa diselesaikan lagi.",
+        "RESET EVERY": "ULANGI SETIAP",
+        "Half day (12 hours)": "Setengah hari (12 jam)",
+        "Day(s)": "Hari",
+        "Week(s)": "Minggu",
+        "Habit setup minimized": "Pengaturan kebiasaan diminimalkan",
+        "Click to continue": "Klik untuk melanjutkan",
+        "CALENDAR & EVENTS": "KALENDER & ACARA",
+        "Plan your next challenge and meet the DOYOURSTREAK community.": "Rencanakan tantangan berikutnya dan temui komunitas DOYOURSTREAK.",
+        "THIS DEVICE": "PERANGKAT INI",
+        "LOCAL PLAYER RANKING": "PERINGKAT PEMAIN LOKAL",
+        "Compare XP and streaks between profiles saved on this device.": "Bandingkan XP dan streak antarprofil di perangkat ini.",
+        "ACTIVE PROFILE": "PROFIL AKTIF",
+        "ADD A PROFILE": "TAMBAH PROFIL",
+        "ADD": "TAMBAH",
+        "October 2026": "Oktober 2026",
+        "MON": "SEN",
+        "TUE": "SEL",
+        "WED": "RAB",
+        "THU": "KAM",
+        "FRI": "JUM",
+        "SAT": "SAB",
+        "SUN": "MIN",
+        "UPCOMING EVENTS": "ACARA MENDATANG",
+        "7 DAYS · +50 XP": "7 HARI · +50 XP",
+        "STREAK SPRINT": "SPRINT STREAK",
+        "Complete one habit each day for seven days and keep your streak alive.": "Selesaikan satu kebiasaan setiap hari selama tujuh hari dan jaga streak-mu.",
+        "COMMUNITY · SHOWCASE": "KOMUNITAS · PAMERAN",
+        "CHARACTER PARADE": "PARADE KARAKTER",
+        "Show off your character in chat and cheer on other streak builders.": "Pamerkan karaktermu di chat dan dukung pemain lain.",
+        "WEEKEND · +30 XP": "AKHIR PEKAN · +30 XP",
+        "WEEKEND QUEST": "MISI AKHIR PEKAN",
+        "Finish three habits this weekend to earn a bonus for your progress.": "Selesaikan tiga kebiasaan akhir pekan ini untuk mendapat bonus.",
+        "STREAK CHAT": "CHAT STREAK",
+        "Join the community conversation": "Gabung dalam percakapan komunitas",
+        "← BACK TO EVENTS": "← KEMBALI KE ACARA",
+        "PENCAPAIAN & QUEST": "PENCAPAIAN & MISI",
+        "Pantau progres, raih hadiah, dan bangun rutinitas.": "Pantau progres, raih hadiah, dan bangun rutinitas.",
+        "PERJALANANMU": "PERJALANANMU",
+        "Pencapaian": "Pencapaian",
+        "Buka badge dari pencapaian jangka panjang.": "Buka lencana dari pencapaian jangka panjang.",
+        "DIULANG HARIAN": "DIULANG HARIAN",
+        "Quest Harian": "Misi Harian",
+        "Selesaikan target habit harian.": "Selesaikan target kebiasaan harian.",
+        "DIULANG MINGGUAN": "DIULANG MINGGUAN",
+        "Quest Mingguan": "Misi Mingguan",
+        "Jaga konsistensi setiap minggu.": "Jaga konsistensi setiap minggu.",
+        "DIULANG BULANAN": "DIULANG BULANAN",
+        "Quest Bulanan": "Misi Bulanan",
+        "Bangun progres habit jangka panjang.": "Bangun progres kebiasaan jangka panjang.",
+        "QUEST LAMA": "MISI TAHUNAN",
+        "Quest Tahunan": "Misi Tahunan",
+        "Lanjutkan tantangan tahunan yang tersedia.": "Lanjutkan tantangan tahunan yang tersedia.",
+        "← BACK TO AWARDS": "← KEMBALI KE PENGHARGAAN",
+        "FITUR EKSTRA": "FITUR EKSTRA",
+        "Main game menggunakan character kamu sendiri.": "Mainkan game dengan karaktermu sendiri.",
+        "Gunakan strategi untuk mengalahkan monster.": "Gunakan strategi untuk mengalahkan monster.",
+        "Lompat dan hindari obstacle.": "Melompat dan hindari rintangan.",
+        "Terbang melewati pipa dan pecahkan skor terbaik.": "Terbang melewati pipa dan pecahkan rekor.",
+        "Tekan MULAI, lalu klik atau tekan spasi untuk terbang.": "Tekan MULAI, lalu klik atau tekan spasi untuk terbang.",
+        "Gerakkan capit, lalu tekan CAPIT. Karakter memberi hadiah; anomaly bikin zonk.": "Gerakkan capit, lalu tekan CAPIT. Karakter memberi hadiah; hindari anomali!",
+        "Bisa pakai tombol panah kiri/kanan, lalu Spasi untuk capit.": "Gunakan tombol panah kiri/kanan, lalu Spasi untuk mencapit.",
+        "Ajak profil lain berlomba menjaga rutinitas. Hari dihitung jika minimal satu habit selesai.": "Ajak profil lain menjaga rutinitas bersama. Hari dihitung jika minimal satu kebiasaan selesai.",
+        "Teman adalah profil lokal di browser ini. Progres tidak tersinkron ke perangkat lain.": "Teman adalah profil lokal di browser ini. Progres tidak disinkronkan ke perangkat lain.",
+        "Ngobrol sebagai karaktermu dan beri semangat ke pemain lain.": "Ngobrol sebagai karaktermu dan semangati pemain lain.",
+        "ESP32 OFFLINE": "ESP32 OFFLINE",
+        "LVL": "LEVEL",
+        "LVL 1": "LEVEL 1",
+        "Capit karakter untuk dapat koin dan EXP. Hindari anomaly!": "Capit karakter untuk mendapat koin dan EXP. Hindari anomali!",
+        "ESP32: Disconnected": "ESP32: Terputus",
+        "DITANGKAP": "DITANGKAP",
+        "KOIN": "KOIN",
+        "EXP": "EXP",
+        "CAPIT": "CAPIT",
+        "SCORE": "SKOR",
+        "BEST": "TERBAIK",
+        "NEXT": "LANJUT",
+        "BACK": "KEMBALI",
+        "ADD HABIT": "TAMBAH KEBIASAAN",
+        "NOVEMBER LINEUP": "ACARA BULAN NOVEMBER",
+        "NOV": "NOV",
+        "CHAT AKTIF": "CHAT AKTIF",
+        "Karakter": "Karakter",
+        "Statistik": "Statistik",
+        "Koleksi karakter": "Koleksi karakter",
+        "Pilih karakter spesial untuk menemani streak-mu.": "Pilih karakter spesial untuk menemani streak-mu.",
+        "Statistik kebiasaan": "Statistik kebiasaan",
+        "Lihat jumlah kebiasaan dan progres penyelesaiannya.": "Lihat jumlah kebiasaan dan progres penyelesaiannya.",
+        "Demo Premium belum aktif.": "Demo Premium belum aktif.",
+        "Aktifkan demo gratis": "Aktifkan demo gratis",
+        "Switch app": "Ganti aplikasi"
+    },
+    zh: {
+        "Welcome!": "欢迎！",
+        "Create your account and start your journey.": "创建账户，开启你的旅程。",
+        "YOUR EMAIL": "你的邮箱",
+        "PASSWORD": "密码",
+        "CONFIRM PASSWORD": "确认密码",
+        "CONTINUE": "继续",
+        "OR CONTINUE WITH": "或使用以下方式继续",
+        "Enter your email...": "输入邮箱...",
+        "At least 8 characters": "至少 8 个字符",
+        "Enter your password again": "再次输入密码",
+        "Show": "显示",
+        "Hide": "隐藏",
+        "CHARACTER NAME": "角色名称",
+        "Enter character name...": "输入角色名称...",
+        "START JOURNEY 🚀": "开始旅程 🚀",
+        "HOW TO PLAY": "玩法说明",
+        "Log in, add a habit, then mark it done to earn XP and build your streak. Connect ESP in the app.": "登录后添加习惯并标记完成，即可获得 XP 并累积连续记录。在应用中连接 ESP。",
+        "PLAYER": "玩家",
+        "LOG OUT": "退出",
+        "STREAK": "连续记录",
+        "TOTAL XP": "总 XP",
+        "TODAY": "今天",
+        "Tap character": "点击角色",
+        "Press to feed": "按键喂食",
+        "CHARACTER STORE": "角色商店",
+        "CHARACTER SHOP": "角色商店",
+        "CHARACTER": "角色",
+        "BACKGROUND": "背景",
+        "BUY": "购买",
+        "HOME": "主页",
+        "CATALOG": "目录",
+        "HABIT": "习惯",
+        "EVENTS": "活动",
+        "GAMES": "游戏",
+        "AWARDS": "奖励",
+        "ACHIEVEMENT UNLOCKED": "成就已解锁",
+        "SKIP": "跳过",
+        "NEXT →": "下一步 →",
+        "Anda ingin log out?": "确定要退出吗？",
+        "Progress Anda akan disimpan sebelum keluar.": "退出前将保存你的进度。",
+        "Cancel": "取消",
+        "Save and logout": "保存并退出",
+        "Please enter a valid email.": "请输入有效的邮箱地址。",
+        "Use at least 8 characters for your password.": "密码至少需要 8 个字符。",
+        "Your passwords do not match.": "两次输入的密码不一致。",
+        "Please give your character a name.": "请为角色取个名字。",
+        "Name must be at least 2 characters.": "名称至少需要 2 个字符。",
+        "Add a habit, then mark it done to earn XP and build your streak. Your progress is saved in this browser.": "添加习惯并标记完成，即可获得 XP 并累积连续记录。进度保存在此浏览器中。",
+        "Secure sign-in is not connected yet. Passwords are checked here but never saved.": "安全登录尚未连接。密码只会进行检查，不会被保存。",
+        "No profiles yet": "暂无个人资料",
+        "New player name": "新玩家名称",
+        "Switch local profile": "切换本地个人资料",
+        "Example: Read a book": "例如：阅读一本书",
+        "Mark done": "标记完成",
+        "Add habit": "添加习惯",
+        "No habits yet": "暂无习惯",
+        "All": "全部",
+        "Health": "健康",
+        "Happy": "快乐",
+        "Finance": "财务",
+        "Normal": "普通",
+        "High": "高",
+        "Low": "低",
+        "Daily": "每天",
+        "Weekly": "每周",
+        "Monthly": "每月",
+        "Close": "关闭",
+        "Save": "保存",
+        "Delete": "删除",
+        "Edit": "编辑",
+        "Back": "返回",
+        "Search": "搜索",
+        "Loading...": "加载中...",
+        "No events yet.": "暂无活动。",
+        "Send": "发送",
+        "Message": "消息",
+        "Achievements": "成就",
+        "Quests": "任务",
+        "Daily tasks": "每日任务",
+        "Your habits": "你的习惯",
+        "Add your first habit": "添加你的第一个习惯",
+        "LOGIN": "登录",
+        "BUILD YOUR STREAK": "坚持打卡",
+        "MAKE YOUR": "让你的",
+        "HABITS A": "习惯成为",
+        "GAME.": "游戏。",
+        "Build better habits, keep your streak, earn XP and become the best version of yourself.": "培养好习惯，坚持打卡，赚取 XP，成为更好的自己。",
+        "DOWNLOAD FOR": "下载",
+        "WINDOWS": "Windows",
+        "ANDROID": "Android",
+        "Choose Your": "选择你的",
+        "Character": "角色",
+        "This character will accompany you on your streak journey.": "这个角色将陪伴你坚持打卡。",
+        "SELECTED": "已选择",
+        "Name Your": "为你的角色",
+        "Give your character a name before starting your journey.": "开始旅程前，为角色取个名字。",
+        "MOBILE": "手机",
+        "DESKTOP": "电脑",
+        "MINIGAME": "迷你游戏",
+        "PLAY & EARN": "游玩并赢取奖励",
+        "BATTLE": "战斗",
+        "FIGHTING": "格斗",
+        "RUN": "跑酷",
+        "DINO RUN": "恐龙跑酷",
+        "ARCADE": "街机",
+        "FLAPPY BIRD": "飞翔小鸟",
+        "PRIZE CRANE": "幸运抓娃娃",
+        "CLAW MACHINE": "抓娃娃机",
+        "ENDLESS RIDE": "无尽骑行",
+        "CAT BIKE": "猫咪骑行",
+        "Ride the sunny farm road and dodge cars and trucks!": "骑行穿越阳光农场，躲避汽车和卡车！",
+        "MONSTER": "怪物",
+        "Ready to fight!": "准备战斗！",
+        "ATTACK": "攻击",
+        "SPECIAL": "特殊技能",
+        "HEAVY": "重击",
+        "DEFEND": "防御",
+        "RECOVER": "恢复",
+        "PLAY AGAIN": "再玩一次",
+        "SCORE:": "分数：",
+        "BEST:": "最高分：",
+        "Press SPACE or click to jump!": "按空格键或点击跳跃！",
+        "START RUN": "开始奔跑",
+        "JUMP": "跳跃",
+        "MENU GAME": "游戏菜单",
+        "DISTANCE": "距离",
+        "POINTS EARNED": "获得积分",
+        "Four lanes! Swipe or use ← → / A / D. Traffic can come from either end.": "四条车道！滑动或使用 ← → / A / D。车辆会从两端驶来。",
+        "LEFT": "左",
+        "START RIDE": "开始骑行",
+        "RIGHT": "右",
+        "DAILY TASK": "每日任务",
+        "Loading daily task...": "正在加载每日任务...",
+        "CLAIM": "领取",
+        "YOUR ROUTINE": "你的日常",
+        "Today's Habits": "今日习惯",
+        "+ ADD HABIT": "+ 添加习惯",
+        "ALL": "全部",
+        "HEALTH": "健康",
+        "HAPPY": "快乐",
+        "FINANCE": "财务",
+        "HIDE REMINDERS": "隐藏提醒",
+        "KEEP YOUR ROUTINE": "保持你的习惯",
+        "Reminders & Streak Freeze": "提醒与连续记录保护",
+        "Freeze:": "保护次数：",
+        "VIEW SETTINGS": "查看设置",
+        "1 Freeze protects 1 missed calendar day. Missed days are checked when the app opens; if you run out, your streak resets. The first Freeze is earned at a 7-day streak.": "1 次保护可弥补 1 天未打卡。应用打开时会检查漏掉的日期；保护次数用完后，连续记录将重置。连续打卡 7 天可获得首次保护。",
+        "Reminders only run while the app is open.": "应用打开时才会发送提醒。",
+        "Add your first habit and start your streak.": "添加第一个习惯，开始连续打卡。",
+        "CREATE HABIT": "创建习惯",
+        "ADD NEW HABIT": "添加新习惯",
+        "Set up a habit, one step at a time.": "一步一步设置习惯。",
+        "What is your habit?": "你要培养什么习惯？",
+        "Give your habit a name.": "为习惯命名。",
+        "HABIT NAME": "习惯名称",
+        "When will you do it?": "你打算什么时候做？",
+        "Choose your habit time.": "选择习惯时间。",
+        "TIME": "时间",
+        "How important is it?": "重要程度如何？",
+        "Choose your priority.": "选择优先级。",
+        "Choose your type": "选择习惯类型",
+        "Choose a category, then pick an icon for your habit.": "选择类别，再为习惯挑选图标。",
+        "Set your savings goal and usual daily deposit. Checking this habit adds the deposit automatically.": "设置储蓄目标和每日存款。完成此习惯后将自动添加存款。",
+        "SAVINGS GOAL (IDR)": "储蓄目标（印尼盾）",
+        "ALREADY SAVED (IDR)": "已存金额（印尼盾）",
+        "DAILY DEPOSIT (IDR)": "每日存款（印尼盾）",
+        "When should it reset?": "何时重置？",
+        "Choose how long until this habit can be completed again.": "选择再次完成此习惯前的间隔时间。",
+        "RESET EVERY": "重置周期",
+        "Half day (12 hours)": "半天（12 小时）",
+        "Day(s)": "天",
+        "Week(s)": "周",
+        "Habit setup minimized": "习惯设置已最小化",
+        "Click to continue": "点击继续",
+        "CALENDAR & EVENTS": "日历与活动",
+        "Plan your next challenge and meet the DOYOURSTREAK community.": "规划下一个挑战，认识 DOYOURSTREAK 社区。",
+        "THIS DEVICE": "此设备",
+        "LOCAL PLAYER RANKING": "本地玩家排行",
+        "Compare XP and streaks between profiles saved on this device.": "比较此设备上不同个人资料的 XP 和连续记录。",
+        "ACTIVE PROFILE": "当前个人资料",
+        "ADD A PROFILE": "添加个人资料",
+        "ADD": "添加",
+        "October 2026": "2026年10月",
+        "MON": "周一",
+        "TUE": "周二",
+        "WED": "周三",
+        "THU": "周四",
+        "FRI": "周五",
+        "SAT": "周六",
+        "SUN": "周日",
+        "UPCOMING EVENTS": "近期活动",
+        "7 DAYS · +50 XP": "7 天 · +50 XP",
+        "STREAK SPRINT": "连续打卡冲刺",
+        "Complete one habit each day for seven days and keep your streak alive.": "连续七天每天完成一个习惯，保持你的连续记录。",
+        "COMMUNITY · SHOWCASE": "社区 · 展示",
+        "CHARACTER PARADE": "角色巡游",
+        "Show off your character in chat and cheer on other streak builders.": "在聊天中展示你的角色，为其他打卡玩家加油。",
+        "WEEKEND · +30 XP": "周末 · +30 XP",
+        "WEEKEND QUEST": "周末任务",
+        "Finish three habits this weekend to earn a bonus for your progress.": "本周末完成三个习惯，即可获得进度奖励。",
+        "STREAK CHAT": "打卡聊天",
+        "Join the community conversation": "加入社区讨论",
+        "← BACK TO EVENTS": "← 返回活动",
+        "PROFIL DI PERANGKAT INI": "此设备上的个人资料",
+        "Tantangan Teman": "好友挑战",
+        "Ajak profil lain berlomba menjaga rutinitas. Hari dihitung jika minimal satu habit selesai.": "邀请其他个人资料一起坚持习惯。每天至少完成一个习惯才计入进度。",
+        "Teman adalah profil lokal di browser ini. Progres tidak tersinkron ke perangkat lain.": "好友是此浏览器中的本地个人资料。进度不会同步到其他设备。",
+        "Profil teman": "好友资料",
+        "Tambah teman": "添加好友",
+        "Pilih tantangan": "选择挑战",
+        "Streak 3 hari · berturut-turut": "连续打卡 3 天",
+        "Mingguan · target 5 dari 7 hari": "每周 · 目标 7 天中的 5 天",
+        "Buat tantangan": "创建挑战",
+        "NOVEMBER LINEUP": "十一月活动",
+        "NOV": "十一月",
+        "PENCAPAIAN & QUEST": "成就与任务",
+        "Pantau progres, raih hadiah, dan bangun rutinitas.": "追踪进度、赢取奖励并养成习惯。",
+        "PERJALANANMU": "你的旅程",
+        "Pencapaian": "成就",
+        "Buka badge dari pencapaian jangka panjang.": "解锁长期成就徽章。",
+        "DIULANG HARIAN": "每日重置",
+        "Quest Harian": "每日任务",
+        "Selesaikan target habit harian.": "完成每日习惯目标。",
+        "DIULANG MINGGUAN": "每周重置",
+        "Quest Mingguan": "每周任务",
+        "Jaga konsistensi setiap minggu.": "每周保持坚持。",
+        "DIULANG BULANAN": "每月重置",
+        "Quest Bulanan": "每月任务",
+        "Bangun progres habit jangka panjang.": "逐步养成长期习惯。",
+        "QUEST LAMA": "年度任务",
+        "Quest Tahunan": "年度任务",
+        "Lanjutkan tantangan tahunan yang tersedia.": "继续完成年度挑战。",
+        "← BACK TO AWARDS": "← 返回奖励",
+        "FITUR EKSTRA": "额外功能",
+        "Connect your ESP32 in the app.": "在应用中连接 ESP32。",
+        "Google/Gmail sign-in is not enabled yet. Use email to continue.": "Google/Gmail 登录尚未启用。请使用邮箱继续。",
+        "Chat aktif": "聊天已开启",
+        "Tulis pesan chat": "输入聊天内容",
+        "KIRIM": "发送",
+        "Pesan tersimpan di perangkat ini.": "消息已保存在此设备上。",
+        "Main game menggunakan character kamu sendiri.": "使用你自己的角色进行游戏。",
+        "Gunakan strategi untuk mengalahkan monster.": "运用策略击败怪物。",
+        "Lompat dan hindari obstacle.": "跳跃并躲避障碍。",
+        "Terbang melewati pipa dan pecahkan skor terbaik.": "穿越管道飞行，刷新最高分。",
+        "Tekan MULAI, lalu klik atau tekan spasi untuk terbang.": "按下开始，然后点击或按空格键飞行。",
+        "Gerakkan capit, lalu tekan CAPIT. Karakter memberi hadiah; anomaly bikin zonk.": "移动抓钩并按下抓取。角色会送出奖励；注意避开异常物！",
+        "Bisa pakai tombol panah kiri/kanan, lalu Spasi untuk capit.": "使用左右方向键移动，然后按空格键抓取。",
+        "NEXT": "下一步",
+        "BACK": "返回",
+        "ADD HABIT": "添加习惯",
+        "LVL": "等级",
+        "LVL 1": "等级 1",
+        "ESP32 OFFLINE": "ESP32 离线",
+        "Capit karakter untuk dapat koin dan EXP. Hindari anomaly!": "抓取角色可获得金币和经验值。小心异常物！",
+        "ESP32: Disconnected": "ESP32：未连接",
+        "SKOR": "分数",
+        "TERBAIK": "最高分",
+        "MULAI": "开始",
+        "DITANGKAP": "已抓取",
+        "KOIN": "金币",
+        "EXP": "经验值",
+        "CAPIT": "抓取",
+        "MAIN LAGI": "再玩一次",
+        "SCORE": "分数",
+        "BEST": "最高分",
+        "SEMBUNYIKAN PENGINGAT": "隐藏提醒",
+        "JAGA RUTINITAS": "保持习惯",
+        "Pengingat & Streak Freeze": "提醒与连续记录保护",
+        "LIHAT PENGATURAN": "查看设置",
+        "1 Freeze melindungi 1 hari kalender yang terlewat. Hari yang terlewat diperiksa saat aplikasi dibuka; jika stok habis, streak direset. Freeze pertama didapat dari pencapaian 7 hari.": "1 次保护可弥补 1 天未打卡。应用打开时会检查漏掉的日期；保护用完后连续记录将重置。连续打卡 7 天可获得首次保护。",
+        "Pengingat hanya berjalan saat aplikasi terbuka.": "应用打开时才会发送提醒。",
+        "Buka karakter spesial dan lihat progres kebiasaanmu.": "解锁特别角色并查看习惯进度。",
+        "Karakter": "角色",
+        "Statistik": "统计",
+        "Koleksi karakter": "角色收藏",
+        "Pilih karakter spesial untuk menemani streak-mu.": "选择特别角色陪伴你连续打卡。",
+        "Statistik kebiasaan": "习惯统计",
+        "Lihat jumlah kebiasaan dan progres penyelesaiannya.": "查看习惯数量与完成进度。",
+        "Demo Premium belum aktif.": "高级版演示尚未启用。",
+        "Aktifkan demo gratis": "启用免费演示",
+        "Switch app": "切换应用"
+    }
+};
+const supportedLanguages = ["en", "id", "zh"];
+function getAppLocale() {
+    return { en: "en-US", id: "id-ID", zh: "zh-CN" }[appLanguage];
+}
+let appLanguage = localStorage.getItem("doyourstreak-language") || "en";
+if (!supportedLanguages.includes(appLanguage)) appLanguage = "en";
+const originalTextNodes = new WeakMap();
+const originalAttributes = new WeakMap();
+
+function translateAppContent(root = document.body) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    if (root.nodeType === Node.TEXT_NODE) textNodes.push(root);
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+    textNodes.forEach(node => {
+        if (node.parentElement?.closest("#settingsPage")) return;
+        if (node.parentElement?.closest("#habitList, #playerName, #headerName, #localLeaderboard, #eventChatMessages")) return;
+        if (!originalTextNodes.has(node)) originalTextNodes.set(node, node.textContent);
+        const source = originalTextNodes.get(node);
+        const trimmedSource = source.trim();
+        const stepMatch = trimmedSource.match(/^STEP (\d+) OF (\d+)$/i);
+        let translated = appTranslations[appLanguage]?.[trimmedSource];
+        if (stepMatch && appLanguage !== "en") {
+            translated = appLanguage === "id"
+                ? `LANGKAH ${stepMatch[1]} DARI ${stepMatch[2]}`
+                : `第 ${stepMatch[1]} 步，共 ${stepMatch[2]} 步`;
+        }
+        if (translated) {
+            const leading = source.match(/^\s*/)?.[0] || "";
+            const trailing = source.match(/\s*$/)?.[0] || "";
+            node.textContent = `${leading}${translated}${trailing}`;
+        } else if (node.textContent !== source && appLanguage === "en") {
+            node.textContent = source;
+        }
+    });
+
+    const elements = root.querySelectorAll ? [root, ...root.querySelectorAll("*")] : [];
+    elements.forEach(element => {
+        if (element.closest?.("#settingsPage")) return;
+        ["placeholder", "aria-label", "title"].forEach(attribute => {
+            if (!element.hasAttribute?.(attribute)) return;
+            let originals = originalAttributes.get(element);
+            if (!originals) {
+                originals = {};
+                originalAttributes.set(element, originals);
+            }
+            if (!(attribute in originals)) originals[attribute] = element.getAttribute(attribute);
+            const source = originals[attribute];
+            const translated = appTranslations[appLanguage]?.[source];
+            if (translated) element.setAttribute(attribute, translated);
+            else if (appLanguage === "en") element.setAttribute(attribute, source);
+        });
+    });
+}
+
+function setAppLanguage(language) {
+    if (!supportedLanguages.includes(language)) return;
+    appLanguage = language;
+    localStorage.setItem("doyourstreak-language", language);
+    document.documentElement.lang = language;
+    document.querySelectorAll("[data-language]").forEach(button => {
+        button.setAttribute("aria-pressed", String(button.dataset.language === language));
+    });
+    translateAppContent();
+}
+
+document.querySelectorAll("[data-language]").forEach(button => {
+    button.addEventListener("click", () => {
+        setAppLanguage(button.dataset.language);
+        updateHeaderClock();
+        renderCalendar();
+        renderQuestBoard();
+    });
+});
+setAppLanguage(appLanguage);
+new MutationObserver(records => {
+    records.forEach(record => record.addedNodes.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE || node.nodeType === Node.TEXT_NODE) {
+            translateAppContent(node);
+        }
+    }));
+}).observe(document.body, { childList: true, subtree: true });
+
+function normalizeStats(value) {
+    value.habitsCompletedTotal = Math.max(0, Number(value.habitsCompletedTotal) || 0);
+    return value;
+}
 
 let selectedEmoji = "belajaricon.png";
 let selectedPriority = "Normal";
@@ -60,6 +694,10 @@ const appScreen = document.getElementById("appScreen");
 
 const emailInput = document.getElementById("emailInput");
 const emailNext = document.getElementById("emailNext");
+const loginProviderMessage = document.getElementById("loginProviderMessage");
+const passwordInput = document.getElementById("passwordInput");
+const passwordConfirmInput = document.getElementById("passwordConfirmInput");
+const passwordError = document.getElementById("passwordError");
 
 const characterPlayer =
     document.getElementById("characterPlayer");
@@ -81,19 +719,25 @@ const nameError =
 
 const playerName = document.getElementById("playerName");
 const headerName = document.getElementById("headerName");
+const settingsProfileName = document.getElementById("settingsProfileName");
+const settingsProfileStreak = document.getElementById("settingsProfileStreak");
+const settingsProfileAvatar = document.getElementById("settingsProfileAvatar");
+const settingsProfileInitials = document.getElementById("settingsProfileInitials");
+const settingsAvatarInput = document.getElementById("settingsAvatarInput");
+const settingsAvatarFeedback = document.getElementById("settingsAvatarFeedback");
 const headerClockTime = document.getElementById("headerClockTime");
 const headerClockDate = document.getElementById("headerClockDate");
 
 function updateHeaderClock() {
     const now = new Date();
     if (headerClockTime) {
-        headerClockTime.textContent = new Intl.DateTimeFormat(undefined, {
+        headerClockTime.textContent = new Intl.DateTimeFormat(getAppLocale(), {
             hour: "2-digit", minute: "2-digit"
         }).format(now);
         headerClockTime.dateTime = now.toISOString();
     }
     if (headerClockDate) {
-        headerClockDate.textContent = new Intl.DateTimeFormat(undefined, {
+        headerClockDate.textContent = new Intl.DateTimeFormat(getAppLocale(), {
             weekday: "short", month: "short", day: "numeric", year: "numeric"
         }).format(now);
     }
@@ -145,6 +789,7 @@ const eventChatForm = document.getElementById("eventChatForm");
 const eventChatInput = document.getElementById("eventChatInput");
 const eventChatAvatar = document.getElementById("eventChatAvatar");
 const eventChatProfileName = document.getElementById("eventChatProfileName");
+const eventChatPremiumBadge = document.getElementById("eventChatPremiumBadge");
 const eventChatFeedback = document.getElementById("eventChatFeedback");
 let eventChatHistory = JSON.parse(localStorage.getItem("doyourstreak-event-chat") || "[]");
 if (!Array.isArray(eventChatHistory)) eventChatHistory = [];
@@ -269,6 +914,10 @@ if (espConnectButton) espConnectButton.addEventListener("click", connectESP32);
 document.addEventListener("DOMContentLoaded", () => {
 
     initializeLocalProfiles();
+    window.DYSFeatures?.setProfile(activeProfileId, stats);
+    window.DYSFeatures?.setProfiles(localProfiles, activeProfileId);
+    window.DYSFeatures?.updateCurrentHabits(habits);
+    saveStats();
     renderDailyTask();
     setupCharacterFallback();
     setupPriorityButtons();
@@ -317,9 +966,15 @@ function showApp() {
         headerName.textContent = displayName;
     }
 
+    if (settingsProfileName) settingsProfileName.textContent = displayName;
+    if (settingsProfileStreak) settingsProfileStreak.textContent = String(stats.streak || 0);
+    updateSettingsProfileAvatar();
+
     renderHabits();
 
     updateStats();
+    window.DYSFeatures?.updateCurrentHabits(habits);
+    window.DYSFeatures?.syncProgress(stats);
     syncWindowsDesktopWidget();
 
     if (!localStorage.getItem("doyourstreak-tutorial-seen")) {
@@ -946,6 +1601,7 @@ function renderHabits() {
 
         habitFilters.hidden = true;
         emptyState.classList.remove("hidden");
+        window.DYSFeatures?.updateCurrentHabits(habits);
 
         return;
 
@@ -961,6 +1617,7 @@ function renderHabits() {
 
     if (visibleHabits.length === 0) {
         habitList.innerHTML = `<div class="habit-filter-empty">No ${escapeHTML(habitCategories[activeHabitCategory]?.label || "matching")} habits yet.</div>`;
+        window.DYSFeatures?.updateCurrentHabits(habits);
         return;
     }
 
@@ -972,6 +1629,7 @@ function renderHabits() {
 
         card.className =
             "habit-card";
+        card.dataset.featureHabitId = String(habit.id);
 
 
         if (habit.completed) {
@@ -1082,6 +1740,7 @@ function renderHabits() {
 
     });
 
+    window.DYSFeatures?.updateCurrentHabits(habits);
 }
 
 function getHabitCategory(habit) {
@@ -1130,6 +1789,7 @@ function deleteHabit(id) {
 
     if (!confirmDelete) return;
 
+    window.DYSFeatures?.removeHabitReminder(id);
     habits = habits.filter(h => h.id !== id);
 
     saveHabits();
@@ -1189,6 +1849,86 @@ function triggerCharacterReaction(reaction) {
     target.classList.add(className);
     window.setTimeout(() => target.classList.remove(className), 1400);
 }
+
+function setupCharacterFeeding() {
+    const characterPage = document.getElementById("characterPage");
+    const characterMain = characterPage?.querySelector(".character-main");
+    const playerImage = document.getElementById("playerImage");
+    const fallback = document.getElementById("characterFallback");
+    const foodImage = document.getElementById("characterFood");
+    const bubble = document.getElementById("characterReactionBubble");
+    if (!characterPage || !characterMain || !playerImage || !fallback || !foodImage) return;
+
+    const foods = ["makanan1.png", "makanan2.png", "makanan3.png"];
+    const feedingReactions = ["Yay! So tasty!", "Mmm, so delicious!", "That was yummy!"];
+    let tapCount = 0;
+    let tapResetTimer;
+    let feeding = false;
+    let bubbleTimer;
+
+    const showBubble = message => {
+        if (!bubble) return;
+        bubble.textContent = message;
+        bubble.classList.remove("hidden");
+        window.clearTimeout(bubbleTimer);
+        bubbleTimer = window.setTimeout(() => bubble.classList.add("hidden"), 2200);
+    };
+
+    const feedCharacter = () => {
+        if (!characterPage.classList.contains("active") || feeding) return;
+        feeding = true;
+        foodImage.src = foods[Math.floor(Math.random() * foods.length)];
+        foodImage.classList.remove("hidden");
+        characterMain.classList.remove("character-feeding", "character-celebrating");
+        playerImage.classList.remove("character-feed-chewing", "character-feed-happy");
+        fallback.classList.remove("character-feed-chewing", "character-feed-happy");
+        void foodImage.offsetWidth;
+        characterMain.classList.add("character-feeding");
+        playerImage.classList.add("character-feed-chewing");
+        fallback.classList.add("character-feed-chewing");
+        window.setTimeout(() => {
+            foodImage.classList.add("hidden");
+            characterMain.classList.remove("character-feeding");
+            playerImage.classList.remove("character-feed-chewing");
+            fallback.classList.remove("character-feed-chewing");
+            characterMain.classList.add("character-celebrating");
+            playerImage.classList.add("character-feed-happy");
+            fallback.classList.add("character-feed-happy");
+            showBubble(feedingReactions[Math.floor(Math.random() * feedingReactions.length)]);
+
+            window.setTimeout(() => {
+                characterMain.classList.remove("character-celebrating");
+                playerImage.classList.remove("character-feed-happy");
+                fallback.classList.remove("character-feed-happy");
+                feeding = false;
+            }, 1500);
+        }, 700);
+    };
+
+    characterMain.addEventListener("pointerup", event => {
+        if (event.pointerType !== "touch" || !(playerImage.contains(event.target) || fallback.contains(event.target))) return;
+        tapCount += 1;
+        window.clearTimeout(tapResetTimer);
+        if (tapCount >= 3) {
+            tapCount = 0;
+            feedCharacter();
+            return;
+        }
+        tapResetTimer = window.setTimeout(() => {
+            tapCount = 0;
+        }, 700);
+    });
+
+    document.addEventListener("keydown", event => {
+        const target = event.target;
+        const isTyping = target instanceof HTMLElement
+            && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
+        if (event.code !== "KeyE" || event.repeat || event.ctrlKey || event.metaKey || event.altKey || isTyping) return;
+        feedCharacter();
+    });
+}
+
+setupCharacterFeeding();
 
 
 function toggleHabit(id) {
@@ -1256,6 +1996,7 @@ function toggleHabit(id) {
     stats.xp += 10;
 
     updateDailyStreak();
+    window.DYSFeatures?.recordHabitCompletion(habit.id, stats);
     careForCharacterToday();
 
     const newLevel =
@@ -1317,53 +2058,29 @@ function toggleHabit(id) {
 ===================================================== */
 
 function updateDailyStreak() {
-
-    const today =
-        new Date().toISOString().split("T")[0];
-
-
-    if (stats.lastCompletedDate === today) {
-        return;
-    }
-
+    const today = getTodayDate();
+    if (stats.lastCompletedDate === today) return;
     if (stats.lastCompletedDate) {
-        const previousDay = new Date(`${stats.lastCompletedDate}T00:00:00Z`);
-        const currentDay = new Date(`${today}T00:00:00Z`);
+        const previousDay = new Date(`${stats.lastCompletedDate}T12:00:00`);
+        const currentDay = new Date(`${today}T12:00:00`);
         const daysSinceLastCompletion = Math.floor((currentDay - previousDay) / 86400000);
         if (daysSinceLastCompletion >= 30) {
             achievements.comebackDays = Math.max(Number(achievements.comebackDays) || 0, daysSinceLastCompletion);
         }
     }
-
-
-    const yesterdayDate = new Date();
-
-    yesterdayDate.setDate(
-        yesterdayDate.getDate() - 1
-    );
-
-
-    const yesterday =
-        yesterdayDate.toISOString().split("T")[0];
-
-
-    if (
-        stats.lastCompletedDate === yesterday
-    ) {
-
-        stats.streak++;
-
-    } else {
-
-        stats.streak = 1;
-
+    if (window.DYSFeatures) {
+        window.DYSFeatures.recordStreakCompletion(stats, today);
+        return;
     }
-
-
+    stats.streak = stats.lastCompletedDate === getPreviousDate(today) ? stats.streak + 1 : 1;
     stats.lastCompletedDate = today;
-
 }
 
+function getPreviousDate(dateKey) {
+    const date = new Date(`${dateKey}T12:00:00`);
+    date.setDate(date.getDate() - 1);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
 
 /* =====================================================
    STATS
@@ -1383,6 +2100,8 @@ function updateStats() {
 
     streakElement.textContent =
         stats.streak;
+
+    if (settingsProfileStreak) settingsProfileStreak.textContent = String(stats.streak || 0);
 
 
     totalXP.textContent =
@@ -1440,6 +2159,7 @@ function saveStats() {
     );
 
     saveActiveProfileSnapshot();
+    window.DYSFeatures?.syncProgress(stats);
 
 }
 
@@ -1468,6 +2188,7 @@ function saveActiveProfileSnapshot() {
     if (index >= 0) localProfiles[index] = snapshot;
     else localProfiles.push(snapshot);
     localStorage.setItem("doyourstreak-profiles", JSON.stringify(localProfiles));
+    window.DYSFeatures?.setProfiles(localProfiles, activeProfileId);
     renderLocalLeaderboard();
 }
 
@@ -1524,10 +2245,12 @@ function renderEventChat() {
     if (!eventChatMessagesElement) return;
 
     const characterImage = getEventChatCharacterImage();
+    const hasPremium = localStorage.getItem("doyourstreak-premium-demo") === "true";
     if (eventChatAvatar) eventChatAvatar.src = characterImage;
     if (eventChatProfileName) {
         eventChatProfileName.textContent = user?.characterName || user?.name || "PLAYER";
     }
+    eventChatPremiumBadge?.classList.toggle("hidden", !hasPremium);
 
     if (!eventChatHistory.length) {
         eventChatMessagesElement.innerHTML = '<p class="event-chat-empty">Belum ada pesan. Mulai obrolan dan kenalan dengan pemain lain!</p>';
@@ -1545,11 +2268,14 @@ function renderEventChat() {
             ? date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
             : "";
         const ownMessage = message?.profileId === activeProfileId ? " is-own-message" : "";
+        const premiumBadge = message?.isPremium === true
+            ? '<small class="event-chat-premium-badge">PRO</small>'
+            : "";
 
         return `<article class="event-chat-message${ownMessage}">
             <img class="event-chat-message-avatar" src="${escapeHTML(image)}" alt="">
             <div class="event-chat-message-body">
-                <div class="event-chat-message-meta"><strong>${name}</strong><time>${escapeHTML(time)}</time></div>
+                <div class="event-chat-message-meta"><div class="event-chat-author">${premiumBadge}<strong>${name}</strong></div><time>${escapeHTML(time)}</time></div>
                 <p>${text}</p>
             </div>
         </article>`;
@@ -1581,6 +2307,7 @@ eventChatForm?.addEventListener("submit", event => {
         profileId,
         name: user.characterName || user.name || "PLAYER",
         characterImage: getEventChatCharacterImage(),
+        isPremium: localStorage.getItem("doyourstreak-premium-demo") === "true",
         text: text.slice(0, 280),
         createdAt: Date.now()
     }].slice(-100);
@@ -1606,10 +2333,13 @@ function activateLocalProfile(profileId) {
     if (playerImageElement) playerImageElement.src = selectedCharacter;
     habits = JSON.parse(JSON.stringify(profile.habits || []));
     stats = { xp: 0, streak: 0, lastCompletedDate: null, ...(profile.stats || {}) };
+    normalizeStats(stats);
+    window.DYSFeatures?.setProfile(activeProfileId, stats);
     localStorage.setItem("doyourstreak-user", JSON.stringify(user));
     localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
     localStorage.setItem("doyourstreak-stats", JSON.stringify(stats));
     showApp();
+    saveStats();
     renderDailyTask();
     updateCoins();
     renderLocalLeaderboard();
@@ -1629,6 +2359,8 @@ createLocalProfileButton?.addEventListener("click", () => {
     activeProfileId = id;
     habits = [];
     stats = { xp: 0, streak: 0, lastCompletedDate: null };
+    normalizeStats(stats);
+    window.DYSFeatures?.setProfile(activeProfileId, stats);
     localStorage.setItem("doyourstreak-user", JSON.stringify(user));
     localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
     localStorage.setItem("doyourstreak-stats", JSON.stringify(stats));
@@ -1637,6 +2369,7 @@ createLocalProfileButton?.addEventListener("click", () => {
     const playerImageElement = document.getElementById("playerImage");
     if (playerImageElement) playerImageElement.src = user.character;
     showApp();
+    saveStats();
     updateCoins();
     renderEventChat();
 });
@@ -1701,6 +2434,23 @@ const loginModal =
 const closeLogin =
     document.getElementById("closeLogin");
 
+function clearLoginPasswords() {
+    if (passwordInput) passwordInput.value = "";
+    if (passwordConfirmInput) passwordConfirmInput.value = "";
+    if (passwordError) passwordError.textContent = "";
+    document.querySelectorAll("[data-password-toggle]").forEach((toggle) => {
+        const input = document.getElementById(toggle.dataset.passwordToggle);
+        if (input) input.type = "password";
+        toggle.textContent = "Show";
+        toggle.setAttribute("aria-pressed", "false");
+        toggle.setAttribute(
+            "aria-label",
+            toggle.dataset.passwordToggle === "passwordInput"
+                ? "Show password"
+                : "Show password confirmation"
+        );
+    });
+}
 
 /* OPEN LOGIN */
 
@@ -1750,6 +2500,9 @@ confirmLogoutButton?.addEventListener("click", () => {
     activeProfileId = null;
     habits = [];
     stats = { xp: 0, streak: 0, lastCompletedDate: null };
+    normalizeStats(stats);
+    window.DYSFeatures?.setProfile(null, stats);
+    window.DYSFeatures?.updateCurrentHabits(habits);
 
     localStorage.removeItem("doyourstreak-user");
     localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
@@ -1764,6 +2517,7 @@ confirmLogoutButton?.addEventListener("click", () => {
 closeLogin?.addEventListener("click", () => {
 
     loginModal.classList.add("hidden");
+    clearLoginPasswords();
 
 });
 
@@ -1775,6 +2529,7 @@ loginModal?.addEventListener("click", (event) => {
     if (event.target === loginModal) {
 
         loginModal.classList.add("hidden");
+        clearLoginPasswords();
 
     }
 
@@ -1791,6 +2546,7 @@ document.addEventListener("keydown", (event) => {
     ) {
 
         loginModal.classList.add("hidden");
+        clearLoginPasswords();
 
     }
 
@@ -1840,6 +2596,8 @@ emailNext?.addEventListener("click", () => {
     const email =
         emailInput.value.trim();
 
+    const password = passwordInput?.value || "";
+    const passwordConfirmation = passwordConfirmInput?.value || "";
 
     if (!email) {
 
@@ -1865,11 +2623,53 @@ emailNext?.addEventListener("click", () => {
         return;
     }
 
+    if (password.length < 8) {
+        passwordError.textContent = "Use at least 8 characters for your password.";
+        passwordInput.focus();
+        return;
+    }
+
+    if (password !== passwordConfirmation) {
+        passwordError.textContent = "Your passwords do not match.";
+        passwordConfirmInput.focus();
+        return;
+    }
 
     emailError.textContent = "";
+    passwordError.textContent = "";
+    clearLoginPasswords();
 
     showLoginStep(2);
 
+});
+
+document.querySelectorAll("[data-password-toggle]").forEach((toggle) => {
+    toggle.addEventListener("click", () => {
+        const input = document.getElementById(toggle.dataset.passwordToggle);
+        if (!input) return;
+
+        const isVisible = input.type === "text";
+        input.type = isVisible ? "password" : "text";
+        toggle.textContent = isVisible ? "Show" : "Hide";
+        toggle.setAttribute("aria-pressed", String(!isVisible));
+        toggle.setAttribute(
+            "aria-label",
+            `${isVisible ? "Show" : "Hide"} ${
+                toggle.dataset.passwordToggle === "passwordInput"
+                    ? "password"
+                    : "password confirmation"
+            }`
+        );
+    });
+});
+
+["googleLoginButton", "gmailLoginButton"].forEach((buttonId) => {
+    document.getElementById(buttonId)?.addEventListener("click", () => {
+        if (loginProviderMessage) {
+            loginProviderMessage.textContent =
+                "Google/Gmail sign-in is not configured yet. Use email to continue.";
+        }
+    });
 });
 
 
@@ -1885,6 +2685,18 @@ emailInput?.addEventListener(
 
     }
 );
+
+passwordConfirmInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") emailNext?.click();
+});
+
+passwordInput?.addEventListener("input", () => {
+    if (passwordError) passwordError.textContent = "";
+});
+
+passwordConfirmInput?.addEventListener("input", () => {
+    if (passwordError) passwordError.textContent = "";
+});
 
 
 /* =====================================================
@@ -2001,9 +2813,12 @@ function startJourney() {
         selectedCharacter = user.character || selectedCharacter;
         habits = JSON.parse(JSON.stringify(savedProfile.habits || []));
         stats = { xp: 0, streak: 0, lastCompletedDate: null, ...(savedProfile.stats || {}) };
+        normalizeStats(stats);
         localStorage.setItem("doyourstreak-habits", JSON.stringify(habits));
         localStorage.setItem("doyourstreak-stats", JSON.stringify(stats));
     }
+
+    window.DYSFeatures?.setProfile(activeProfileId, stats);
 
 
     localStorage.setItem(
@@ -2029,6 +2844,7 @@ function startJourney() {
 // PAGE NAVIGATION
 // ================================
 
+const settingsNav = document.getElementById("settingsNav");
 const characterNav = document.getElementById("characterNav");
 const shopNav = document.getElementById("shopNav");
 const gameNav = document.getElementById("gameNav");
@@ -2043,6 +2859,7 @@ const exercisePage = document.getElementById("exercisePage");
 const infoPage = document.getElementById("infoPage");
 const eventChatPage = document.getElementById("eventChatPage");
 const achievementsPage = document.getElementById("achievementsPage");
+const settingsPage = document.getElementById("settingsPage");
 const awardsMenu = document.getElementById("awardsMenu");
 const awardDetail = document.getElementById("awardDetail");
 const achievementList = document.getElementById("achievementList");
@@ -2117,12 +2934,18 @@ function getQuestResetText(periodId) {
     } else {
         resetDate = new Date(today.getFullYear() + 1, 0, 1);
     }
-    return `REFRESHES ${resetDate.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }).toUpperCase()}`;
+    const resetLabel = { en: "REFRESHES", id: "DIATUR ULANG", zh: "重置时间" }[appLanguage];
+    const resetDateText = resetDate.toLocaleDateString(getAppLocale(), { month: "short", day: "numeric", year: "numeric" });
+    return appLanguage === "zh" ? `${resetLabel} ${resetDateText}` : `${resetLabel} ${resetDateText.toUpperCase()}`;
 }
 
 function renderQuestBoard() {
     const list = questList;
     if (!list) return;
+    if (window.DYSFeatures && ["daily", "weekly", "monthly"].includes(currentAwardSection)) {
+        window.DYSFeatures.renderQuestList(list, currentAwardSection);
+        return;
+    }
     const selectedPeriod = questPeriods.find(period => period.id === currentAwardSection);
     list.innerHTML = (selectedPeriod ? [selectedPeriod] : []).map(period => {
         const state = getQuestPeriodState(period.id);
@@ -2216,6 +3039,7 @@ function renderAchievements() {
             </div>
         </article>`;
     }).join("");
+    window.DYSFeatures?.renderAchievementCards();
 }
 
 function showAwardsMenu() {
@@ -2226,7 +3050,7 @@ function showAwardsMenu() {
 }
 
 function openAwardSection(section) {
-    const titles = { achievement: "ACHIEVEMENTS", weekly: "WEEKLY QUESTS", monthly: "MONTHLY QUESTS", annual: "ANNUAL QUESTS" };
+    const titles = { achievement: "PENCAPAIAN", daily: "QUEST HARIAN", weekly: "QUEST MINGGUAN", monthly: "QUEST BULANAN", annual: "QUEST TAHUNAN" };
     if (!titles[section]) return;
     currentAwardSection = section;
     awardsMenu.hidden = true;
@@ -2234,7 +3058,10 @@ function openAwardSection(section) {
     document.getElementById("awardDetailTitle").textContent = titles[section];
     achievementList.hidden = section !== "achievement";
     questList.hidden = section === "achievement";
-    if (section === "achievement") renderAchievements();
+    if (section === "achievement") {
+        renderAchievements();
+        window.DYSFeatures?.renderAchievementCards();
+    }
     else renderQuestBoard();
     window.scrollTo(0, 0);
 }
@@ -2276,6 +3103,7 @@ checkAchievements();
 
 function setActiveNav(activeButton) {
 
+    settingsNav?.classList.remove("active");
     characterNav?.classList.remove("active");
     shopNav?.classList.remove("active");
     gameNav?.classList.remove("active");
@@ -2290,6 +3118,7 @@ function showGamePage() {
 
     showGameMenu();
 
+    settingsPage?.classList.remove("active");
     characterPage?.classList.remove("active");
     shopPage?.classList.remove("active");
     gamePage?.classList.add("active");
@@ -2306,6 +3135,7 @@ function showGamePage() {
 
 function showCharacterPage() {
 
+    settingsPage?.classList.remove("active");
     characterPage?.classList.add("active");
     shopPage?.classList.remove("active");
     exercisePage?.classList.remove("active");
@@ -2322,6 +3152,7 @@ function showCharacterPage() {
 
 function showShopPage() {
 
+    settingsPage?.classList.remove("active");
     characterPage?.classList.remove("active");
     shopPage?.classList.add("active");
     gamePage?.classList.remove("active");
@@ -2340,6 +3171,7 @@ function showShopPage() {
 
 function showExercisePage() {
 
+    settingsPage?.classList.remove("active");
     characterPage?.classList.remove("active");
     shopPage?.classList.remove("active");
     exercisePage?.classList.add("active");
@@ -2356,6 +3188,7 @@ function showExercisePage() {
 
 function showInfoPage() {
 
+    settingsPage?.classList.remove("active");
     characterPage?.classList.remove("active");
     shopPage?.classList.remove("active");
     exercisePage?.classList.remove("active");
@@ -2369,12 +3202,13 @@ function showInfoPage() {
     renderCalendar();
     renderLocalLeaderboard();
     renderEventChat();
+    window.DYSFeatures?.renderChallengeBoard();
 
     window.scrollTo(0, 0);
 }
 
 function showEventChatPage() {
-    [characterPage, shopPage, gamePage, exercisePage, infoPage, achievementsPage].forEach(page => page?.classList.remove("active"));
+    [characterPage, shopPage, gamePage, exercisePage, infoPage, achievementsPage, settingsPage].forEach(page => page?.classList.remove("active"));
     eventChatPage?.classList.add("active");
     setActiveNav(infoNav);
     renderEventChat();
@@ -2383,15 +3217,122 @@ function showEventChatPage() {
 }
 
 function showAchievementsPage() {
-    [characterPage, shopPage, gamePage, exercisePage, infoPage, eventChatPage].forEach(page => page?.classList.remove("active"));
+    [characterPage, shopPage, gamePage, exercisePage, infoPage, eventChatPage, settingsPage].forEach(page => page?.classList.remove("active"));
     achievementsPage?.classList.add("active");
     setActiveNav(achievementsNav);
     showAwardsMenu();
     window.scrollTo(0, 0);
 }
 
+function showSettingsPage() {
+    [characterPage, shopPage, gamePage, exercisePage, infoPage, eventChatPage, achievementsPage].forEach(page => page?.classList.remove("active"));
+    settingsPage?.classList.add("active");
+    setActiveNav(settingsNav);
+    if (settingsProfileName) settingsProfileName.textContent = user?.characterName || user?.name || "Player";
+    if (settingsProfileStreak) settingsProfileStreak.textContent = String(stats.streak || 0);
+    updateSettingsProfileAvatar();
+    window.scrollTo(0, 0);
+}
 
-const menuButtons = [characterNav, shopNav, gameNav, exerciseNav, infoNav, achievementsNav].filter(Boolean);
+function updateSettingsProfileAvatar() {
+    const displayName = user?.characterName || user?.name || "Player";
+    const initials = displayName.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("").toUpperCase() || "P";
+    if (settingsProfileInitials) {
+        settingsProfileInitials.textContent = initials;
+        settingsProfileInitials.classList.toggle("hidden", Boolean(user?.profileImage));
+    }
+    if (settingsProfileAvatar) {
+        settingsProfileAvatar.classList.toggle("hidden", !user?.profileImage);
+        if (user?.profileImage) settingsProfileAvatar.src = user.profileImage;
+        else settingsProfileAvatar.removeAttribute("src");
+    }
+    document.getElementById("settingsAvatarRemove")?.classList.toggle("hidden", !user?.profileImage);
+}
+
+function saveSettingsProfileUser(updatedUser) {
+    localStorage.setItem("doyourstreak-user", JSON.stringify(updatedUser));
+    user = updatedUser;
+    saveActiveProfileSnapshot();
+    updateSettingsProfileAvatar();
+}
+
+async function saveSettingsProfilePhoto(file) {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+        if (settingsAvatarFeedback) settingsAvatarFeedback.textContent = "Choose an image file to use as your photo.";
+        if (settingsAvatarInput) settingsAvatarInput.value = "";
+        return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+        if (settingsAvatarFeedback) settingsAvatarFeedback.textContent = "Choose an image smaller than 10 MB.";
+        if (settingsAvatarInput) settingsAvatarInput.value = "";
+        return;
+    }
+
+    let image;
+    try {
+        image = await createImageBitmap(file);
+        const scale = Math.min(1, 512 / Math.max(image.width, image.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("Could not prepare the selected image.");
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        const profileImage = canvas.toDataURL("image/jpeg", 0.84);
+        saveSettingsProfileUser({ ...user, profileImage });
+        if (settingsAvatarFeedback) settingsAvatarFeedback.textContent = "Profile photo saved on this device.";
+    } catch (error) {
+        console.error("Could not save the profile photo.", error);
+        if (settingsAvatarFeedback) settingsAvatarFeedback.textContent = "Could not save this photo. Try another image or free up browser storage.";
+    } finally {
+        image?.close();
+        if (settingsAvatarInput) settingsAvatarInput.value = "";
+    }
+}
+
+settingsAvatarInput?.addEventListener("change", () => {
+    void saveSettingsProfilePhoto(settingsAvatarInput.files?.[0]);
+});
+document.getElementById("settingsAvatarChoose")?.addEventListener("click", () => settingsAvatarInput?.click());
+document.getElementById("settingsAvatarRemove")?.addEventListener("click", () => {
+    try {
+        const updatedUser = { ...user };
+        delete updatedUser.profileImage;
+        saveSettingsProfileUser(updatedUser);
+        if (settingsAvatarFeedback) settingsAvatarFeedback.textContent = "Profile photo removed.";
+    } catch (error) {
+        console.error("Could not remove the profile photo.", error);
+        if (settingsAvatarFeedback) settingsAvatarFeedback.textContent = "Could not update your profile. Please try again.";
+    }
+});
+
+const settingsEtcButton = document.getElementById("settingsEtcButton");
+const settingsEtcPopup = document.getElementById("settingsEtcPopup");
+const settingsEtcClose = document.getElementById("settingsEtcClose");
+
+function closeSettingsEtcPopup() {
+    settingsEtcPopup?.classList.add("hidden");
+    settingsEtcButton?.setAttribute("aria-expanded", "false");
+    settingsEtcButton?.focus();
+}
+
+settingsEtcButton?.addEventListener("click", () => {
+    settingsEtcPopup?.classList.remove("hidden");
+    settingsEtcButton.setAttribute("aria-expanded", "true");
+    settingsEtcClose?.focus();
+});
+settingsEtcClose?.addEventListener("click", closeSettingsEtcPopup);
+settingsEtcPopup?.addEventListener("click", event => {
+    if (event.target === settingsEtcPopup) closeSettingsEtcPopup();
+});
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && settingsEtcPopup && !settingsEtcPopup.classList.contains("hidden")) {
+        closeSettingsEtcPopup();
+    }
+});
+
+const menuButtons = [settingsNav, characterNav, shopNav, gameNav, exerciseNav, infoNav, achievementsNav].filter(Boolean);
 let menuShuffleTimer = null;
 let menuOriginalOrder = null;
 
@@ -2425,7 +3366,10 @@ menuButtons.forEach(button => {
         void button.offsetWidth;
         button.classList.add("menu-jump");
 
-        const originalOrder = [...document.querySelectorAll(".bottom-navbar .bottom-nav-image")];
+        if (button === settingsNav) return;
+
+        const originalOrder = [...document.querySelectorAll(".bottom-navbar .bottom-nav-image")]
+            .filter(menuButton => menuButton !== settingsNav);
         if (originalOrder.length > 2) {
             const clickedIndex = originalOrder.indexOf(button);
             let swapIndex = -1;
@@ -2457,11 +3401,13 @@ menuButtons.forEach(button => {
 });
 
 characterNav?.addEventListener("click", showCharacterPage);
+settingsNav?.addEventListener("click", showSettingsPage);
 shopNav?.addEventListener("click", showShopPage);
 gameNav?.addEventListener("click", showGamePage);
 exerciseNav?.addEventListener("click", showExercisePage);
 infoNav?.addEventListener("click", showInfoPage);
 achievementsNav?.addEventListener("click", showAchievementsPage);
+document.getElementById("settingsLogoutButton")?.addEventListener("click", () => logoutButton?.click());
 
 /* =====================================================
    CALENDAR
@@ -2496,7 +3442,7 @@ function renderCalendar() {
     const month = calendarDate.getMonth();
 
 
-    const monthName = calendarDate.toLocaleDateString("en-US", {
+    const monthName = calendarDate.toLocaleDateString(getAppLocale(), {
         month: "long",
         year: "numeric"
     });
@@ -2709,6 +3655,36 @@ const characters = [
         name: "CARET",
         image: "caret.png",
         price: 400
+    },
+    {
+        id: "armycat",
+        name: "ARMYCAT",
+        image: "armycat.png",
+        price: 230
+    },
+    {
+        id: "burgirengcat",
+        name: "BURGIRENGCAT",
+        image: "burgirengcat.png",
+        price: 250
+    },
+    {
+        id: "duriancat",
+        name: "DURIANCAT",
+        image: "duriancat.png",
+        price: 280
+    },
+    {
+        id: "gofoodcat",
+        name: "GOFOODCAT",
+        image: "gofoodcat.png",
+        price: 300
+    },
+    {
+        id: "officecat",
+        name: "OFFICECAT",
+        image: "officecat.png",
+        price: 330
     },
 
     // PREMIUM CHARACTERS
@@ -3057,6 +4033,18 @@ function updateCoins() {
     );
 }
 
+window.addEventListener("dys-feature-reward", event => {
+    const reward = event.detail || {};
+    stats.xp += Math.max(0, Number(reward.xp) || 0);
+    coins += Math.max(0, Number(reward.coins) || 0);
+    if (reward.freezes) {
+        window.DYSFeatures?.addStreakFreezes?.(Number(reward.freezes));
+    }
+    saveStats();
+    updateStats();
+    updateCoins();
+});
+
 
 /* =====================================================
    DYNAMIC CHARACTER SHOP
@@ -3065,7 +4053,10 @@ function updateCoins() {
 const shopBackgrounds = [
     { id: "room", name: "ROOM", image: "roombg.jpe", price: 1900 },
     { id: "sea", name: "SEA", image: "seabg.jpe", price: 2000 },
-    { id: "trail", name: "TRAIL", image: "trailbg.jpe", price: 3400 }
+    { id: "trail", name: "TRAIL", image: "trailbg.jpe", price: 3400 },
+    { id: "lawson", name: "LAWSON", image: "Lawsonbg.jpe", price: 2200 },
+    { id: "park", name: "PARK", image: "parkbg.jpe", price: 2500 },
+    { id: "station", name: "STATION", image: "stationbg.jpe", price: 2800 }
 ];
 
 function isBackgroundOwned(background) {
@@ -3133,7 +4124,7 @@ function renderBackgroundShop() {
                 type="button"
                 ${equipped ? "disabled" : ""}
             >
-                ${equipped ? "DIPAKAI" : owned ? "PASANG" : "BELI"}
+                ${equipped ? "DIPAKAI" : owned ? "PASANG" : "BUY"}
             </button>
         `;
 
