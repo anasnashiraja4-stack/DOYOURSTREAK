@@ -16,6 +16,13 @@
     let reminderControlsHidden = false;
     let currentQuestPeriod = null;
 
+    function localizedText(source, replacements = {}) {
+        const translated = window.translateAppText?.(source) || source;
+        return translated.replace(/\{(\w+)\}/g, (match, key) =>
+            Object.prototype.hasOwnProperty.call(replacements, key) ? replacements[key] : match
+        );
+    }
+
     function createState() {
         return {
             version: 1,
@@ -137,7 +144,7 @@
             const list = document.getElementById("friendChallengeList");
             if (list) {
                 const message = document.createElement("p");
-                message.textContent = "Tantangan gagal disimpan. Periksa ruang penyimpanan browser.";
+                message.textContent = localizedText("Tantangan gagal disimpan. Periksa ruang penyimpanan browser.");
                 list.replaceChildren(message);
             }
             return false;
@@ -429,9 +436,9 @@
 
             const copy = document.createElement("div");
             const title = document.createElement("h4");
-            title.textContent = quest.title;
+            title.textContent = localizedText(quest.title);
             const description = document.createElement("p");
-            description.textContent = quest.description;
+            description.textContent = localizedText(quest.description);
             copy.append(title, description);
 
             const bar = document.createElement("div");
@@ -449,13 +456,16 @@
             footer.className = "quest-card-footer";
             const reward = document.createElement("span");
             reward.className = "quest-reward";
-            reward.textContent = `${progress} / ${quest.target} · ${quest.xp} XP + ${quest.coins} koin`;
+            reward.textContent = localizedText(
+                "{progress} / {target} · {xp} XP + {coins} koin",
+                { progress, target: quest.target, xp: quest.xp, coins: quest.coins }
+            );
             const claim = document.createElement("button");
             claim.type = "button";
             claim.className = "quest-claim";
             claim.dataset.featureClaim = claimKey;
             claim.disabled = !ready;
-            claim.textContent = claimed ? "Sudah diambil ✓" : ready ? "Ambil hadiah" : "Dalam progres";
+            claim.textContent = localizedText(claimed ? "Sudah diambil ✓" : ready ? "Ambil hadiah" : "Dalam progres");
             footer.append(reward, claim);
             card.append(copy, bar, footer);
             return card.outerHTML;
@@ -490,11 +500,11 @@
             const copy = document.createElement("div");
             copy.className = "achievement-copy";
             const status = document.createElement("small");
-            status.textContent = unlocked ? "TERBUKA" : "DALAM PROGRES";
+            status.textContent = localizedText(unlocked ? "TERBUKA" : "DALAM PROGRES");
             const title = document.createElement("h2");
-            title.textContent = definition.title;
+            title.textContent = localizedText(definition.title);
             const description = document.createElement("p");
-            description.textContent = definition.description;
+            description.textContent = localizedText(definition.description);
             const bar = document.createElement("div");
             bar.className = "achievement-progress";
             bar.setAttribute("role", "progressbar");
@@ -506,7 +516,16 @@
             bar.append(fill);
             const count = document.createElement("small");
             count.className = "achievement-count";
-            count.textContent = `${progress} / ${definition.target} · Hadiah: ${definition.xp} XP, ${definition.coins} koin${definition.freezes ? ", 1 Freeze" : ""}`;
+            count.textContent = localizedText(
+                "{progress} / {target} · Hadiah: {xp} XP, {coins} koin{freeze}",
+                {
+                    progress,
+                    target: definition.target,
+                    xp: definition.xp,
+                    coins: definition.coins,
+                    freeze: definition.freezes ? localizedText(", 1 Freeze") : ""
+                }
+            );
             copy.append(status, title, description, bar, count);
             card.append(copy);
             list.append(card);
@@ -524,20 +543,24 @@
     function renderFriendControls() {
         const select = document.getElementById("friendProfileSelect");
         if (!select) return;
+        const selectedProfile = select.value;
         const options = profileSnapshots.filter(profile => profile.id !== activeProfileId);
         select.replaceChildren();
         if (!options.length) {
             const option = document.createElement("option");
             option.value = "";
-            option.textContent = "Belum ada profil lain";
+            option.textContent = localizedText("Belum ada profil lain");
             select.append(option);
             return;
         }
         for (const profile of options) {
             const option = document.createElement("option");
             option.value = encodeURIComponent(profile.id);
-            option.textContent = profile.name || "Pemain";
+            option.textContent = profile.name || localizedText("Pemain");
             select.append(option);
+        }
+        if (options.some(profile => encodeURIComponent(profile.id) === selectedProfile)) {
+            select.value = selectedProfile;
         }
     }
 
@@ -548,16 +571,23 @@
         const friends = state.friends.map(id => profileSnapshots.find(profile => profile.id === id)).filter(Boolean);
         if (!friends.length) {
             const emptyState = document.createElement("p");
-            emptyState.textContent = "Belum ada teman. Tambahkan profil lain dari perangkat ini.";
+            emptyState.textContent = localizedText("Belum ada teman. Tambahkan profil lain dari perangkat ini.");
             list.append(emptyState);
             return;
         }
         const heading = document.createElement("h3");
-        heading.textContent = "Teman lokal";
+        heading.textContent = localizedText("Teman lokal");
         list.append(heading);
         for (const friend of friends) {
             const row = document.createElement("p");
-            row.textContent = `${friend.name || "Pemain"} · ${friend.stats?.streak || 0} hari streak · ${friend.stats?.xp || 0} XP`;
+            row.textContent = localizedText(
+                "{name} · {streak} hari streak · {xp} XP",
+                {
+                    name: friend.name || localizedText("Pemain"),
+                    streak: friend.stats?.streak || 0,
+                    xp: friend.stats?.xp || 0
+                }
+            );
             list.append(row);
         }
     }
@@ -591,26 +621,33 @@
         const challenges = readChallenges().filter(challenge => challenge.participantIds?.includes(activeProfileId));
         if (!challenges.length) {
             const emptyState = document.createElement("p");
-            emptyState.textContent = "Belum ada tantangan aktif.";
+            emptyState.textContent = localizedText("Belum ada tantangan aktif.");
             list.append(emptyState);
             return;
         }
         for (const challenge of challenges) {
-            const names = challenge.participantIds.map(id => profileSnapshots.find(profile => profile.id === id)?.name || "Profil lokal");
+            const names = challenge.participantIds.map(id =>
+                profileSnapshots.find(profile => profile.id === id)?.name || localizedText("Profil lokal")
+            );
             const target = challenge.type === "streak" ? 3 : 5;
             const progress = challenge.participantIds.map(id => getChallengeProgress(challenge, id));
             const finished = localDate() > challenge.endsAt;
-            let result = "Sedang berjalan";
+            let result = localizedText("Sedang berjalan");
             if (finished) {
-                if (progress[0] === progress[1]) result = "Seri";
-                else result = `${names[progress[0] > progress[1] ? 0 : 1]} menang`;
+                if (progress[0] === progress[1]) result = localizedText("Seri");
+                else result = localizedText("{name} menang", { name: names[progress[0] > progress[1] ? 0 : 1] });
             }
             const article = document.createElement("article");
             article.className = "friend-challenge-card";
             const title = document.createElement("h3");
-            title.textContent = challenge.type === "streak" ? "Tantangan streak 3 hari" : "Konsistensi mingguan";
+            title.textContent = localizedText(
+                challenge.type === "streak" ? "Tantangan streak 3 hari" : "Konsistensi mingguan"
+            );
             const summary = document.createElement("p");
-            summary.textContent = `${names[0]} ${progress[0]}/${target} hari · ${names[1]} ${progress[1]}/${target} hari`;
+            summary.textContent = localizedText(
+                "{first} {firstProgress}/{target} hari · {second} {secondProgress}/{target} hari",
+                { first: names[0], firstProgress: progress[0], target, second: names[1], secondProgress: progress[1] }
+            );
             const status = document.createElement("strong");
             status.textContent = result;
             article.append(title, summary, status);
@@ -626,7 +663,7 @@
             const list = document.getElementById("friendChallengeList");
             if (list) {
                 const message = document.createElement("p");
-                message.textContent = "Tambahkan profil sebagai teman sebelum membuat tantangan.";
+                message.textContent = localizedText("Tambahkan profil sebagai teman sebelum membuat tantangan.");
                 list.replaceChildren(message);
             }
             return;
@@ -657,6 +694,14 @@
         renderAchievementCards();
         scheduleReminderCheck();
         unlockAchievements(stats);
+    }
+
+    function refreshTranslations() {
+        renderFriendControls();
+        renderFriendList();
+        renderChallengeBoard();
+        if (currentQuestPeriod) renderQuestList(document.getElementById("questList"), currentQuestPeriod);
+        renderAchievementCards();
     }
 
     function addStreakFreezes(amount) {
@@ -746,6 +791,7 @@
         syncProgress,
         renderQuestList,
         renderAchievementCards,
-        renderChallengeBoard
+        renderChallengeBoard,
+        refreshTranslations
     };
 })();

@@ -40,7 +40,175 @@ let localProfiles = JSON.parse(localStorage.getItem("doyourstreak-profiles") || 
 let activeProfileId = user?.profileId || null;
 
 const appTranslations = {
+    en: {
+        "PENCAPAIAN & QUEST": "ACHIEVEMENTS & QUESTS",
+        "Pantau progres, raih hadiah, dan bangun rutinitas.": "Track your progress, earn rewards, and build a routine.",
+        "PENCAPAIAN": "ACHIEVEMENTS",
+        "QUEST HARIAN": "DAILY QUESTS",
+        "QUEST MINGGUAN": "WEEKLY QUESTS",
+        "QUEST BULANAN": "MONTHLY QUESTS",
+        "QUEST TAHUNAN": "ANNUAL QUESTS",
+        "PERJALANANMU": "YOUR JOURNEY",
+        "Pencapaian": "Achievements",
+        "Buka badge dari pencapaian jangka panjang.": "Unlock badges for long-term achievements.",
+        "DIULANG HARIAN": "RESETS DAILY",
+        "Quest Harian": "Daily Quests",
+        "Selesaikan target habit harian.": "Complete your daily habit goal.",
+        "DIULANG MINGGUAN": "RESETS WEEKLY",
+        "Quest Mingguan": "Weekly Quests",
+        "Jaga konsistensi setiap minggu.": "Stay consistent every week.",
+        "DIULANG BULANAN": "RESETS MONTHLY",
+        "Quest Bulanan": "Monthly Quests",
+        "Bangun progres habit jangka panjang.": "Build long-term habit progress.",
+        "QUEST LAMA": "ANNUAL QUEST",
+        "Quest Tahunan": "Annual Quests",
+        "Lanjutkan tantangan tahunan yang tersedia.": "Keep going with the available annual challenges.",
+        "PROFIL DI PERANGKAT INI": "PROFILES ON THIS DEVICE",
+        "Tantangan Teman": "Friend Challenge",
+        "Ajak profil lain berlomba menjaga rutinitas. Hari dihitung jika minimal satu habit selesai.": "Challenge another profile to keep up a routine. A day counts when at least one habit is completed.",
+        "Teman adalah profil lokal di browser ini. Progres tidak tersinkron ke perangkat lain.": "Friends are local profiles in this browser. Progress is not synced to other devices.",
+        "Profil teman": "Friend profile",
+        "Tambah teman": "Add friend",
+        "Pilih tantangan": "Choose a challenge",
+        "Streak 3 hari · berturut-turut": "3-day streak · consecutive",
+        "Mingguan · target 5 dari 7 hari": "Weekly · target 5 of 7 days",
+        "Buat tantangan": "Create challenge",
+        "Belum ada profil lain": "No other profiles yet",
+        "Belum ada teman. Tambahkan profil lain dari perangkat ini.": "No friends yet. Add another profile from this device.",
+        "Teman lokal": "Local friends",
+        "Pemain": "Player",
+        "Profil lokal": "Local profile",
+        "{name} · {streak} hari streak · {xp} XP": "{name} · {streak}-day streak · {xp} XP",
+        "Belum ada tantangan aktif.": "No active challenges.",
+        "Tantangan streak 3 hari": "3-day streak challenge",
+        "Konsistensi mingguan": "Weekly consistency",
+        "Sedang berjalan": "In progress",
+        "Seri": "Tie",
+        "{name} menang": "{name} wins",
+        "{first} {firstProgress}/{target} hari · {second} {secondProgress}/{target} hari": "{first} {firstProgress}/{target} days · {second} {secondProgress}/{target} days",
+        "Tambahkan profil sebagai teman sebelum membuat tantangan.": "Add the profile as a friend before creating a challenge.",
+        "Tantangan gagal disimpan. Periksa ruang penyimpanan browser.": "Could not save the challenge. Check your browser storage.",
+        "Selesaikan habit pertamamu.": "Complete your first habit.",
+        "Bangun streak selama 7 hari.": "Build a 7-day streak.",
+        "Selesaikan 50 habit.": "Complete 50 habits.",
+        "Kumpulkan 1.000 XP.": "Earn 1,000 XP.",
+        "Dua Langkah Hari Ini": "Two Steps Today",
+        "Selesaikan 2 habit hari ini.": "Complete 2 habits today.",
+        "Konsisten Mingguan": "Weekly Consistency",
+        "Selesaikan 5 habit minggu ini.": "Complete 5 habits this week.",
+        "Habit Bertumbuh": "Growing Habits",
+        "Selesaikan 30 habit bulan ini.": "Complete 30 habits this month.",
+        "TERBUKA": "UNLOCKED",
+        "DALAM PROGRES": "IN PROGRESS",
+        "Hadiah:": "Reward:",
+        "koin": "coins",
+        "{progress} / {target} · {xp} XP + {coins} koin": "{progress} / {target} · {xp} XP + {coins} coins",
+        "{progress} / {target} · Hadiah: {xp} XP, {coins} koin{freeze}": "{progress} / {target} · Reward: {xp} XP, {coins} coins{freeze}",
+        "Sudah diambil ✓": "Claimed ✓",
+        "Ambil hadiah": "Claim reward",
+        "Dalam progres": "In progress"
+    },
     id: {
+        "Settings": "Pengaturan",
+        "More options": "Opsi lainnya",
+        "Language": "Bahasa",
+        "Choose the language used throughout the app.": "Pilih bahasa yang digunakan di seluruh aplikasi.",
+        "Choose language": "Pilih bahasa",
+        "Profile": "Profil",
+        "Your current player details.": "Detail pemain saat ini.",
+        "Profile photo": "Foto profil",
+        "Choose a profile photo": "Pilih foto profil",
+        "Attach photo": "Tambahkan foto",
+        "Remove": "Hapus",
+        "Name": "Nama",
+        "Player": "Pemain",
+        "Streak": "Streak",
+        "days": "hari",
+        "Password": "Kata sandi",
+        "Not saved — secure sign-in is not connected yet.": "Tidak disimpan — login aman belum tersedia.",
+        "Close more options": "Tutup opsi lainnya",
+        "How to play": "Cara bermain",
+        "Log out": "Keluar",
+        "PENCAPAIAN": "PENCAPAIAN",
+        "QUEST HARIAN": "QUEST HARIAN",
+        "QUEST MINGGUAN": "QUEST MINGGUAN",
+        "QUEST BULANAN": "QUEST BULANAN",
+        "QUEST TAHUNAN": "QUEST TAHUNAN",
+        "UNLOCKED": "TERBUKA",
+        "IN PROGRESS": "DALAM PROGRES",
+        "CLAIMED ✓": "SUDAH DIKLAIM ✓",
+        "CLAIM REWARD": "KLAIM HADIAH",
+        "WEEKLY QUESTS": "QUEST MINGGUAN",
+        "MONTHLY QUESTS": "QUEST BULANAN",
+        "ANNUAL QUESTS": "QUEST TAHUNAN",
+        "MEDIUM": "SEDANG",
+        "HARD": "SULIT",
+        "NEARLY IMPOSSIBLE": "HAMPIR MUSTAHIL",
+        "Habit Centurion": "Penakluk 100 Kebiasaan",
+        "Complete 100 habits.": "Selesaikan 100 kebiasaan.",
+        "Fresh Look": "Tampilan Baru",
+        "Purchase 3 character skins.": "Beli 3 skin karakter.",
+        "Game Regular": "Pemain Rutin",
+        "Play 10 games.": "Mainkan 10 game.",
+        "Month of Momentum": "Bulan Penuh Momentum",
+        "Keep a habit streak for 30 days.": "Jaga streak kebiasaan selama 30 hari.",
+        "Routine Finisher": "Penyelesai Rutinitas",
+        "Complete every habit on 7 different days.": "Selesaikan semua kebiasaan pada 7 hari yang berbeda.",
+        "Thoughtful Tracker": "Pelacak Penuh Perhatian",
+        "Write 25 habit notes.": "Tulis 25 catatan kebiasaan.",
+        "Arcade Devotee": "Penggemar Arcade",
+        "Play 100 games.": "Mainkan 100 game.",
+        "Style Collector": "Kolektor Gaya",
+        "Purchase 15 character skins.": "Beli 15 skin karakter.",
+        "Level 25": "Level 25",
+        "Reach level 25.": "Capai level 25.",
+        "Long Road Back": "Perjalanan Kembali",
+        "Return to your habits after 30 days away.": "Kembali melakukan kebiasaan setelah absen 30 hari.",
+        "Daily Task Champion": "Juara Tugas Harian",
+        "Claim 100 daily task rewards.": "Klaim 100 hadiah tugas harian.",
+        "Habit Momentum": "Momentum Kebiasaan",
+        "Complete 15 habits this week.": "Selesaikan 15 kebiasaan minggu ini.",
+        "Play Break": "Jeda Bermain",
+        "Open and play 5 games this week.": "Buka dan mainkan 5 game minggu ini.",
+        "Weekly Reflection": "Refleksi Mingguan",
+        "Write 3 habit notes this week.": "Tulis 3 catatan kebiasaan minggu ini.",
+        "Habit Machine": "Mesin Kebiasaan",
+        "Complete 120 habits this month.": "Selesaikan 120 kebiasaan bulan ini.",
+        "Arcade Regular": "Pemain Arcade Rutin",
+        "Play 30 games this month.": "Mainkan 30 game bulan ini.",
+        "Task Tactician": "Ahli Taktik Tugas",
+        "Claim 20 daily task rewards this month.": "Klaim 20 hadiah tugas harian bulan ini.",
+        "Legendary Habit Master": "Master Kebiasaan Legendaris",
+        "Complete 2,500 habits this year.": "Selesaikan 2.500 kebiasaan tahun ini.",
+        "Arcade Legend": "Legenda Arcade",
+        "Play 500 games this year.": "Mainkan 500 game tahun ini.",
+        "Year of Perfect Focus": "Tahun Fokus Sempurna",
+        "Claim 300 daily task rewards this year.": "Klaim 300 hadiah tugas harian tahun ini.",
+        "{progress} / {target} · {coins} coins + {xp} XP": "{progress} / {target} · {coins} koin + {xp} XP",
+        "First Step": "Langkah Pertama",
+        "7 Day Streak": "Streak 7 Hari",
+        "Habit Master": "Master Kebiasaan",
+        "XP Collector": "Pengumpul XP",
+        ", 1 Freeze": ", 1 Freeze",
+        "Selesaikan habit pertamamu.": "Selesaikan kebiasaan pertamamu.",
+        "Bangun streak selama 7 hari.": "Bangun streak selama 7 hari.",
+        "Selesaikan 50 habit.": "Selesaikan 50 kebiasaan.",
+        "Kumpulkan 1.000 XP.": "Kumpulkan 1.000 XP.",
+        "Dua Langkah Hari Ini": "Dua Langkah Hari Ini",
+        "Selesaikan 2 habit hari ini.": "Selesaikan 2 kebiasaan hari ini.",
+        "Konsisten Mingguan": "Konsisten Mingguan",
+        "Selesaikan 5 habit minggu ini.": "Selesaikan 5 kebiasaan minggu ini.",
+        "Habit Bertumbuh": "Kebiasaan Bertumbuh",
+        "Selesaikan 30 habit bulan ini.": "Selesaikan 30 kebiasaan bulan ini.",
+        "TERBUKA": "TERBUKA",
+        "DALAM PROGRES": "DALAM PROGRES",
+        "Hadiah:": "Hadiah:",
+        "koin": "koin",
+        "{progress} / {target} · {xp} XP + {coins} koin": "{progress} / {target} · {xp} XP + {coins} koin",
+        "{progress} / {target} · Hadiah: {xp} XP, {coins} koin{freeze}": "{progress} / {target} · Hadiah: {xp} XP, {coins} koin{freeze}",
+        "Sudah diambil ✓": "Sudah diambil ✓",
+        "Ambil hadiah": "Ambil hadiah",
+        "Dalam progres": "Dalam progres",
         "Welcome!": "Selamat datang!",
         "Create your account and start your journey.": "Buat akun dan mulai perjalananmu.",
         "YOUR EMAIL": "EMAIL KAMU",
@@ -301,6 +469,121 @@ const appTranslations = {
         "Switch app": "Ganti aplikasi"
     },
     zh: {
+        "Settings": "设置",
+        "More options": "更多选项",
+        "Language": "语言",
+        "Choose the language used throughout the app.": "选择整个应用使用的语言。",
+        "Choose language": "选择语言",
+        "Profile": "个人资料",
+        "Your current player details.": "当前玩家资料。",
+        "Profile photo": "个人资料照片",
+        "Choose a profile photo": "选择个人资料照片",
+        "Attach photo": "添加照片",
+        "Remove": "移除",
+        "Name": "姓名",
+        "Player": "玩家",
+        "Streak": "连续打卡",
+        "days": "天",
+        "Password": "密码",
+        "Not saved — secure sign-in is not connected yet.": "尚未保存——安全登录功能尚未接入。",
+        "Close more options": "关闭更多选项",
+        "How to play": "玩法说明",
+        "Log out": "退出登录",
+        "PENCAPAIAN": "成就",
+        "QUEST HARIAN": "每日任务",
+        "QUEST MINGGUAN": "每周任务",
+        "QUEST BULANAN": "每月任务",
+        "QUEST TAHUNAN": "年度任务",
+        "UNLOCKED": "已解锁",
+        "IN PROGRESS": "进行中",
+        "CLAIMED ✓": "已领取 ✓",
+        "CLAIM REWARD": "领取奖励",
+        "WEEKLY QUESTS": "每周任务",
+        "MONTHLY QUESTS": "每月任务",
+        "ANNUAL QUESTS": "年度任务",
+        "MEDIUM": "中等",
+        "HARD": "困难",
+        "NEARLY IMPOSSIBLE": "几乎不可能",
+        "Habit Centurion": "百习惯达人",
+        "Complete 100 habits.": "完成 100 个习惯。",
+        "Fresh Look": "焕然一新",
+        "Purchase 3 character skins.": "购买 3 个角色皮肤。",
+        "Game Regular": "游戏常客",
+        "Play 10 games.": "玩 10 次游戏。",
+        "Month of Momentum": "持续进步月",
+        "Keep a habit streak for 30 days.": "连续坚持习惯 30 天。",
+        "Routine Finisher": "习惯完成者",
+        "Complete every habit on 7 different days.": "在 7 个不同的日期完成所有习惯。",
+        "Thoughtful Tracker": "细心记录者",
+        "Write 25 habit notes.": "写下 25 条习惯笔记。",
+        "Arcade Devotee": "街机爱好者",
+        "Play 100 games.": "玩 100 次游戏。",
+        "Style Collector": "风格收藏家",
+        "Purchase 15 character skins.": "购买 15 个角色皮肤。",
+        "Level 25": "25 级",
+        "Reach level 25.": "达到 25 级。",
+        "Long Road Back": "漫长归途",
+        "Return to your habits after 30 days away.": "离开 30 天后重新培养习惯。",
+        "Daily Task Champion": "每日任务冠军",
+        "Claim 100 daily task rewards.": "领取 100 份每日任务奖励。",
+        "Habit Momentum": "习惯动力",
+        "Complete 15 habits this week.": "本周完成 15 个习惯。",
+        "Play Break": "游戏休息",
+        "Open and play 5 games this week.": "本周打开并玩 5 次游戏。",
+        "Weekly Reflection": "每周回顾",
+        "Write 3 habit notes this week.": "本周写下 3 条习惯笔记。",
+        "Habit Machine": "习惯达人",
+        "Complete 120 habits this month.": "本月完成 120 个习惯。",
+        "Arcade Regular": "街机常客",
+        "Play 30 games this month.": "本月玩 30 次游戏。",
+        "Task Tactician": "任务谋略家",
+        "Claim 20 daily task rewards this month.": "本月领取 20 份每日任务奖励。",
+        "Legendary Habit Master": "传奇习惯大师",
+        "Complete 2,500 habits this year.": "今年完成 2,500 个习惯。",
+        "Arcade Legend": "街机传奇",
+        "Play 500 games this year.": "今年玩 500 次游戏。",
+        "Year of Perfect Focus": "专注之年",
+        "Claim 300 daily task rewards this year.": "今年领取 300 份每日任务奖励。",
+        "{progress} / {target} · {coins} coins + {xp} XP": "{progress} / {target} · {coins} 金币 + {xp} XP",
+        "First Step": "第一步",
+        "7 Day Streak": "连续打卡 7 天",
+        "Habit Master": "习惯大师",
+        "XP Collector": "XP 收藏家",
+        ", 1 Freeze": "，1 次保护",
+        "Belum ada profil lain": "暂无其他个人资料",
+        "Belum ada teman. Tambahkan profil lain dari perangkat ini.": "暂无好友。请添加此设备上的其他个人资料。",
+        "Teman lokal": "本地好友",
+        "Pemain": "玩家",
+        "Profil lokal": "本地个人资料",
+        "{name} · {streak} hari streak · {xp} XP": "{name} · 连续打卡 {streak} 天 · {xp} XP",
+        "Belum ada tantangan aktif.": "暂无进行中的挑战。",
+        "Tantangan streak 3 hari": "连续打卡 3 天挑战",
+        "Konsistensi mingguan": "每周坚持挑战",
+        "Sedang berjalan": "进行中",
+        "Seri": "平局",
+        "{name} menang": "{name} 获胜",
+        "{first} {firstProgress}/{target} hari · {second} {secondProgress}/{target} hari": "{first} {firstProgress}/{target} 天 · {second} {secondProgress}/{target} 天",
+        "Tambahkan profil sebagai teman sebelum membuat tantangan.": "创建挑战前，请先添加该个人资料为好友。",
+        "Tantangan gagal disimpan. Periksa ruang penyimpanan browser.": "无法保存挑战。请检查浏览器存储空间。",
+        "Selesaikan habit pertamamu.": "完成你的第一个习惯。",
+        "Bangun streak selama 7 hari.": "连续打卡 7 天。",
+        "Selesaikan 50 habit.": "完成 50 个习惯。",
+        "Kumpulkan 1.000 XP.": "获得 1,000 XP。",
+        "Dua Langkah Hari Ini": "今日两步",
+        "Selesaikan 2 habit hari ini.": "今天完成 2 个习惯。",
+        "Konsisten Mingguan": "每周坚持",
+        "Selesaikan 5 habit minggu ini.": "本周完成 5 个习惯。",
+        "Habit Bertumbuh": "习惯成长",
+        "Selesaikan 30 habit bulan ini.": "本月完成 30 个习惯。",
+        "TERBUKA": "已解锁",
+        "DALAM PROGRES": "进行中",
+        "Hadiah:": "奖励：",
+        "koin": "金币",
+        "{progress} / {target} · {xp} XP + {coins} koin": "{progress} / {target} · {xp} XP + {coins} 金币",
+        "{progress} / {target} · Hadiah: {xp} XP, {coins} koin{freeze}": "{progress} / {target} · 奖励：{xp} XP、{coins} 金币{freeze}",
+        "Sudah diambil ✓": "已领取 ✓",
+        "Ambil hadiah": "领取奖励",
+        "Dalam progres": "进行中",
         "Welcome!": "欢迎！",
         "Create your account and start your journey.": "创建账户，开启你的旅程。",
         "YOUR EMAIL": "你的邮箱",
@@ -600,7 +883,6 @@ function translateAppContent(root = document.body) {
     while (walker.nextNode()) textNodes.push(walker.currentNode);
 
     textNodes.forEach(node => {
-        if (node.parentElement?.closest("#settingsPage")) return;
         if (node.parentElement?.closest("#habitList, #playerName, #headerName, #localLeaderboard, #eventChatMessages")) return;
         if (!originalTextNodes.has(node)) originalTextNodes.set(node, node.textContent);
         const source = originalTextNodes.get(node);
@@ -616,14 +898,13 @@ function translateAppContent(root = document.body) {
             const leading = source.match(/^\s*/)?.[0] || "";
             const trailing = source.match(/\s*$/)?.[0] || "";
             node.textContent = `${leading}${translated}${trailing}`;
-        } else if (node.textContent !== source && appLanguage === "en") {
+        } else if (node.textContent !== source) {
             node.textContent = source;
         }
     });
 
     const elements = root.querySelectorAll ? [root, ...root.querySelectorAll("*")] : [];
     elements.forEach(element => {
-        if (element.closest?.("#settingsPage")) return;
         ["placeholder", "aria-label", "title"].forEach(attribute => {
             if (!element.hasAttribute?.(attribute)) return;
             let originals = originalAttributes.get(element);
@@ -635,10 +916,17 @@ function translateAppContent(root = document.body) {
             const source = originals[attribute];
             const translated = appTranslations[appLanguage]?.[source];
             if (translated) element.setAttribute(attribute, translated);
-            else if (appLanguage === "en") element.setAttribute(attribute, source);
+            else if (element.getAttribute(attribute) !== source) element.setAttribute(attribute, source);
         });
     });
 }
+
+window.translateAppText = (source, replacements = {}) => {
+    const translated = appTranslations[appLanguage]?.[source] || source;
+    return translated.replace(/\{(\w+)\}/g, (match, key) =>
+        Object.prototype.hasOwnProperty.call(replacements, key) ? replacements[key] : match
+    );
+};
 
 function setAppLanguage(language) {
     if (!supportedLanguages.includes(language)) return;
@@ -649,6 +937,7 @@ function setAppLanguage(language) {
         button.setAttribute("aria-pressed", String(button.dataset.language === language));
     });
     translateAppContent();
+    window.DYSFeatures?.refreshTranslations();
 }
 
 document.querySelectorAll("[data-language]").forEach(button => {
@@ -2949,16 +3238,25 @@ function renderQuestBoard() {
     const selectedPeriod = questPeriods.find(period => period.id === currentAwardSection);
     list.innerHTML = (selectedPeriod ? [selectedPeriod] : []).map(period => {
         const state = getQuestPeriodState(period.id);
+        const periodTitle = window.translateAppText(period.title);
+        const difficulty = window.translateAppText(period.difficulty);
         return `<section class="quest-period" aria-labelledby="quest-${period.id}-title">
-            <div class="quest-period-header"><div><h3 id="quest-${period.id}-title">${period.title}</h3><small>${period.difficulty}</small></div><small>${getQuestResetText(period.id)}</small></div>
+            <div class="quest-period-header"><div><h3 id="quest-${period.id}-title">${periodTitle}</h3><small>${difficulty}</small></div><small>${getQuestResetText(period.id)}</small></div>
             <div class="quest-cards">${period.quests.map(quest => {
                 const progress = Math.min(Number(state.counters[quest.metric]) || 0, quest.target);
                 const isClaimed = state.claimed.includes(quest.id);
                 const canClaim = progress >= quest.target && !isClaimed;
-                return `<article class="quest-card"><div><h4>${quest.title}</h4><p>${quest.description}</p></div>
-                    <div class="quest-progress" role="progressbar" aria-label="${quest.title}" aria-valuemin="0" aria-valuemax="${quest.target}" aria-valuenow="${progress}"><span style="width:${progress / quest.target * 100}%"></span></div>
-                    <div class="quest-card-footer"><span class="quest-reward">${progress} / ${quest.target} · ${quest.coins.toLocaleString()} coins + ${quest.xp.toLocaleString()} XP</span>
-                    <button class="quest-claim" type="button" data-claim-quest="${period.id}:${quest.id}" ${canClaim ? "" : "disabled"}>${isClaimed ? "CLAIMED ✓" : canClaim ? "CLAIM REWARD" : "IN PROGRESS"}</button></div></article>`;
+                const title = window.translateAppText(quest.title);
+                const description = window.translateAppText(quest.description);
+                const reward = window.translateAppText(
+                    "{progress} / {target} · {coins} coins + {xp} XP",
+                    { progress, target: quest.target, coins: quest.coins.toLocaleString(), xp: quest.xp.toLocaleString() }
+                );
+                const claimLabel = window.translateAppText(isClaimed ? "CLAIMED ✓" : canClaim ? "CLAIM REWARD" : "IN PROGRESS");
+                return `<article class="quest-card"><div><h4>${title}</h4><p>${description}</p></div>
+                    <div class="quest-progress" role="progressbar" aria-label="${title}" aria-valuemin="0" aria-valuemax="${quest.target}" aria-valuenow="${progress}"><span style="width:${progress / quest.target * 100}%"></span></div>
+                    <div class="quest-card-footer"><span class="quest-reward">${reward}</span>
+                    <button class="quest-claim" type="button" data-claim-quest="${period.id}:${quest.id}" ${canClaim ? "" : "disabled"}>${claimLabel}</button></div></article>`;
             }).join("")}</div>
         </section>`;
     }).join("");
