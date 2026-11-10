@@ -1388,7 +1388,7 @@ body::before {
     .settings-section-heading h2 { margin: 0; font-size: 19px; }
     .settings-section-heading p { margin: 4px 0 0; color: #666; font-size: 13px; }
 
-    .settings-language-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .settings-language-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
     .settings-language-option {
         min-height: 46px;
         border: 2px solid #171717;
@@ -10311,7 +10311,7 @@ body::before {
 .settings-avatar-remove { color: #555; }
 .settings-avatar-feedback { min-height: 18px; margin-top: 4px !important; font-size: 11px !important; }
 
-.settings-language-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.settings-language-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .settings-language-option {
     min-height: 48px;
     border: 1px solid rgba(17, 17, 17, .14);

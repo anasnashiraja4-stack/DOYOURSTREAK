@@ -68,6 +68,32 @@ const appTranslations = {
         "Ajak profil lain berlomba menjaga rutinitas. Hari dihitung jika minimal satu habit selesai.": "Challenge another profile to keep up a routine. A day counts when at least one habit is completed.",
         "Teman adalah profil lokal di browser ini. Progres tidak tersinkron ke perangkat lain.": "Friends are local profiles in this browser. Progress is not synced to other devices.",
         "Profil teman": "Friend profile",
+        "Anda ingin log out?": "Are you sure you want to log out?",
+        "Progress Anda akan disimpan sebelum keluar.": "Your progress will be saved before you log out.",
+        "Belum ada profil lain": "No other profiles yet",
+        "Belum ada teman. Tambahkan profil lain dari perangkat ini.": "No friends yet. Add another profile from this device.",
+        "Teman lokal": "Local friends",
+        "Belum ada tantangan aktif.": "No active challenges yet.",
+        "Tambahkan profil sebagai teman sebelum membuat tantangan.": "Add a profile as a friend before creating a challenge.",
+        "Tantangan gagal disimpan. Periksa ruang penyimpanan browser.": "Could not save the challenge. Check your browser storage.",
+        "Data fitur tidak dapat dibaca. Data baru digunakan; data habit lama tetap aman.": "Feature data could not be read. New data will be used; your existing habits are safe.",
+        "Data fitur gagal disimpan. Periksa ruang penyimpanan browser.": "Could not save feature data. Check your browser storage.",
+        "Tunda 1 jam": "Snooze 1 hour",
+        "Tunda 15 menit": "Snooze 15 minutes",
+        "Tunda 30 menit": "Snooze 30 minutes",
+        "Tunda 60 menit": "Snooze 60 minutes",
+        "pengingat aktif. Pengingat hanya berjalan saat aplikasi terbuka.": "reminders active. Reminders only run while the app is open.",
+        "Belum ada pengingat aktif.": "No active reminders yet.",
+        "Sudah diambil ✓": "Claimed ✓",
+        "Ambil hadiah": "Claim reward",
+        "Dalam progres": "In progress",
+        "TERBUKA": "UNLOCKED",
+        "DALAM PROGRES": "IN PROGRESS",
+        "Hadiah:": "Reward:",
+        "Belum ada profil lain": "No other profiles yet",
+        "Teman lokal": "Local friends",
+        "Tantangan streak 3 hari": "3-day streak challenge",
+        "Konsistensi mingguan": "Weekly consistency",
         "Tambah teman": "Add friend",
         "Pilih tantangan": "Choose a challenge",
         "Streak 3 hari · berturut-turut": "3-day streak · consecutive",
@@ -92,6 +118,62 @@ const appTranslations = {
         "Bangun streak selama 7 hari.": "Build a 7-day streak.",
         "Selesaikan 50 habit.": "Complete 50 habits.",
         "Kumpulkan 1.000 XP.": "Earn 1,000 XP.",
+        "PROFIL DI PERANGKAT INI": "PROFILES ON THIS DEVICE",
+        "Tantangan Teman": "Friend Challenges",
+        "Teman adalah profil lokal di browser ini. Progres tidak tersinkron ke perangkat lain.": "Friends are local profiles in this browser. Progress does not sync to other devices.",
+        "Ajak profil lain berlomba menjaga rutinitas. Hari dihitung jika minimal satu habit selesai.": "Challenge another profile to keep up a routine. A day counts when at least one habit is completed.",
+        "Tulis pesan chat": "Write a chat message",
+        "Tulis pesan untuk komunitas...": "Write a message to the community...",
+        "Kirim pesan": "Send message",
+        "KIRIM": "SEND",
+        "KIRIM PESAN": "SEND MESSAGE",
+        "Pesan tersimpan di perangkat ini.": "Messages are saved on this device.",
+        "Belum ada pesan. Mulai obrolan dan kenalan dengan pemain lain!": "No messages yet. Start a conversation and meet other players!",
+        "Buat atau pilih profil terlebih dahulu untuk mengirim pesan.": "Create or select a profile before sending a message.",
+        "Pesan terkirim dan tersimpan di perangkat ini.": "Message sent and saved on this device.",
+        "CHAT AKTIF": "CHAT ACTIVE",
+        "Profil teman": "Friend profile",
+        "Buat tantangan": "Create challenge",
+        "Tambahkan profil sebagai teman sebelum membuat tantangan.": "Add a profile as a friend before creating a challenge.",
+        "hari streak": "day streak",
+        "Selesai": "Completed",
+        "Belum selesai": "Not completed",
+        "Kebiasaan": "Habits",
+        "Pilih kategori": "Choose a category",
+        "Nama kebiasaan": "Habit name",
+        "Catatan": "Notes",
+        "Tambahkan catatan...": "Add a note...",
+        "Target tabungan": "Savings goal",
+        "Tabungan terkumpul": "Saved so far",
+        "Setoran harian": "Daily deposit",
+        "DIULANG HARIAN": "RESETS DAILY",
+        "DIULANG MINGGUAN": "RESETS WEEKLY",
+        "DIULANG BULANAN": "RESETS MONTHLY",
+        "QUEST LAMA": "YEARLY QUEST",
+        "Quest Harian": "Daily Quests",
+        "Quest Mingguan": "Weekly Quests",
+        "Quest Bulanan": "Monthly Quests",
+        "Quest Tahunan": "Yearly Quests",
+        "Selesaikan target habit harian.": "Complete your daily habit goals.",
+        "Jaga konsistensi setiap minggu.": "Stay consistent every week.",
+        "Bangun progres habit jangka panjang.": "Build progress on long-term habits.",
+        "Lanjutkan tantangan tahunan yang tersedia.": "Keep working on the available yearly challenges.",
+        "PENCAPAIAN & QUEST": "ACHIEVEMENTS & QUESTS",
+        "Pantau progres, raih hadiah, dan bangun rutinitas.": "Track progress, earn rewards, and build a routine.",
+        "PERJALANANMU": "YOUR JOURNEY",
+        "Pencapaian": "Achievements",
+        "Buka badge dari pencapaian jangka panjang.": "Unlock badges for long-term achievements.",
+        "FITUR EKSTRA": "EXTRA FEATURES",
+        "Main game menggunakan character kamu sendiri.": "Play games using your own character.",
+        "Gunakan strategi untuk mengalahkan monster.": "Use strategy to defeat the monster.",
+        "Lompat dan hindari obstacle.": "Jump and avoid obstacles.",
+        "Terbang melewati pipa dan pecahkan skor terbaik.": "Fly through the pipes and beat your best score.",
+        "Tekan MULAI, lalu klik atau tekan spasi untuk terbang.": "Press START, then click or press Space to fly.",
+        "Gerakkan capit, lalu tekan CAPIT. Karakter memberi hadiah; anomaly bikin zonk.": "Move the claw, then press GRAB. Characters give rewards; anomalies are duds.",
+        "Bisa pakai tombol panah kiri/kanan, lalu Spasi untuk capit.": "Use the left/right arrow keys, then Space to grab.",
+        "Capit karakter untuk dapat koin dan EXP. Hindari anomaly!": "Grab characters to earn coins and XP. Avoid anomalies!",
+        "Tekan MULAI, lalu klik atau tekan spasi untuk terbang.": "Press START, then click or press Space to fly.",
+        "Terbang! Hindari pipa.": "Fly! Avoid the pipes.",
         "Dua Langkah Hari Ini": "Two Steps Today",
         "Selesaikan 2 habit hari ini.": "Complete 2 habits today.",
         "Konsisten Mingguan": "Weekly Consistency",
@@ -106,7 +188,190 @@ const appTranslations = {
         "{progress} / {target} · Hadiah: {xp} XP, {coins} koin{freeze}": "{progress} / {target} · Reward: {xp} XP, {coins} coins{freeze}",
         "Sudah diambil ✓": "Claimed ✓",
         "Ambil hadiah": "Claim reward",
-        "Dalam progres": "In progress"
+        "Dalam progres": "In progress",
+        "7 Day Streak": "7-Day Streak",
+        "Bangun streak selama 7 hari.": "Build a 7-day streak.",
+        "Selesaikan 1 habit hari ini.": "Complete 1 habit today.",
+        "Selesaikan 3 habit hari ini.": "Complete 3 habits today.",
+        "Selesaikan 4 habit hari ini.": "Complete 4 habits today.",
+        "Selesaikan 5 habit hari ini.": "Complete 5 habits today.",
+        "Selesaikan semua habit yang kamu punya hari ini.": "Complete all your habits today.",
+        "Selesaikan setidaknya setengah dari habit kamu.": "Complete at least half of your habits.",
+        "Tulis satu catatan singkat pada habit hari ini.": "Write a short note for one of today's habits.",
+        "Giliran kamu — ": "Your turn — ",
+        "Giliran kamu!": "Your turn!",
+        "Klik / spasi untuk terbang": "Click / Space to fly",
+        "Geser capit dan cari 3 karakter di antara 60 anomaly yang berjatuhan.": "Move the claw and find 3 characters among 60 falling anomalies.",
+        "Dapat karakter! Capit lagi naik…": "Character caught! The claw is moving back up…",
+        "Sedang berjalan": "In progress",
+        "Seri": "Tie",
+        "Profil lokal": "Local profile",
+        "Konsisten": "Consistent",
+        "LEBIH BAIK": "DOING BETTER",
+        "AKTIF": "ACTIVE",
+        "MULAI": "START",
+        "ULANGI": "RETRY",
+        "TERBANG": "FLY",
+        "KIRI": "LEFT",
+        "KANAN": "RIGHT",
+        "CAPIT": "GRAB",
+        "MAIN LAGI": "PLAY AGAIN",
+        "DITANGKAP": "CAUGHT",
+        "SKOR": "SCORE",
+        "TERBAIK": "BEST",
+        "RONDE SELESAI": "ROUND COMPLETE",
+        "SEMBUNYIKAN PENGINGAT": "HIDE REMINDERS",
+        "TAMPILKAN PENGINGAT": "SHOW REMINDERS",
+        "SEMBUNYIKAN": "HIDE",
+        "LIHAT PENGATURAN": "VIEW SETTINGS",
+        "KOIN": "COINS",
+        "Statistik kebiasaan": "Habit Statistics",
+        "Lihat jumlah kebiasaan dan progres penyelesaiannya.": "See your habit count and completion progress.",
+        "Koleksi karakter": "Character Collection",
+        "Pilih karakter spesial untuk menemani streak-mu.": "Choose a special character to join your streak journey.",
+        "Demo Premium belum aktif.": "The Premium demo is not active.",
+        "Aktifkan demo gratis": "Activate the free demo",
+        "Buka karakter spesial dan lihat progres kebiasaanmu.": "Unlock special characters and view your habit progress.",
+        "Pilih": "Select",
+        "Belum ada kebiasaan": "No habits yet",
+        "Tambahkan kebiasaan terlebih dahulu. Statistik akan muncul di sini.": "Add a habit first. Your statistics will appear here.",
+        "Progres berdasarkan prioritas": "Progress by priority",
+        "Kebiasaan berdasarkan prioritas": "Habits by priority",
+        "Coins kamu belum cukup!": "You don't have enough coins!",
+        "Character ini sudah kamu punya!": "You already own this character!",
+        "Ronde selesai:": "Round complete:",
+        "Dapat karakter! +5 koin, +10 EXP.": "Character caught! +5 coins, +10 XP.",
+        "Belum kena. Coba geser capit ke atas karakter.": "Missed! Try moving the claw over a character.",
+        "Geser capit dan cari 3 karakter di antara 60 anomaly yang berjatuhan.": "Move the claw and find 3 characters among 60 falling anomalies."
+    },
+    ru: {
+        "Welcome!": "Добро пожаловать!", "Create your account and start your journey.": "Создайте аккаунт и начните свой путь.",
+        "YOUR EMAIL": "ВАША ПОЧТА", "PASSWORD": "ПАРОЛЬ", "CONFIRM PASSWORD": "ПОДТВЕРДИТЕ ПАРОЛЬ", "CONTINUE": "ПРОДОЛЖИТЬ",
+        "OR CONTINUE WITH": "ИЛИ ПРОДОЛЖИТЬ С ПОМОЩЬЮ", "Enter your email...": "Введите адрес электронной почты...", "At least 8 characters": "Не менее 8 символов",
+        "Enter your password again": "Введите пароль ещё раз", "Show": "Показать", "Hide": "Скрыть", "CHARACTER NAME": "ИМЯ ПЕРСОНАЖА",
+        "Enter character name...": "Введите имя персонажа...", "START JOURNEY 🚀": "НАЧАТЬ ПУТЬ 🚀", "LOGIN": "ВОЙТИ", "LOG OUT": "ВЫЙТИ",
+        "BUILD YOUR STREAK": "СОЗДАЙТЕ СЕРИЮ", "MAKE YOUR": "ПРЕВРАТИТЕ", "HABITS A": "ПРИВЫЧКИ В", "GAME.": "ИГРУ.",
+        "Build better habits, keep your streak, earn XP and become the best version of yourself.": "Формируйте полезные привычки, поддерживайте серию, получайте XP и становитесь лучше.",
+        "DOWNLOAD FOR": "СКАЧАТЬ ДЛЯ", "WINDOWS": "WINDOWS", "ANDROID": "ANDROID", "HOME": "ГЛАВНАЯ", "CATALOG": "КАТАЛОГ",
+        "HABIT": "ПРИВЫЧКИ", "EVENTS": "СОБЫТИЯ", "GAMES": "ИГРЫ", "AWARDS": "НАГРАДЫ", "PLAYER": "ИГРОК", "STREAK": "СЕРИЯ",
+        "TOTAL XP": "ВСЕГО XP", "TODAY": "СЕГОДНЯ", "CHARACTER STORE": "МАГАЗИН ПЕРСОНАЖЕЙ", "CHARACTER SHOP": "МАГАЗИН ПЕРСОНАЖЕЙ",
+        "CHARACTER": "ПЕРСОНАЖ", "BACKGROUND": "ФОН", "BUY": "КУПИТЬ", "SKIP": "ПРОПУСТИТЬ", "NEXT →": "ДАЛЕЕ →", "BACK": "НАЗАД",
+        "Cancel": "Отмена", "Save": "Сохранить", "Delete": "Удалить", "Edit": "Изменить", "Close": "Закрыть", "Search": "Поиск",
+        "No events yet.": "Пока нет событий.", "Send": "Отправить", "Message": "Сообщение", "Achievements": "Достижения", "Quests": "Задания",
+        "Daily tasks": "Ежедневные задания", "Your habits": "Ваши привычки", "Add your first habit": "Добавьте первую привычку", "Add habit": "Добавить привычку",
+        "No habits yet": "Пока нет привычек", "All": "Все", "Health": "Здоровье", "Happy": "Настроение", "Finance": "Финансы",
+        "Normal": "Обычный", "High": "Высокий", "Low": "Низкий", "Daily": "Ежедневно", "Weekly": "Еженедельно", "Monthly": "Ежемесячно",
+        "YOUR ROUTINE": "ВАШ РАСПОРЯДОК", "Today's Habits": "Привычки на сегодня", "+ ADD HABIT": "+ ДОБАВИТЬ ПРИВЫЧКУ", "ALL": "ВСЕ",
+        "HEALTH": "ЗДОРОВЬЕ", "HAPPY": "НАСТРОЕНИЕ", "FINANCE": "ФИНАНСЫ", "HIDE REMINDERS": "СКРЫТЬ НАПОМИНАНИЯ",
+        "SHOW REMINDERS": "ПОКАЗАТЬ НАПОМИНАНИЯ", "KEEP YOUR ROUTINE": "СОБЛЮДАЙТЕ РАСПОРЯДОК", "Reminders & Streak Freeze": "Напоминания и защита серии",
+        "VIEW SETTINGS": "НАСТРОЙКИ НАПОМИНАНИЙ", "CREATE HABIT": "СОЗДАТЬ ПРИВЫЧКУ", "ADD NEW HABIT": "НОВАЯ ПРИВЫЧКА",
+        "Set up a habit, one step at a time.": "Настройте привычку шаг за шагом.", "What is your habit?": "Какую привычку вы хотите создать?",
+        "Give your habit a name.": "Назовите свою привычку.", "HABIT NAME": "НАЗВАНИЕ ПРИВЫЧКИ", "When will you do it?": "Когда вы будете её выполнять?",
+        "Choose your habit time.": "Выберите время для привычки.", "TIME": "ВРЕМЯ", "How important is it?": "Насколько это важно?",
+        "Choose your priority.": "Выберите приоритет.", "Choose your type": "Выберите тип", "Choose a category, then pick an icon for your habit.": "Выберите категорию и значок для привычки.",
+        "RESET EVERY": "ПОВТОРЯТЬ КАЖДЫЕ", "Half day (12 hours)": "Полдня (12 часов)", "Day(s)": "Дн.", "Week(s)": "Нед.",
+        "CALENDAR & EVENTS": "КАЛЕНДАРЬ И СОБЫТИЯ", "Plan your next challenge and meet the DOYOURSTREAK community.": "Планируйте новые испытания и знакомьтесь с сообществом DOYOURSTREAK.",
+        "THIS DEVICE": "ЭТО УСТРОЙСТВО", "LOCAL PLAYER RANKING": "РЕЙТИНГ ИГРОКОВ НА УСТРОЙСТВЕ", "ACTIVE PROFILE": "АКТИВНЫЙ ПРОФИЛЬ",
+        "ADD A PROFILE": "ДОБАВИТЬ ПРОФИЛЬ", "ADD": "ДОБАВИТЬ", "UPCOMING EVENTS": "СКОРО СОСТОЯТСЯ", "STREAK SPRINT": "СЕРИЯ ЗА 7 ДНЕЙ",
+        "CHARACTER PARADE": "ПАРАД ПЕРСОНАЖЕЙ", "WEEKEND QUEST": "ЗАДАНИЕ НА ВЫХОДНЫЕ", "STREAK CHAT": "ЧАТ СЕРИЙ",
+        "← BACK TO EVENTS": "← К СОБЫТИЯМ", "← BACK TO AWARDS": "← К НАГРАДАМ", "← MENU GAME": "← В МЕНЮ ИГР",
+        "DAILY TASK": "ЗАДАНИЕ ДНЯ", "CLAIM": "ЗАБРАТЬ", "START RUN": "НАЧАТЬ ЗАБЕГ", "JUMP": "ПРЫЖОК", "PLAY AGAIN": "ИГРАТЬ СНОВА",
+        "SCORE:": "СЧЁТ:", "BEST:": "РЕКОРД:", "Press SPACE or click to jump!": "Нажмите ПРОБЕЛ или кликните, чтобы прыгнуть!",
+        "START RIDE": "НАЧАТЬ ЗАЕЗД", "LEFT": "ВЛЕВО", "RIGHT": "ВПРАВО", "DISTANCE": "ДИСТАНЦИЯ", "POINTS EARNED": "ОЧКИ ЗАРАБОТАНЫ",
+        "PRIZE CRANE": "ПРИЗОВОЙ КРАН", "CLAW MACHINE": "ИГРОВОЙ АВТОМАТ", "FLAPPY BIRD": "ПОЛЁТ ПТИЦЫ", "CAT BIKE": "КОШАЧИЙ ВЕЛОЗАЕЗД",
+        "Tantangan Teman": "Испытания друзей", "Teman lokal": "Друзья на этом устройстве", "Tambah teman": "Добавить друга", "Pilih tantangan": "Выбрать испытание",
+        "Ajak profil lain berlomba menjaga rutinitas. Hari dihitung jika minimal satu habit selesai.": "Пригласите другой профиль соревноваться в регулярности. День засчитывается, если выполнена хотя бы одна привычка.",
+        "Profil teman": "Профиль друга", "Buat tantangan": "Создать испытание", "Streak 3 hari · berturut-turut": "Серия из 3 дней подряд", "Mingguan · target 5 dari 7 hari": "Неделя · цель — 5 из 7 дней",
+        "Belum ada tantangan aktif.": "Пока нет активных испытаний.", "Belum ada teman. Tambahkan profil lain dari perangkat ini.": "Пока нет друзей. Добавьте другой профиль с этого устройства.",
+        "Tambahkan profil sebagai teman sebelum membuat tantangan.": "Добавьте профиль в друзья, прежде чем создавать испытание.", "Sedang berjalan": "Выполняется", "Seri": "Ничья", "Profil lokal": "Локальный профиль",
+        "PROFIL DI PERANGKAT INI": "ПРОФИЛИ НА ЭТОМ УСТРОЙСТВЕ", "Teman adalah profil lokal di browser ini. Progres tidak tersinkron ke perangkat lain.": "Друзья — это профили в этом браузере. Прогресс не синхронизируется с другими устройствами.",
+        "LOCAL COMMUNITY · THIS DEVICE": "ЛОКАЛЬНОЕ СООБЩЕСТВО · ЭТО УСТРОЙСТВО", "CHAT AKTIF": "ЧАТ АКТИВЕН", "Ngobrol sebagai karaktermu dan beri semangat ke pemain lain.": "Общайтесь от имени своего персонажа и поддерживайте других игроков.",
+        "Tulis pesan chat": "Введите сообщение", "Tulis pesan untuk komunitas...": "Напишите сообщение сообществу...", "KIRIM": "ОТПРАВИТЬ",
+        "Kirim pesan": "Отправить сообщение", "Buat atau pilih profil terlebih dahulu untuk mengirim pesan.": "Сначала создайте или выберите профиль, чтобы отправить сообщение.", "Pesan terkirim dan tersimpan di perangkat ini.": "Сообщение отправлено и сохранено на этом устройстве.",
+        "Pesan tersimpan di perangkat ini.": "Сообщения сохраняются на этом устройстве.", "Belum ada pesan. Mulai obrolan dan kenalan dengan pemain lain!": "Сообщений пока нет. Начните беседу и познакомьтесь с игроками!",
+        "DIULANG HARIAN": "ЕЖЕДНЕВНО", "DIULANG MINGGUAN": "ЕЖЕНЕДЕЛЬНО", "DIULANG BULANAN": "ЕЖЕМЕСЯЧНО", "QUEST LAMA": "ЕЖЕГОДНОЕ ЗАДАНИЕ",
+        "Quest Harian": "Ежедневные задания", "Quest Mingguan": "Еженедельные задания", "Quest Bulanan": "Ежемесячные задания", "Quest Tahunan": "Ежегодные задания",
+        "Selesaikan target habit harian.": "Выполняйте ежедневные цели по привычкам.", "Jaga konsistensi setiap minggu.": "Поддерживайте постоянство каждую неделю.",
+        "Bangun progres habit jangka panjang.": "Достигайте долгосрочного прогресса в привычках.", "Lanjutkan tantangan tahunan yang tersedia.": "Продолжайте выполнять годовые испытания.",
+        "PENCAPAIAN & QUEST": "ДОСТИЖЕНИЯ И ЗАДАНИЯ", "Pantau progres, raih hadiah, dan bangun rutinitas.": "Следите за прогрессом, получайте награды и формируйте распорядок.",
+        "PERJALANANMU": "ВАШ ПУТЬ", "Pencapaian": "Достижения", "FITUR EKSTRA": "ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ",
+        "Statistik kebiasaan": "Статистика привычек", "Koleksi karakter": "Коллекция персонажей", "Lihat jumlah kebiasaan dan progres penyelesaiannya.": "Количество привычек и прогресс их выполнения.",
+        "Belum ada kebiasaan": "Пока нет привычек", "Tambahkan kebiasaan terlebih dahulu. Statistik akan muncul di sini.": "Сначала добавьте привычку. Здесь появится статистика.",
+        "Sudah diambil ✓": "Получено ✓", "Ambil hadiah": "Получить награду", "Dalam progres": "В процессе", "TERBUKA": "ОТКРЫТО", "DALAM PROGRES": "В ПРОЦЕССЕ",
+        "TANTANGAN": "ИСПЫТАНИЕ", "Simpan": "Сохранить", "Batal": "Отмена", "Tunda 1 jam": "Отложить на 1 час", "MULAI": "НАЧАТЬ", "ULANGI": "ПОВТОРИТЬ",
+        "SEMBUNYIKAN PENGINGAT": "СКРЫТЬ НАПОМИНАНИЯ", "TAMPILKAN PENGINGAT": "ПОКАЗАТЬ НАПОМИНАНИЯ", "LIHAT PENGATURAN": "НАСТРОЙКИ НАПОМИНАНИЙ",
+        "KOIN": "МОНЕТЫ", "Capit karakter untuk dapat koin dan EXP. Hindari anomaly!": "Ловите персонажей, чтобы получить монеты и опыт. Избегайте аномалий!",
+        "Tekan MULAI, lalu klik atau tekan spasi untuk terbang.": "Нажмите «НАЧАТЬ», затем кликните или нажмите пробел, чтобы лететь.", "Terbang! Hindari pipa.": "Летите! Избегайте труб.",
+        "Switch app": "Переключить приложение", "Pilih": "Выбрать", "Coins kamu belum cukup!": "Недостаточно монет!", "Character ini sudah kamu punya!": "Этот персонаж уже у вас!",
+        "Klik / spasi untuk terbang": "Кликните или нажмите пробел, чтобы лететь", "Geser capit dan cari 3 karakter di antara 60 anomaly yang berjatuhan.": "Перемещайте захват и найдите 3 персонажей среди 60 падающих аномалий.",
+        "Dapat karakter! Capit lagi naik…": "Персонаж пойман! Захват поднимается…", "Dapat karakter! +5 koin, +10 EXP.": "Персонаж пойман! +5 монет, +10 опыта.", "Belum kena. Coba geser capit ke atas karakter.": "Не попали. Переместите захват над персонажем.",
+        "Game over! Skor kamu": "Игра окончена! Ваш результат:", "Tunda 15 menit": "Отложить на 15 мин.", "Tunda 30 menit": "Отложить на 30 мин.", "Tunda 60 menit": "Отложить на 60 мин."
+        ,"MINIGAME": "МИНИ-ИГРЫ", "PLAY & EARN": "ИГРАЙТЕ И ЗАРАБАТЫВАЙТЕ", "Main game menggunakan character kamu sendiri.": "Играйте за собственного персонажа.",
+        "BATTLE": "БИТВА", "FIGHTING": "БОЙ", "Gunakan strategi untuk mengalahkan monster.": "Используйте стратегию, чтобы победить монстра.", "RUN": "БЕГ", "DINO RUN": "ЗАБЕГ С ДИНОЗАВРОМ",
+        "Lompat dan hindari obstacle.": "Прыгайте и избегайте препятствий.", "ARCADE": "АРКАДА", "FLAPPY BIRD": "ПОЛЁТ ПТИЦЫ", "Terbang melewati pipa dan pecahkan skor terbaik.": "Летите между трубами и побейте свой рекорд.",
+        "PRIZE CRANE": "ПРИЗОВОЙ КРАН", "CLAW MACHINE": "КРАН-АВТОМАТ", "Capit karakter untuk dapat koin dan EXP. Hindari anomaly!": "Ловите персонажей, чтобы получить монеты и опыт. Избегайте аномалий!",
+        "ENDLESS RIDE": "БЕСКОНЕЧНАЯ ПОЕЗДКА", "CAT BIKE": "КОШАЧИЙ МОТОЗАЕЗД", "Ride the sunny farm road and dodge cars and trucks!": "Езжайте по солнечной фермерской дороге и объезжайте машины и грузовики!",
+        "Ready to fight!": "Готовьтесь к бою!", "ATTACK": "АТАКА", "SPECIAL": "ОСОБАЯ АТАКА", "HEAVY": "ТЯЖЁЛЫЙ УДАР", "DEFEND": "ЗАЩИТА", "RECOVER": "ВОССТАНОВИТЬСЯ",
+        "Press SPACE or click to jump!": "Нажмите ПРОБЕЛ или кликните, чтобы прыгнуть!", "START RUN": "НАЧАТЬ ЗАБЕГ", "JUMP": "ПРЫЖОК", "Four lanes! Swipe or use ← → / A / D. Traffic can come from either end.": "Четыре полосы! Свайпайте или используйте ← → / A / D. Машины могут появляться с обоих концов.",
+        "MULAI": "НАЧАТЬ", "ULANGI": "ПОВТОРИТЬ", "TERBANG": "ЛЕТЕТЬ", "KIRI": "ВЛЕВО", "KANAN": "ВПРАВО", "CAPIT": "ХВАТАТЬ", "MAIN LAGI": "ИГРАТЬ СНОВА", "DITANGKAP": "ПОЙМАНО", "SKOR": "СЧЁТ", "TERBAIK": "РЕКОРД", "KOIN": "МОНЕТЫ", "EXP": "ОПЫТ",
+        "Gerakkan capit, lalu tekan CAPIT. Karakter memberi hadiah; anomaly bikin zonk.": "Переместите захват, затем нажмите «ХВАТАТЬ». Персонажи дают награды, аномалии — пустышки.", "Bisa pakai tombol panah kiri/kanan, lalu Spasi untuk capit.": "Используйте стрелки влево/вправо, затем пробел, чтобы схватить.", "Tekan MULAI, lalu klik atau tekan spasi untuk terbang.": "Нажмите «НАЧАТЬ», затем кликните или нажмите пробел, чтобы лететь.", "Terbang! Hindari pipa.": "Летите! Избегайте труб.",
+        "No notes yet. Add duration, mood, or a quick thought.": "Записей пока нет. Добавьте длительность, настроение или короткую заметку.", "Duration": "Длительность", "minutes": "минут", "How did it feel?": "Какие были ощущения?", "Choose a mood": "Выберите настроение", "Great": "Отлично", "Good": "Хорошо", "Okay": "Нормально", "Tough": "Тяжело", "Quick note": "Короткая заметка", "What went well? Anything to remember?": "Что получилось? Что стоит запомнить?", "SAVE NOTE": "СОХРАНИТЬ ЗАМЕТКУ",
+        "Reset:": "Сброс:", "every": "каждые", "day(s)": "дн.", "week(s)": "нед.", "day streak": "дней подряд", "No notes yet.": "Заметок пока нет.", "Add duration, mood, or a quick thought.": "Добавьте длительность, настроение или короткую заметку.",
+        "NEXT →": "ДАЛЕЕ →", "NEXT": "ДАЛЕЕ", "← BACK": "← НАЗАД", "ADD HABIT": "ДОБАВИТЬ ПРИВЫЧКУ", "Example: Read a book": "Например: прочитать книгу",
+        "When should it reset?": "Когда сбрасывать привычку?", "Choose how long until this habit can be completed again.": "Выберите интервал до следующего выполнения привычки.",
+        "Finance habits reset every day so you can log one deposit daily.": "Финансовые привычки сбрасываются ежедневно, чтобы можно было отмечать один взнос в день.",
+        "Set your savings goal and usual daily deposit. Checking this habit adds the deposit automatically.": "Укажите цель накоплений и ежедневный взнос. Отметка привычки автоматически добавит взнос.",
+        "SAVINGS GOAL (IDR)": "ЦЕЛЬ НАКОПЛЕНИЙ (IDR)", "ALREADY SAVED (IDR)": "УЖЕ НАКОПЛЕНО (IDR)", "DAILY DEPOSIT (IDR)": "ЕЖЕДНЕВНЫЙ ВЗНОС (IDR)",
+        "e.g. 1000000": "например, 1000000", "e.g. 10000": "например, 10000", "Habit setup progress": "Прогресс настройки привычки", "Habit category": "Категория привычки",
+        "Filter habits by category": "Фильтр привычек по категории", "Reset interval unit": "Единица интервала сброса", "Delete habit": "Удалить привычку", "Minimize habit form": "Свернуть форму привычки",
+        "Close habit form": "Закрыть форму привычки", "Restore habit form": "Восстановить форму привычки", "Habit setup minimized": "Настройка привычки свёрнута", "Click to continue": "Нажмите, чтобы продолжить",
+        "YOUR ROUTINE": "ВАШ РАСПОРЯДОК", "Today's Habits": "Привычки на сегодня", "+ ADD HABIT": "+ ДОБАВИТЬ ПРИВЫЧКУ", "ALL": "ВСЕ", "HEALTH": "ЗДОРОВЬЕ", "HAPPY": "НАСТРОЕНИЕ", "FINANCE": "ФИНАНСЫ",
+        "1 Freeze protects 1 missed calendar day. Missed days are checked when the app opens; if you run out, your streak resets. The first Freeze is earned at a 7-day streak.": "Одна защита сохраняет серию за один пропущенный день. Пропуски проверяются при открытии приложения. Если защиты закончатся, серия сбросится. Первую защиту можно получить за серию из 7 дней.",
+        "Reminders only run while the app is open.": "Напоминания работают, пока приложение открыто.", "No habits yet": "Пока нет привычек", "Add your first habit and start your streak.": "Добавьте первую привычку и начните серию.",
+        "CREATE HABIT": "СОЗДАТЬ ПРИВЫЧКУ", "DAILY TASK": "ЗАДАНИЕ ДНЯ", "Loading daily task...": "Загрузка задания дня...", "CLAIM": "ЗАБРАТЬ",
+        "LOCAL PLAYER RANKING": "РЕЙТИНГ ИГРОКОВ НА УСТРОЙСТВЕ", "Compare XP and streaks between profiles saved on this device.": "Сравнивайте XP и серии профилей, сохранённых на этом устройстве.",
+        "New player name": "Имя нового игрока", "Switch local profile": "Сменить локальный профиль", "Compare XP and streaks between profiles saved on this device.": "Сравнивайте XP и серии профилей, сохранённых на этом устройстве.",
+        "7 DAYS · +50 XP": "7 ДНЕЙ · +50 XP", "Complete one habit each day for seven days and keep your streak alive.": "Выполняйте по одной привычке каждый день в течение недели и сохраняйте серию.",
+        "COMMUNITY · SHOWCASE": "СООБЩЕСТВО · ВИТРИНА", "Show off your character in chat and cheer on other streak builders.": "Покажите своего персонажа в чате и поддержите других участников.",
+        "WEEKEND · +30 XP": "ВЫХОДНЫЕ · +30 XP", "Finish three habits this weekend to earn a bonus for your progress.": "Выполните три привычки в эти выходные и получите бонус.",
+        "Join the community conversation": "Присоединяйтесь к беседе сообщества", "LOCAL COMMUNITY · THIS DEVICE": "ЛОКАЛЬНОЕ СООБЩЕСТВО · ЭТО УСТРОЙСТВО",
+        "MONTHLY QUESTS": "ЕЖЕМЕСЯЧНЫЕ ЗАДАНИЯ", "WEEKLY QUESTS": "ЕЖЕНЕДЕЛЬНЫЕ ЗАДАНИЯ", "ANNUAL QUESTS": "ГОДОВЫЕ ЗАДАНИЯ", "MEDIUM": "СРЕДНЕ", "HARD": "СЛОЖНО", "NEARLY IMPOSSIBLE": "ПОЧТИ НЕВОЗМОЖНО",
+        "end of day": "конец дня", "CHOOSE": "ВЫБРАТЬ", "Start ride": "Начать заезд", "MENU GAME": "МЕНЮ ИГР",
+        "Selesaikan 1 habit hari ini.": "Выполните 1 привычку сегодня.", "Selesaikan 2 habit hari ini.": "Выполните 2 привычки сегодня.", "Selesaikan 3 habit hari ini.": "Выполните 3 привычки сегодня.", "Selesaikan 4 habit hari ini.": "Выполните 4 привычки сегодня.", "Selesaikan 5 habit hari ini.": "Выполните 5 привычек сегодня.", "Selesaikan 5 habit minggu ini.": "Выполните 5 привычек на этой неделе.", "Selesaikan 30 habit bulan ini.": "Выполните 30 привычек в этом месяце.", "First Step": "Первый шаг", "Selesaikan habit pertamamu.": "Выполните свою первую привычку.", "Bangun streak selama 7 hari.": "Поддерживайте серию 7 дней.", "Selesaikan 50 habit.": "Выполните 50 привычек.", "Kumpulkan 1.000 XP.": "Наберите 1 000 XP.",
+        "Sedang berjalan": "Выполняется", "Sudah diambil ✓": "Получено ✓", "Ambil hadiah": "Получить награду", "Dalam progres": "В процессе", "TERBUKA": "ОТКРЫТО", "DALAM PROGRES": "В ПРОЦЕССЕ", "Tunda 1 jam": "Отложить на 1 час", "Tampilkan pengingat": "Показать напоминания",
+        "1 Freeze melindungi 1 hari kalender yang terlewat. Hari yang terlewat diperiksa saat aplikasi dibuka; jika stok habis, streak direset. Freeze pertama didapat dari pencapaian 7 hari.": "Одна защита сохраняет серию за один пропущенный день. Пропуски проверяются при открытии приложения. Если защиты закончатся, серия сбросится. Первую защиту можно получить за серию из 7 дней.",
+        "Pengingat hanya berjalan saat aplikasi terbuka.": "Напоминания работают, пока приложение открыто.", "1 Freeze protects 1 missed calendar day. Missed days are checked when the app opens; if you run out, your streak resets. The first Freeze is earned at a 7-day streak.": "Одна защита сохраняет серию за один пропущенный день. Пропуски проверяются при открытии приложения. Если защиты закончатся, серия сбросится. Первую защиту можно получить за серию из 7 дней.",
+        "Claim": "Забрать", "CLAIM": "ЗАБРАТЬ", "CLAIMED ✓": "ПОЛУЧЕНО ✓", "LOCKED": "ЗАКРЫТО", "PLAY & EARN": "ИГРАЙТЕ И ЗАРАБАТЫВАЙТЕ", "START RIDE": "НАЧАТЬ ЗАЕЗД",
+        "Buat profil lokal untuk memulai papan peringkat perangkat ini.": "Создайте локальный профиль, чтобы начать рейтинг на этом устройстве.", "Create a local profile to start your device leaderboard.": "Создайте локальный профиль, чтобы начать рейтинг на этом устройстве.",
+        "No other profiles yet": "Других профилей пока нет", "Local friends": "Друзья на этом устройстве", "Friend profile": "Профиль друга", "Create challenge": "Создать испытание",
+        "No active reminders yet.": "Активных напоминаний пока нет.", "Reminder snoozed for": "Напоминание отложено на", "SHOW REMINDERS": "ПОКАЗАТЬ НАПОМИНАНИЯ", "HIDE REMINDERS": "СКРЫТЬ НАПОМИНАНИЯ",
+        "Dodge the traffic! Use ← → or A / D.": "Объезжайте машины! Используйте ← → или A / D.", "Ride on! Each 100 meters earns a point.": "В путь! Каждые 100 метров приносят одно очко.", "RIDE AGAIN": "ЕЩЁ РАЗ",
+        "DROP": "БРОСИТЬ", "Claimed ✓": "Получено ✓", "Complete 1 habit today.": "Выполните 1 привычку сегодня.", "Complete 2 habits today.": "Выполните 2 привычки сегодня.",
+        "Complete 3 habits today.": "Выполните 3 привычки сегодня.", "Complete 4 habits today.": "Выполните 4 привычки сегодня.", "Complete 5 habits today.": "Выполните 5 привычек сегодня.",
+        "First Step": "Первый шаг", "Selesaikan 50 habit.": "Выполните 50 привычек.", "Kumpulkan 1.000 XP.": "Наберите 1 000 XP.",
+        "Pilih emoji": "Выберите значок", "Rabu": "Среда", "Tanpa kategori": "Без категории"
+        ,"PENCAPAIAN": "ДОСТИЖЕНИЯ", "QUEST HARIAN": "ЕЖЕДНЕВНЫЕ ЗАДАНИЯ", "QUEST MINGGUAN": "ЕЖЕНЕДЕЛЬНЫЕ ЗАДАНИЯ", "QUEST BULANAN": "ЕЖЕМЕСЯЧНЫЕ ЗАДАНИЯ", "QUEST TAHUNAN": "ГОДОВЫЕ ЗАДАНИЯ",
+        "UNLOCKED": "ОТКРЫТО", "IN PROGRESS": "В ПРОЦЕССЕ", "REFRESHES": "СБРОС",
+        "Habit Centurion": "Мастер привычек", "Complete 100 habits.": "Выполните 100 привычек.",
+        "Fresh Look": "Новый образ", "Purchase 3 character skins.": "Купите 3 облика персонажа.",
+        "Game Regular": "Игрок", "Play 10 games.": "Сыграйте 10 раз.",
+        "Month of Momentum": "Месяц постоянства", "Keep a habit streak for 30 days.": "Поддерживайте серию привычек 30 дней.",
+        "Routine Finisher": "Распорядок выполнен", "Complete every habit on 7 different days.": "Выполните все привычки в течение 7 разных дней.",
+        "Thoughtful Tracker": "Внимательный дневник", "Write 25 habit notes.": "Добавьте 25 заметок к привычкам.",
+        "Arcade Devotee": "Поклонник аркад", "Play 100 games.": "Сыграйте 100 раз.",
+        "Style Collector": "Коллекционер образов", "Purchase 15 character skins.": "Купите 15 обликов персонажа.",
+        "Level 25": "Уровень 25", "Reach level 25.": "Достигните 25-го уровня.",
+        "Long Road Back": "Возвращение", "Return to your habits after 30 days away.": "Вернитесь к привычкам после перерыва в 30 дней.",
+        "Daily Task Champion": "Чемпион ежедневных заданий", "Claim 100 daily task rewards.": "Получите награды за 100 ежедневных заданий.",
+        "First Step": "Первый шаг", "Selesaikan habit pertamamu.": "Выполните свою первую привычку.", "7 Day Streak": "Серия из 7 дней", "Habit Master": "Мастер привычек", "XP Collector": "Коллекционер XP",
+        "Dua Langkah Hari Ini": "Два шага сегодня", "Selesaikan 2 habit hari ini.": "Выполните 2 привычки сегодня.", "Konsisten Mingguan": "Постоянство недели", "Selesaikan 5 habit minggu ini.": "Выполните 5 привычек на этой неделе.",
+        "Habit Bertumbuh": "Рост привычек", "Selesaikan 30 habit bulan ini.": "Выполните 30 привычек в этом месяце.",
+        "WEEKLY QUESTS": "ЕЖЕНЕДЕЛЬНЫЕ ЗАДАНИЯ", "MONTHLY QUESTS": "ЕЖЕМЕСЯЧНЫЕ ЗАДАНИЯ", "ANNUAL QUESTS": "ГОДОВЫЕ ЗАДАНИЯ", "MEDIUM": "СРЕДНЕ", "HARD": "СЛОЖНО", "NEARLY IMPOSSIBLE": "ПОЧТИ НЕВОЗМОЖНО",
+        "Habit Momentum": "Ритм привычек", "Complete 15 habits this week.": "Выполните 15 привычек на этой неделе.", "Play Break": "Игровой перерыв", "Open and play 5 games this week.": "Запустите и сыграйте в 5 игр на этой неделе.", "Weekly Reflection": "Еженедельные заметки", "Write 3 habit notes this week.": "Добавьте 3 заметки к привычкам на этой неделе.",
+        "Habit Machine": "Машина привычек", "Complete 120 habits this month.": "Выполните 120 привычек в этом месяце.", "Arcade Regular": "Завсегдатай аркады", "Play 30 games this month.": "Сыграйте в 30 игр в этом месяце.", "Task Tactician": "Тактик заданий", "Claim 20 daily task rewards this month.": "Получите награды за 20 ежедневных заданий в этом месяце.",
+        "Legendary Habit Master": "Легендарный мастер привычек", "Complete 2,500 habits this year.": "Выполните 2 500 привычек в этом году.", "Arcade Legend": "Легенда аркад", "Play 500 games this year.": "Сыграйте в 500 игр в этом году.", "Year of Perfect Focus": "Год полной концентрации", "Claim 300 daily task rewards this year.": "Получите награды за 300 ежедневных заданий в этом году.",
+        "IN PROGRESS": "В ПРОЦЕССЕ", "CLAIMED ✓": "ПОЛУЧЕНО ✓", "CLAIM REWARD": "ПОЛУЧИТЬ НАГРАДУ", "IN PROGRESS": "В ПРОЦЕССЕ", "CLAIMED ✓": "ПОЛУЧЕНО ✓", "OWNED ✓": "УЖЕ ЕСТЬ ✓",
+        "UNLOCKED": "ОТКРЫТО", "Achievement Unlocked": "Достижение открыто", "ACHIEVEMENT UNLOCKED": "ДОСТИЖЕНИЕ ОТКРЫТО"
     },
     id: {
         "Settings": "Pengaturan",
@@ -867,9 +1132,9 @@ const appTranslations = {
         "Switch app": "切换应用"
     }
 };
-const supportedLanguages = ["en", "id", "zh"];
+const supportedLanguages = ["en", "id", "zh", "ru"];
 function getAppLocale() {
-    return { en: "en-US", id: "id-ID", zh: "zh-CN" }[appLanguage];
+    return { en: "en-US", id: "id-ID", zh: "zh-CN", ru: "ru-RU" }[appLanguage];
 }
 let appLanguage = localStorage.getItem("doyourstreak-language") || "en";
 if (!supportedLanguages.includes(appLanguage)) appLanguage = "en";
@@ -883,16 +1148,70 @@ function translateAppContent(root = document.body) {
     while (walker.nextNode()) textNodes.push(walker.currentNode);
 
     textNodes.forEach(node => {
-        if (node.parentElement?.closest("#habitList, #playerName, #headerName, #localLeaderboard, #eventChatMessages")) return;
+        if (node.parentElement?.closest("#settingsPage")) return;
+        if (node.parentElement?.closest("#playerName, #headerName")) return;
+        if (node.parentElement?.closest("#habitList .habit-name, #habitList .habit-time, #habitList .habit-note-entry, .event-chat-message, #localLeaderboard .leaderboard-player strong")) return;
         if (!originalTextNodes.has(node)) originalTextNodes.set(node, node.textContent);
         const source = originalTextNodes.get(node);
         const trimmedSource = source.trim();
         const stepMatch = trimmedSource.match(/^STEP (\d+) OF (\d+)$/i);
         let translated = appTranslations[appLanguage]?.[trimmedSource];
+        if (!translated && appLanguage === "en") {
+            const reminderCount = trimmedSource.match(/^(\d+) pengingat aktif\. Pengingat hanya berjalan saat aplikasi terbuka\.$/);
+            const friendSummary = trimmedSource.match(/^(.+) · (\d+) hari streak · (\d+) XP$/);
+            const rewardSummary = trimmedSource.match(/^(\d+) \/ (\d+) · (\d+) XP \+ (\d+) koin$/);
+            const featureReward = trimmedSource.match(/^(\d+) \/ (\d+) · Hadiah: (\d+) XP, (\d+) koin(, 1 Freeze)?$/);
+            const reminderSnooze = trimmedSource.match(/^Pengingat ditunda (.+)\.$/);
+            const challengeSummary = trimmedSource.match(/^(.+) (\d+)\/(\d+) hari · (.+) (\d+)\/(\d+) hari$/);
+            const gameOver = trimmedSource.match(/^Game over! Skor kamu (\d+)\.$/);
+            const challengeWinner = trimmedSource.match(/^(.+) menang$/);
+            if (reminderCount) translated = `${reminderCount[1]} reminders active. Reminders only run while the app is open.`;
+            else if (friendSummary) translated = `${friendSummary[1]} · ${friendSummary[2]}-day streak · ${friendSummary[3]} XP`;
+            else if (rewardSummary) translated = `${rewardSummary[1]} / ${rewardSummary[2]} · ${rewardSummary[3]} XP + ${rewardSummary[4]} coins`;
+            else if (featureReward) translated = `${featureReward[1]} / ${featureReward[2]} · Reward: ${featureReward[3]} XP, ${featureReward[4]} coins${featureReward[5] ? ", 1 Freeze" : ""}`;
+            else if (reminderSnooze) translated = `Reminder snoozed for ${reminderSnooze[1]}.`;
+            else if (challengeSummary) translated = `${challengeSummary[1]} ${challengeSummary[2]}/${challengeSummary[3]} days · ${challengeSummary[4]} ${challengeSummary[5]}/${challengeSummary[6]} days`;
+            else if (gameOver) translated = `Game over! Your score is ${gameOver[1]}.`;
+            else if (challengeWinner) translated = `${challengeWinner[1]} wins`;
+        }
+        if (!translated && appLanguage === "ru") {
+            const reminderCount = trimmedSource.match(/^(\d+) pengingat aktif\. Pengingat hanya berjalan saat aplikasi terbuka\.$/);
+            const friendSummary = trimmedSource.match(/^(.+) · (\d+) hari streak · (\d+) XP$/);
+            const challengeSummary = trimmedSource.match(/^(.+) (\d+)\/(\d+) hari · (.+) (\d+)\/(\d+) hari$/);
+            const rewardSummary = trimmedSource.match(/^(\d+) \/ (\d+) · (\d+) XP \+ (\d+) koin$/);
+            const featureReward = trimmedSource.match(/^(\d+) \/ (\d+) · Hadiah: (\d+) XP, (\d+) koin(, 1 Freeze)?$/);
+            const snooze = trimmedSource.match(/^Pengingat ditunda (.+)\.$/);
+            const gameOver = trimmedSource.match(/^Game over! Skor kamu (\d+)\.$/);
+            const winner = trimmedSource.match(/^(.+) menang$/);
+            const snoozeButton = trimmedSource.match(/^Tunda (\d+) menit$/);
+            const habitReset = trimmedSource.match(/^Reset: every (\d+) (day\(s\)|week\(s\)|12 hours)$/);
+            const clawAttempt = trimmedSource.match(/^Capit turun… percobaan (\d+)\/(\d+)$/);
+            const clawRound = trimmedSource.match(/^Ronde selesai: (\d+) karakter, \+(\d+) koin, \+(\d+) EXP\.$/);
+            const finances = trimmedSource.match(/^Daily deposit: (.+) · added when checked$/);
+            const bikeCrash = trimmedSource.match(/^Crash! You rode (\d+) m and scored (\d+)\. Press RIDE AGAIN to try again\.$/);
+            const bikePoints = trimmedSource.match(/^\+([\d.]+) shop points! Keep riding and dodge traffic\.$/);
+            if (reminderCount) translated = `${reminderCount[1]} напоминаний активно. Напоминания работают, пока приложение открыто.`;
+            else if (friendSummary) translated = `${friendSummary[1]} · серия ${friendSummary[2]} дн. · ${friendSummary[3]} XP`;
+            else if (challengeSummary) translated = `${challengeSummary[1]}: ${challengeSummary[2]}/${challengeSummary[3]} дн. · ${challengeSummary[4]}: ${challengeSummary[5]}/${challengeSummary[6]} дн.`;
+            else if (rewardSummary) translated = `${rewardSummary[1]} / ${rewardSummary[2]} · ${rewardSummary[3]} XP + ${rewardSummary[4]} монет`;
+            else if (featureReward) translated = `${featureReward[1]} / ${featureReward[2]} · Награда: ${featureReward[3]} XP, ${featureReward[4]} монет${featureReward[5] ? ", 1 защита" : ""}`;
+            else if (snooze) translated = `Напоминание отложено на ${snooze[1]}.`;
+            else if (gameOver) translated = `Игра окончена! Ваш результат: ${gameOver[1]}.`;
+            else if (winner) translated = `${winner[1]} победил(а)`;
+            else if (snoozeButton) translated = `Отложить на ${snoozeButton[1]} мин.`;
+            else if (habitReset) translated = `Сброс: каждые ${habitReset[1]} ${habitReset[2] === "week(s)" ? "нед." : habitReset[2] === "12 hours" ? "12 часов" : "дн."}`;
+            else if (clawAttempt) translated = `Захват опускается… попытка ${clawAttempt[1]}/${clawAttempt[2]}`;
+            else if (clawRound) translated = `Раунд завершён: ${clawRound[1]} персонажей, +${clawRound[2]} монет, +${clawRound[3]} опыта.`;
+            else if (finances) translated = `Ежедневный взнос: ${finances[1]} · добавляется при отметке`;
+            else if (bikeCrash) translated = `Авария! Вы проехали ${bikeCrash[1]} м и набрали ${bikeCrash[2]} очк. Нажмите «ЕЩЁ РАЗ», чтобы попробовать снова.`;
+            else if (bikePoints) translated = `+${bikePoints[1]} очк. магазина! Продолжайте ехать и объезжайте машины.`;
+        }
         if (stepMatch && appLanguage !== "en") {
             translated = appLanguage === "id"
                 ? `LANGKAH ${stepMatch[1]} DARI ${stepMatch[2]}`
-                : `第 ${stepMatch[1]} 步，共 ${stepMatch[2]} 步`;
+                : appLanguage === "ru"
+                    ? `ШАГ ${stepMatch[1]} ИЗ ${stepMatch[2]}`
+                    : `第 ${stepMatch[1]} 步，共 ${stepMatch[2]} 步`;
         }
         if (translated) {
             const leading = source.match(/^\s*/)?.[0] || "";
@@ -3223,7 +3542,7 @@ function getQuestResetText(periodId) {
     } else {
         resetDate = new Date(today.getFullYear() + 1, 0, 1);
     }
-    const resetLabel = { en: "REFRESHES", id: "DIATUR ULANG", zh: "重置时间" }[appLanguage];
+    const resetLabel = { en: "REFRESHES", id: "DIATUR ULANG", zh: "重置时间", ru: "СБРОС" }[appLanguage];
     const resetDateText = resetDate.toLocaleDateString(getAppLocale(), { month: "short", day: "numeric", year: "numeric" });
     return appLanguage === "zh" ? `${resetLabel} ${resetDateText}` : `${resetLabel} ${resetDateText.toUpperCase()}`;
 }
@@ -6863,7 +7182,11 @@ function drawFlappyScene() {
         ctx.font = "bold 22px sans-serif";
         ctx.fillText("FLAPPY STREAK", 180, 220);
         ctx.font = "14px sans-serif";
-        ctx.fillText("Klik / spasi untuk terbang", 180, 246);
+        ctx.fillText(
+            appTranslations[appLanguage]?.["Klik / spasi untuk terbang"] || "Klik / spasi untuk terbang",
+            180,
+            246
+        );
     }
 }
 
