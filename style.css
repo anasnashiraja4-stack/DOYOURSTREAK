@@ -10409,5 +10409,177 @@ body::before {
     .settings-language-option,
     .settings-avatar-button,
     .settings-avatar-remove,
-    .settings-logout-button { transition-duration: .01ms; }
+    .settings-logout-button,
+    .settings-theme-switch-track,
+    .settings-theme-switch-track::after { transition-duration: .01ms; }
+}
+
+/* Dark theme */
+:root.dark-mode {
+    color-scheme: dark;
+    --black: #f2f2f2;
+    --dark: #dddddd;
+    --gray: #aaaaaa;
+    --light-gray: #333333;
+    --white: #171717;
+    --border: 3px solid #dddddd;
+    --shadow: 7px 7px 0 #050505;
+    --small-shadow: 4px 4px 0 #050505;
+}
+
+.dark-mode body {
+    background: #151515;
+    color: #f2f2f2;
+}
+
+.dark-mode body::before {
+    background-image: radial-gradient(#dddddd 1px, transparent 1px);
+}
+
+.dark-mode #appScreen {
+    background: #151515;
+    color: #f2f2f2;
+}
+
+.dark-mode #appScreen :is([class*="card"], [class*="panel"], .topbar, .bottom-navbar, .settings-etc-trigger) {
+    border-color: #494949 !important;
+    background: #242424 !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .35) !important;
+    color: #f2f2f2 !important;
+}
+
+.dark-mode #appScreen :is(h1, h2, h3, h4, p, label, dt, dd, small, summary, time) {
+    color: #eeeeee;
+}
+
+.dark-mode #appScreen :is(input:not([type="checkbox"]), textarea, select) {
+    border-color: #555555;
+    background-color: #1b1b1b;
+    color: #f2f2f2;
+}
+
+.dark-mode #appScreen :is(input, textarea, select)::placeholder {
+    color: #a0a0a0;
+}
+
+.dark-mode #appScreen .bottom-nav-image.active {
+    background: #444444 !important;
+}
+
+.settings-theme-icon {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    place-items: center;
+    border: 1px solid rgba(17, 17, 17, .12);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, .72);
+    font-size: 25px;
+    line-height: 1;
+}
+
+.settings-theme-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.settings-theme-control label {
+    font-weight: 900;
+}
+
+.settings-theme-control p {
+    margin: 4px 0 0;
+    color: #666;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.settings-theme-switch {
+    position: relative;
+    display: inline-flex;
+    width: 54px;
+    height: 32px;
+    flex: 0 0 54px;
+    cursor: pointer;
+}
+
+.settings-theme-switch input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.settings-theme-switch-track {
+    width: 100%;
+    height: 100%;
+    border: 2px solid #555;
+    border-radius: 99px;
+    background: #d7d7d7;
+    transition: background .2s ease, border-color .2s ease;
+}
+
+.settings-theme-switch-track::after {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .25);
+    content: "";
+    transition: transform .2s ease;
+}
+
+.settings-theme-switch input:checked + .settings-theme-switch-track {
+    border-color: #f2f2f2;
+    background: #555;
+}
+
+.settings-theme-switch input:checked + .settings-theme-switch-track::after {
+    transform: translateX(22px);
+}
+
+.settings-theme-switch input:focus-visible + .settings-theme-switch-track {
+    outline: 3px solid #8585ff;
+    outline-offset: 3px;
+}
+
+.settings-theme-feedback {
+    min-height: 18px;
+    margin: 8px 0 0;
+    color: #9c2525;
+    font-size: 12px;
+}
+
+.dark-mode #appScreen .settings-theme-icon {
+    border-color: #494949;
+    background: #303030;
+}
+
+.dark-mode #appScreen .settings-theme-control p,
+.dark-mode #appScreen .settings-theme-feedback {
+    color: #bdbdbd;
+}
+
+.dark-mode #appScreen .settings-theme-switch-track {
+    border-color: #777;
+    background: #444;
+}
+
+.dark-mode #appScreen .settings-theme-switch input:checked + .settings-theme-switch-track {
+    border-color: #eeeeee;
+    background: #666;
+}
+
+@media (max-width: 640px) {
+    .settings-theme-icon {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+    }
 }

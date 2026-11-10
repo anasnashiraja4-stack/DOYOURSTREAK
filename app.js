@@ -1259,6 +1259,31 @@ function setAppLanguage(language) {
     window.DYSFeatures?.refreshTranslations();
 }
 
+const darkModeToggle = document.getElementById("darkModeToggle");
+const settingsThemeFeedback = document.getElementById("settingsThemeFeedback");
+
+function setDarkMode(enabled, persist = false) {
+    document.documentElement.classList.toggle("dark-mode", enabled);
+    if (darkModeToggle) {
+        darkModeToggle.checked = enabled;
+        darkModeToggle.setAttribute("aria-checked", String(enabled));
+    }
+
+    if (!persist) return;
+    try {
+        localStorage.setItem("doyourstreak-dark-mode", String(enabled));
+        if (settingsThemeFeedback) settingsThemeFeedback.textContent = "";
+    } catch (error) {
+        console.error("Could not save the dark mode preference.", error);
+        if (settingsThemeFeedback) {
+            settingsThemeFeedback.textContent = "Dark mode preference could not be saved.";
+        }
+    }
+}
+
+setDarkMode(localStorage.getItem("doyourstreak-dark-mode") === "true");
+darkModeToggle?.addEventListener("change", () => setDarkMode(darkModeToggle.checked, true));
+
 document.querySelectorAll("[data-language]").forEach(button => {
     button.addEventListener("click", () => {
         setAppLanguage(button.dataset.language);

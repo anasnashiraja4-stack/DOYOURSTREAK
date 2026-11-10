@@ -451,6 +451,27 @@
                 </div>
             </section>
 
+            <section class="settings-card" aria-labelledby="appearanceTitle">
+                <div class="settings-section-heading">
+                    <span class="settings-theme-icon" aria-hidden="true">◐</span>
+                    <div>
+                        <h2 id="appearanceTitle">Appearance</h2>
+                        <p>Customize how the app looks.</p>
+                    </div>
+                </div>
+                <div class="settings-theme-control">
+                    <div>
+                        <label for="darkModeToggle">Dark mode</label>
+                        <p>Use a darker color theme across the app.</p>
+                    </div>
+                    <label class="settings-theme-switch">
+                        <input id="darkModeToggle" type="checkbox" role="switch" aria-checked="false">
+                        <span class="settings-theme-switch-track" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <p id="settingsThemeFeedback" class="settings-theme-feedback" role="status" aria-live="polite"></p>
+            </section>
+
             <section class="settings-card" aria-labelledby="profileSettingsTitle">
                 <div class="settings-section-heading settings-profile-heading">
                     <div class="settings-profile-avatar-wrap">
