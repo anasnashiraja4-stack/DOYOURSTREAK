@@ -1388,7 +1388,7 @@ body::before {
     .settings-section-heading h2 { margin: 0; font-size: 19px; }
     .settings-section-heading p { margin: 4px 0 0; color: #666; font-size: 13px; }
 
-    .settings-language-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .settings-language-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
     .settings-language-option {
         min-height: 46px;
         border: 2px solid #171717;
@@ -10311,7 +10311,7 @@ body::before {
 .settings-avatar-remove { color: #555; }
 .settings-avatar-feedback { min-height: 18px; margin-top: 4px !important; font-size: 11px !important; }
 
-.settings-language-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.settings-language-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .settings-language-option {
     min-height: 48px;
     border: 1px solid rgba(17, 17, 17, .14);
@@ -10409,5 +10409,643 @@ body::before {
     .settings-language-option,
     .settings-avatar-button,
     .settings-avatar-remove,
-    .settings-logout-button { transition-duration: .01ms; }
+    .settings-logout-button,
+    .settings-theme-switch-track,
+    .settings-theme-switch-track::after { transition-duration: .01ms; }
+}
+
+/* Dark theme */
+:root.dark-mode {
+    color-scheme: dark;
+    --black: #111111;
+    --dark: #242424;
+    --gray: #aaaaaa;
+    --light-gray: #333333;
+    --white: #171717;
+    --border: 2px solid #555555;
+    --shadow: 7px 7px 0 #050505;
+    --small-shadow: 4px 4px 0 #050505;
+}
+
+.dark-mode body {
+    background: #151515;
+    color: #f2f2f2;
+}
+
+.dark-mode body::before {
+    background-image: radial-gradient(#dddddd 1px, transparent 1px);
+}
+
+.dark-mode #appScreen {
+    background: #151515;
+    color: #f2f2f2;
+}
+
+.dark-mode #appScreen :is([class*="card"], [class*="panel"], .topbar, .bottom-navbar, .settings-etc-trigger) {
+    border-color: #494949 !important;
+    background: #242424 !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .35) !important;
+    color: #f2f2f2 !important;
+}
+
+.dark-mode #appScreen :is(h1, h2, h3, h4, p, label, dt, dd, small, summary, time) {
+    color: #eeeeee;
+}
+
+.dark-mode #appScreen :is(input:not([type="checkbox"]), textarea, select) {
+    border-color: #555555;
+    background-color: #1b1b1b;
+    color: #f2f2f2;
+}
+
+.dark-mode #appScreen :is(input, textarea, select)::placeholder {
+    color: #a0a0a0;
+}
+
+.dark-mode #appScreen .bottom-nav-image.active {
+    background: #444444 !important;
+}
+
+.dark-mode #characterPage .coin-display,
+.dark-mode #characterPage .premium-open-button,
+.dark-mode #characterPage .character-stats > div,
+.dark-mode #characterPage .character-display,
+.dark-mode #characterPage .character-xp {
+    border-color: rgba(224, 224, 240, .2);
+    background: rgba(27, 29, 42, .9);
+    box-shadow: 0 5px 18px rgba(0, 0, 0, .28);
+    color: #f3f3f7;
+}
+
+.dark-mode #characterPage .coin-display strong,
+.dark-mode #characterPage .character-stats strong,
+.dark-mode #characterPage .xp-label,
+.dark-mode #characterPage .xp-label span,
+.dark-mode #characterPage .xp-label strong,
+.dark-mode #characterPage .character-main h2 {
+    color: #f5f5fa;
+}
+
+.dark-mode #characterPage .character-stats small {
+    color: #c4c6d3;
+    opacity: 1;
+}
+
+.dark-mode #characterPage .character-main h2 {
+    text-shadow: 0 2px 3px #151621;
+}
+
+.dark-mode #characterPage .feed-hint-step {
+    border-color: rgba(224, 224, 240, .2);
+    background: rgba(31, 33, 47, .94);
+    color: #f0f1f7;
+}
+
+.dark-mode #characterPage .feed-hint-platform,
+.dark-mode #characterPage .feed-hint-action {
+    color: #e0e1eb;
+}
+
+.dark-mode #characterPage .feed-hint-count,
+.dark-mode #characterPage .character-feed-hint kbd {
+    border-color: #56596c;
+    background: #343749;
+    color: #fff;
+}
+
+.dark-mode #characterPage .character-arrow {
+    border-color: rgba(224, 224, 240, .24);
+    background: #292b3b;
+    color: #f5f5fa;
+}
+
+.dark-mode #characterPage .character-arrow:hover {
+    background: #454967;
+    color: #fff;
+}
+
+.dark-mode #characterPage .character-xp .xp-bar {
+    background: #454759;
+}
+
+.dark-mode #exercisePage .daily-task-card,
+.dark-mode #exercisePage .habit-card,
+.dark-mode #exercisePage .empty-state,
+.dark-mode #exercisePage .feature-panel {
+    border-color: #454545 !important;
+    background: #252525 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .2) !important;
+    color: #ededed;
+}
+
+.dark-mode #exercisePage :is(.daily-task-header, .daily-task-card h3, .daily-task-card p, #dailyTaskProgressText, .section-header h2, .section-header small, .habit-name, .habit-streak, .empty-state h3, .empty-state p, .feature-panel-heading h2, .feature-panel-heading small, .feature-panel-actions p, .feature-panel-content, .feature-status, .habit-filter-empty) {
+    color: #e1e1e1;
+}
+
+.dark-mode #exercisePage .habit-streak,
+.dark-mode #exercisePage .daily-task-card p,
+.dark-mode #exercisePage #dailyTaskProgressText,
+.dark-mode #exercisePage .feature-status {
+    color: #bdbdbd;
+}
+
+.dark-mode #exercisePage .habit-card.completed {
+    background: #303030 !important;
+}
+
+.dark-mode #exercisePage .habit-card.completed .habit-name {
+    color: #b9b9b9;
+}
+
+.dark-mode #exercisePage .habit-time,
+.dark-mode #exercisePage .habit-reset-label {
+    color: #bdbdbd;
+}
+
+.dark-mode #exercisePage .habit-priority.important {
+    border-color: #9a5d5d;
+    background: #663b3b;
+    color: #f3e5e5;
+}
+
+.dark-mode #exercisePage .habit-priority.normal {
+    border-color: #666;
+    background: #3a3a3a;
+    color: #e2e2e2;
+}
+
+.dark-mode #exercisePage .habit-priority.low {
+    border-color: #555;
+    background: #2e2e2e;
+    color: #d0d0d0;
+}
+
+.dark-mode #exercisePage .habit-icon,
+.dark-mode #exercisePage .habit-category-label,
+.dark-mode #exercisePage .habit-note-editor {
+    border-color: #505050;
+    background: #333;
+    color: #e8e8e8;
+}
+
+.dark-mode #exercisePage .complete-button {
+    border-color: #666;
+    background: #333;
+    color: #e8e8e8;
+}
+
+.dark-mode #exercisePage .habit-card.completed .complete-button {
+    border-color: #4a805e;
+    background: #38644a;
+    color: #fff;
+}
+
+.dark-mode #exercisePage .habit-filter,
+.dark-mode #exercisePage .reminder-controls-toggle,
+.dark-mode #exercisePage .habit-snooze-actions button,
+.dark-mode #exercisePage .reminder-panel-toggle {
+    border-color: #515151;
+    background: #303030;
+    color: #e5e5e5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
+}
+
+.dark-mode #exercisePage .habit-filter.active {
+    border-color: #7168a8;
+    background: #514a78;
+    color: #fff;
+}
+
+.dark-mode #exercisePage .feature-panel-content {
+    border-color: #454545;
+}
+
+.dark-mode #exercisePage .habit-reminder-controls {
+    border-color: #494949;
+    background: #2d2d2d;
+    color: #e2e2e2;
+}
+
+.dark-mode #exercisePage .habit-reminder-controls label,
+.dark-mode #exercisePage .habit-reminder-controls .habit-reminder-label {
+    color: #dedede;
+}
+
+.dark-mode #exercisePage .habit-snooze-actions button:disabled {
+    border-color: #494949;
+    background: #292929;
+    color: #999;
+}
+
+.dark-mode #exercisePage .finance-fields {
+    border-color: #665c3b;
+    background: #332f24;
+    color: #e8e0c8;
+}
+
+.dark-mode #exercisePage .finance-fields > p {
+    color: #d3c9a9;
+}
+
+.dark-mode #exercisePage .habit-note-details summary {
+    color: #dedede;
+}
+
+.dark-mode #exercisePage .habit-note-empty,
+.dark-mode #exercisePage .habit-note-entry {
+    border: 1px solid #484848;
+    background: #303030;
+    color: #e1e1e1;
+}
+
+.dark-mode #exercisePage .habit-note-entry p,
+.dark-mode #exercisePage .finance-progress span,
+.dark-mode #exercisePage .finance-progress small {
+    color: #bdbdbd;
+}
+
+.dark-mode #exercisePage .habit-note-editor input,
+.dark-mode #exercisePage .habit-note-editor textarea,
+.dark-mode #exercisePage .habit-reminder-controls input {
+    border-color: #555;
+    background: #202020;
+    color: #ededed;
+}
+
+.dark-mode #exercisePage #claimDailyTask:disabled {
+    background: #3a3a3a;
+    color: #bdbdbd;
+}
+
+.dark-mode #infoPage .friend-challenge-panel .feature-status {
+    border-color: #665c3b;
+    background: #332f24;
+    color: #e8e0c8;
+}
+
+.dark-mode #infoPage .info-header,
+.dark-mode #infoPage .events-title {
+    padding: 18px 22px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 18px;
+    background: rgba(25, 25, 28, .9);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .22);
+    color: #e8e8e8;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+.dark-mode #infoPage .info-header small,
+.dark-mode #infoPage .events-title small {
+    color: #d0c58f;
+}
+
+.dark-mode #infoPage .info-header h1,
+.dark-mode #infoPage .events-title h2 {
+    color: #f0f0f0;
+}
+
+.dark-mode #infoPage .info-header p {
+    color: #c5c5c5;
+}
+
+.dark-mode #infoPage .events-title {
+    margin-bottom: 14px;
+}
+
+.dark-mode #infoPage .event-card {
+    border-color: #171717 !important;
+    background: rgba(255, 255, 255, .97) !important;
+    box-shadow: 4px 4px 0 #171717 !important;
+    color: #171717 !important;
+}
+
+.dark-mode #infoPage .event-card .event-date {
+    border-color: #171717 !important;
+    background: #ffe66d !important;
+    color: #171717 !important;
+}
+
+.dark-mode #infoPage .event-card .event-content :is(h3, p),
+.dark-mode #infoPage .event-card .event-date strong,
+.dark-mode #infoPage .event-card .event-date span {
+    color: #171717 !important;
+}
+
+.dark-mode #infoPage .event-card .event-tag {
+    color: #6b5b20 !important;
+}
+
+.dark-mode #infoPage .event-card .event-arrow {
+    color: #777 !important;
+}
+
+.dark-mode #infoPage .calendar-day:not(.today):not(.empty) {
+    border-color: #494949;
+    background: #242424;
+    color: #eeeeee;
+}
+
+.dark-mode #infoPage .friend-list p,
+.dark-mode #infoPage .friend-challenge-list > p,
+.dark-mode #infoPage .friend-challenge-card {
+    border-color: #494949;
+    background: #303030;
+    color: #eeeeee;
+}
+
+.dark-mode #achievementsPage .achievements-header > small {
+    color: #c4b5fd !important;
+}
+
+.dark-mode #achievementsPage .award-option {
+    border-color: #494949;
+    background: #242424;
+    box-shadow: 4px 4px 0 #080808;
+    color: #eeeeee;
+}
+
+.dark-mode #achievementsPage .award-option strong {
+    color: #f5f5f5;
+}
+
+.dark-mode #achievementsPage .award-option span {
+    color: #c4c4c4;
+}
+
+.dark-mode #achievementsPage .achievement-card.unlocked {
+    border-color: #766b40 !important;
+    background: #393522 !important;
+}
+
+.dark-mode #achievementsPage .quest-period {
+    border-color: #494949 !important;
+    background: #242424 !important;
+}
+
+.dark-mode #achievementsPage .quest-card {
+    border-color: #494949;
+    background: #303030;
+}
+
+.dark-mode #achievementsPage .quest-claim:disabled {
+    border-color: #555;
+    background: #3a3a3a;
+    color: #bbb;
+}
+
+.dark-mode #achievementsPage .award-back-button {
+    border-color: #555;
+    background: #303030;
+    color: #eee;
+}
+
+.dark-mode #shopPage .shop-category,
+.dark-mode #shopPage .shop-item {
+    border-color: #454545;
+    background: linear-gradient(155deg, #2d2d2d, #252525);
+    color: #ededed;
+    box-shadow: 0 5px 16px rgba(0, 0, 0, .22);
+}
+
+.dark-mode #shopPage .shop-category {
+    color: #dedede;
+}
+
+.dark-mode #shopPage .shop-category.active {
+    border-color: #7168a8;
+    background: #514a78;
+    color: #fff;
+}
+
+.dark-mode #shopPage .shop-item::before {
+    background: radial-gradient(circle, #444 0%, #353535 62%, rgba(53, 53, 53, 0) 70%);
+}
+
+.dark-mode #shopPage .shop-item h3 {
+    color: #ededed;
+}
+
+.dark-mode #shopPage .shop-item .character-price {
+    color: #c9c4e0;
+}
+
+.dark-mode #shopPage .buy-character {
+    background: #514a78;
+    color: #fff;
+}
+
+.dark-mode #shopPage .buy-character:disabled {
+    background: #3a3a3a;
+    color: #aaa;
+}
+
+.dark-mode #shopPage .shop-coins {
+    background: rgba(20, 20, 20, .45);
+    color: #fff;
+}
+
+.dark-mode #gamePage .game-header p,
+.dark-mode #gamePage .game-card p,
+.dark-mode #gamePage .claw-hint {
+    color: #bdbdbd;
+}
+
+.dark-mode #gamePage .game-card {
+    border-color: #454545;
+    background: #252525;
+    box-shadow: 0 5px 16px rgba(0, 0, 0, .22);
+    color: #ededed;
+}
+
+.dark-mode #gamePage .game-card-icon {
+    border-color: #505050;
+    background: #333;
+}
+
+.dark-mode #gamePage .game-screen-header .secondary-button {
+    border-color: #555;
+    background: #303030;
+    color: #e8e8e8;
+}
+
+.dark-mode #gamePage .game-screen-header {
+    padding: 10px 12px;
+    border: 1px solid #454545;
+    border-radius: 14px;
+    background: #252525;
+}
+
+.dark-mode #gamePage .game-screen-header h2 {
+    color: #ededed;
+}
+
+.dark-mode #gamePage #fightingGame .fight-arena {
+    border-color: #505050;
+    background: linear-gradient(180deg, #303030, #252525);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .24);
+    color: #ededed;
+}
+
+.dark-mode #gamePage #fightingGame .fighter-name,
+.dark-mode #gamePage #fightingGame .fight-vs {
+    color: #ededed;
+}
+
+.dark-mode #gamePage #fightingGame .hp-bar {
+    border-color: #505050;
+    background: #444;
+}
+
+.dark-mode #gamePage #fightingGame .hp-bar > div {
+    background: #668f70;
+}
+
+.dark-mode #gamePage #fightingGame .enemy-hp > div {
+    background: #a96a68;
+}
+
+.dark-mode #gamePage #fightingGame .game-status {
+    color: #dedede;
+}
+
+.dark-mode #gamePage .game-action-button {
+    border-color: #555;
+    background: #303030;
+    color: #e8e8e8;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .2);
+}
+
+.dark-mode #gamePage .game-action-button.special {
+    border-color: #7168a8;
+    background: #514a78;
+    color: #fff;
+}
+
+.dark-mode #gamePage #clawGame .claw-scoreboard {
+    color: #e1e1e1;
+}
+
+.dark-mode #gamePage #clawGame .claw-stage {
+    border-color: #555;
+    background: #eaf5ff;
+    box-shadow: 0 5px 14px rgba(0, 0, 0, .25);
+}
+
+.settings-theme-icon {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    place-items: center;
+    border: 1px solid rgba(17, 17, 17, .12);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, .72);
+    font-size: 25px;
+    line-height: 1;
+}
+
+.settings-theme-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.settings-theme-control label {
+    font-weight: 900;
+}
+
+.settings-theme-control p {
+    margin: 4px 0 0;
+    color: #666;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.settings-theme-switch {
+    position: relative;
+    display: inline-flex;
+    width: 54px;
+    height: 32px;
+    flex: 0 0 54px;
+    cursor: pointer;
+}
+
+.settings-theme-switch input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.settings-theme-switch-track {
+    width: 100%;
+    height: 100%;
+    border: 2px solid #555;
+    border-radius: 99px;
+    background: #d7d7d7;
+    transition: background .2s ease, border-color .2s ease;
+}
+
+.settings-theme-switch-track::after {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .25);
+    content: "";
+    transition: transform .2s ease;
+}
+
+.settings-theme-switch input:checked + .settings-theme-switch-track {
+    border-color: #f2f2f2;
+    background: #555;
+}
+
+.settings-theme-switch input:checked + .settings-theme-switch-track::after {
+    transform: translateX(22px);
+}
+
+.settings-theme-switch input:focus-visible + .settings-theme-switch-track {
+    outline: 3px solid #8585ff;
+    outline-offset: 3px;
+}
+
+.settings-theme-feedback {
+    min-height: 18px;
+    margin: 8px 0 0;
+    color: #9c2525;
+    font-size: 12px;
+}
+
+.dark-mode #appScreen .settings-theme-icon {
+    border-color: #494949;
+    background: #303030;
+}
+
+.dark-mode #appScreen .settings-theme-control p,
+.dark-mode #appScreen .settings-theme-feedback {
+    color: #bdbdbd;
+}
+
+.dark-mode #appScreen .settings-theme-switch-track {
+    border-color: #777;
+    background: #444;
+}
+
+.dark-mode #appScreen .settings-theme-switch input:checked + .settings-theme-switch-track {
+    border-color: #eeeeee;
+    background: #666;
+}
+
+@media (max-width: 640px) {
+    .settings-theme-icon {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+    }
 }
