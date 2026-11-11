@@ -9670,6 +9670,19 @@ body::before {
     object-fit: contain;
     filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .18));
 }
+#characterPage .character-main .character-accessory {
+    position: absolute;
+    z-index: 3;
+    top: 57%;
+    left: 50%;
+    width: 76px !important;
+    height: 44px !important;
+    transform: translateX(-50%);
+    object-fit: contain;
+    pointer-events: none;
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .14));
+}
+#characterPage .character-main .character-accessory.hidden { display: none !important; }
 #characterPage .character-main.character-feeding .character-food {
     animation: characterFoodBite .7s ease-in both;
 }
@@ -9810,6 +9823,7 @@ body::before {
     #characterPage .character-main img { width: 185px; max-width: 55vw; }
     #characterPage .character-main h2 { font-size: 18px; }
     #characterPage .character-main .character-food { width: 58px !important; height: 58px !important; }
+    #characterPage .character-main .character-accessory { width: 62px !important; height: 36px !important; }
     #characterPage .character-main .character-feed-hint { gap: 4px; margin-top: 6px; }
     #characterPage .feed-hint-step { min-width: 0; padding: 4px 5px; border-radius: 8px; }
     #characterPage .feed-hint-platform { font-size: 6px; letter-spacing: .6px; }

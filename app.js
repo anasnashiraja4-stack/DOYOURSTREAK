@@ -2669,8 +2669,33 @@ function setupCharacterFeeding() {
     const bubble = document.getElementById("characterReactionBubble");
     if (!characterPage || !characterMain || !playerImage || !fallback || !foodImage) return;
 
-    const foods = ["makanan1.png", "makanan2.png", "makanan3.png"];
-    const feedingReactions = ["Yay! So tasty!", "Mmm, so delicious!", "That was yummy!"];
+    const foods = [
+        "makanan1.png",
+        "makanan2.png",
+        "makanan3.png",
+        "fish.png",
+        "matcharaisa.png",
+        "cookiees.png",
+        "milktea.png",
+        "cake.png"
+    ];
+    const feedingReactions = [
+        "Yay! So tasty!",
+        "Mmm, so delicious!",
+        "That was yummy!",
+        "Thanks! I was getting hungry!",
+        "Can I have another bite?",
+        "My tummy is so happy!",
+        "Best snack ever!",
+        "Nom nom nom!",
+        "I love snack time!",
+        "That hit the spot!",
+        "More treats, please!",
+        "I could eat this all day!",
+        "Delicious! You always know what I like!",
+        "I'm full and super happy!",
+        "Save me a little more for later!"
+    ];
     let tapCount = 0;
     let tapResetTimer;
     let feeding = false;
@@ -4506,6 +4531,36 @@ const characters = [
         image: "officecat.png",
         price: 330
     },
+    {
+        id: "babybear",
+        name: "BABYBEAR",
+        image: "babybear.png",
+        price: 300
+    },
+    {
+        id: "constructioncat",
+        name: "CONSTRUCTIONCAT",
+        image: "constructioncat.png",
+        price: 350
+    },
+    {
+        id: "keresekcat",
+        name: "KERESEKCAT",
+        image: "keresekcat.png",
+        price: 400
+    },
+    {
+        id: "masroom",
+        name: "MASROOM",
+        image: "masroom.png",
+        price: 450
+    },
+    {
+        id: "shiningcat",
+        name: "SHININGCAT",
+        image: "shiningcat.png",
+        price: 500
+    },
 
     // PREMIUM CHARACTERS
     {
@@ -4572,9 +4627,11 @@ const characters = [
         premium: true
     }
     // NANTI TAMBAH CHARACTER DI SINI
-
 ];
 
+const shopAccessories = [
+    { id: "bowtie", name: "BOWTIE", image: "bowtie.png", price: 150 }
+];
 
 let currentCharacter = 0;
 
@@ -4754,6 +4811,31 @@ function updateCharacter() {
 
     }
 
+    updateCharacterAccessory();
+
+}
+
+function isAccessoryOwned(accessory) {
+    return localStorage.getItem(
+        `doyourstreak-owned-accessory-${accessory.id}`
+    ) === "true";
+}
+
+function updateCharacterAccessory() {
+    const accessoryImage = document.getElementById("characterAccessory");
+    if (!accessoryImage) return;
+
+    const selectedAccessoryId = localStorage.getItem("doyourstreak-selected-accessory");
+    const accessory = shopAccessories.find(item => item.id === selectedAccessoryId);
+    if (!accessory || !isAccessoryOwned(accessory)) {
+        accessoryImage.classList.add("hidden");
+        accessoryImage.removeAttribute("src");
+        return;
+    }
+
+    accessoryImage.src = accessory.image;
+    accessoryImage.alt = accessory.name;
+    accessoryImage.classList.remove("hidden");
 }
 
 
@@ -4901,6 +4983,75 @@ function equipShopBackground(background) {
     renderBackgroundShop();
 }
 
+function equipShopAccessory(accessory) {
+    if (!isAccessoryOwned(accessory)) return;
+
+    localStorage.setItem("doyourstreak-selected-accessory", accessory.id);
+    updateCharacterAccessory();
+    renderAccessoryShop();
+}
+
+function buyShopAccessory(accessory) {
+    if (isAccessoryOwned(accessory)) {
+        equipShopAccessory(accessory);
+        return;
+    }
+
+    if (coins < accessory.price) {
+        alert("Coins kamu belum cukup!");
+        return;
+    }
+
+    coins -= accessory.price;
+    localStorage.setItem(`doyourstreak-owned-accessory-${accessory.id}`, "true");
+    updateCoins();
+    equipShopAccessory(accessory);
+    alert(`${accessory.name} berhasil dibeli dan dipasang!`);
+}
+
+function renderAccessoryShop() {
+    const shopItems = document.querySelector(".shop-items");
+    if (!shopItems) return;
+
+    shopItems.innerHTML = "";
+    const selectedAccessoryId = localStorage.getItem("doyourstreak-selected-accessory");
+
+    shopAccessories.forEach(accessory => {
+        const owned = isAccessoryOwned(accessory);
+        const equipped = selectedAccessoryId === accessory.id && owned;
+        const item = document.createElement("div");
+        item.className = "shop-item shop-accessory-item";
+        item.innerHTML = `
+            <img src="${accessory.image}" alt="${accessory.name}">
+            <h3>${accessory.name}</h3>
+            <p class="character-price">
+                <img src="koinngawi.png" alt="Coin" class="coin-icon">
+                ${accessory.price}
+            </p>
+            <button
+                class="buy-character"
+                type="button"
+            >
+                ${equipped ? "LEPAS" : owned ? "PASANG" : "BUY"}
+            </button>
+        `;
+
+        item.querySelector(".buy-character").addEventListener("click", () => {
+            if (equipped) {
+                localStorage.removeItem("doyourstreak-selected-accessory");
+                updateCharacterAccessory();
+                renderAccessoryShop();
+            } else if (owned) {
+                equipShopAccessory(accessory);
+            } else {
+                buyShopAccessory(accessory);
+            }
+        });
+
+        shopItems.appendChild(item);
+    });
+}
+
 function buyShopBackground(background) {
     if (isBackgroundOwned(background)) {
         equipShopBackground(background);
@@ -4980,6 +5131,8 @@ document.querySelectorAll(".shop-category").forEach(button => {
 
         if (category === "background") {
             renderBackgroundShop();
+        } else if (category === "accessory") {
+            renderAccessoryShop();
         } else {
             renderCharacterShop();
         }
