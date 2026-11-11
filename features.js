@@ -421,6 +421,15 @@
         unlockAchievements(stats);
     }
 
+    function getActivityByDate() {
+        return Object.fromEntries(
+            Object.entries(state.activityByDate).map(([dateKey, entry]) => [
+                dateKey,
+                { habitIds: Array.isArray(entry?.habitIds) ? [...entry.habitIds] : [] }
+            ])
+        );
+    }
+
     function renderQuestList(list, period) {
         if (!list || !["daily", "weekly", "monthly"].includes(period)) return;
         currentQuestPeriod = period;
@@ -784,6 +793,7 @@
         setProfiles,
         updateCurrentHabits,
         recordHabitCompletion,
+        getActivityByDate,
         reconcileStreak,
         recordStreakCompletion,
         addStreakFreezes,

@@ -1288,6 +1288,7 @@ document.querySelectorAll("[data-language]").forEach(button => {
     button.addEventListener("click", () => {
         setAppLanguage(button.dataset.language);
         updateHeaderClock();
+        renderHabitHeatmap();
         renderCalendar();
         renderQuestBoard();
     });
@@ -2215,9 +2216,177 @@ function createHabit() {
    RENDER HABITS
 ===================================================== */
 
+let heatmapYear = new Date().getFullYear();
+let heatmapCollapsed = false;
+try {
+    heatmapCollapsed = localStorage.getItem("doyourstreak-heatmap-hidden") === "true";
+} catch (error) {
+    console.error("Could not read the activity calendar visibility setting.", error);
+}
+
+const heatmapTranslations = {
+    en: {
+        eyebrow: "YEAR IN REVIEW", title: "Activity calendar", description: "Your habit activity, day by day.",
+        activeDays: "active days", completions: "habits completed", note: "Activity is recorded from the day tracking began.",
+        less: "Less", more: "More", previous: "Previous year", next: "Next year", hide: "Hide", show: "Show",
+        dayCount: count => `${count} ${count === 1 ? "habit completed" : "habits completed"}`
+    },
+    id: {
+        eyebrow: "RINGKASAN TAHUNAN", title: "Kalender aktivitas", description: "Aktivitas habit dari hari ke hari.",
+        activeDays: "hari aktif", completions: "habit selesai", note: "Aktivitas tercatat sejak pelacakan dimulai.",
+        less: "Sedikit", more: "Banyak", previous: "Tahun sebelumnya", next: "Tahun berikutnya", hide: "Sembunyikan", show: "Tampilkan",
+        dayCount: count => `${count} habit selesai`
+    },
+    zh: {
+        eyebrow: "年度回顾", title: "活动日历", description: "查看每天的习惯完成情况。",
+        activeDays: "活跃天数", completions: "已完成习惯", note: "从开始记录之日起显示活动。",
+        less: "少", more: "多", previous: "上一年", next: "下一年", hide: "隐藏", show: "显示",
+        dayCount: count => `完成 ${count} 个习惯`
+    },
+    ru: {
+        eyebrow: "ИТОГИ ГОДА", title: "Календарь активности", description: "История выполнения привычек по дням.",
+        activeDays: "активных дней", completions: "выполнено привычек", note: "Активность записывается с начала отслеживания.",
+        less: "Меньше", more: "Больше", previous: "Предыдущий год", next: "Следующий год", hide: "Скрыть", show: "Показать",
+        dayCount: count => `Выполнено привычек: ${count}`
+    }
+};
+
+function updateHeatmapVisibility() {
+    const content = document.getElementById("heatmapContent");
+    const toggle = document.getElementById("heatmapVisibilityToggle");
+    if (content) content.hidden = heatmapCollapsed;
+    if (toggle) {
+        const copy = heatmapTranslations[appLanguage] || heatmapTranslations.en;
+        toggle.setAttribute("aria-expanded", String(!heatmapCollapsed));
+        toggle.textContent = heatmapCollapsed ? copy.show : copy.hide;
+    }
+}
+
+function renderHabitHeatmap() {
+    const grid = document.getElementById("habitHeatmap");
+    const monthLabels = document.getElementById("heatmapMonths");
+    const weekdayLabels = document.getElementById("heatmapWeekdays");
+    if (!grid || !monthLabels || !weekdayLabels) return;
+
+    const copy = heatmapTranslations[appLanguage] || heatmapTranslations.en;
+    const setText = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value;
+    };
+    setText("habitHeatmapEyebrow", copy.eyebrow);
+    setText("habitHeatmapTitle", copy.title);
+    setText("habitHeatmapDescription", copy.description);
+    setText("heatmapActiveDaysLabel", copy.activeDays);
+    setText("heatmapCompletionsLabel", copy.completions);
+    setText("heatmapHistoryNote", copy.note);
+    setText("heatmapLessLabel", copy.less);
+    setText("heatmapMoreLabel", copy.more);
+    updateHeatmapVisibility();
+
+    const yearLabel = document.getElementById("heatmapYear");
+    if (yearLabel) yearLabel.textContent = String(heatmapYear);
+    const previousButton = document.getElementById("heatmapPreviousYear");
+    const nextButton = document.getElementById("heatmapNextYear");
+    if (previousButton) previousButton.setAttribute("aria-label", copy.previous);
+    if (nextButton) {
+        nextButton.setAttribute("aria-label", copy.next);
+        nextButton.disabled = heatmapYear >= new Date().getFullYear();
+    }
+
+    const firstOfYear = new Date(heatmapYear, 0, 1);
+    const gridStart = new Date(heatmapYear, 0, 1 - firstOfYear.getDay());
+    const finalDay = new Date(heatmapYear, 11, 31);
+    const utcDay = date => Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000;
+    const weekCount = Math.ceil((utcDay(finalDay) - utcDay(gridStart) + 1) / 7);
+    const activity = window.DYSFeatures?.getActivityByDate?.() || {};
+    const dayCounts = new Map();
+    let activeDays = 0;
+    let completions = 0;
+
+    Object.entries(activity).forEach(([dateKey, entry]) => {
+        if (!dateKey.startsWith(`${heatmapYear}-`) || !Array.isArray(entry?.habitIds)) return;
+        const count = new Set(entry.habitIds.map(String)).size;
+        if (count < 1) return;
+        dayCounts.set(dateKey, count);
+        activeDays++;
+        completions += count;
+    });
+
+    setText("heatmapActiveDays", new Intl.NumberFormat(getAppLocale()).format(activeDays));
+    setText("heatmapCompletions", new Intl.NumberFormat(getAppLocale()).format(completions));
+
+    monthLabels.replaceChildren();
+    monthLabels.style.gridTemplateColumns = `repeat(${weekCount}, 12px)`;
+    for (let month = 0; month < 12; month++) {
+        const date = new Date(heatmapYear, month, 1);
+        const label = document.createElement("span");
+        label.textContent = new Intl.DateTimeFormat(getAppLocale(), { month: "short" }).format(date);
+        label.style.gridColumn = `${Math.floor((utcDay(date) - utcDay(gridStart)) / 7) + 1}`;
+        monthLabels.append(label);
+    }
+
+    weekdayLabels.replaceChildren();
+    for (let day = 0; day < 7; day++) {
+        const label = document.createElement("span");
+        label.textContent = new Intl.DateTimeFormat(getAppLocale(), { weekday: "short" }).format(new Date(2023, 0, day + 1));
+        weekdayLabels.append(label);
+    }
+
+    grid.replaceChildren();
+    grid.style.gridTemplateColumns = `repeat(${weekCount}, 12px)`;
+    const maxCount = Math.max(1, ...dayCounts.values());
+    const today = getTodayDate();
+    const dateFormat = new Intl.DateTimeFormat(getAppLocale(), { dateStyle: "full" });
+    for (let week = 0; week < weekCount; week++) {
+        for (let weekday = 0; weekday < 7; weekday++) {
+            const date = new Date(gridStart);
+            date.setDate(gridStart.getDate() + week * 7 + weekday);
+            const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+            const cell = document.createElement("span");
+            cell.className = "heatmap-day";
+            cell.style.gridColumn = String(week + 1);
+            cell.style.gridRow = String(weekday + 1);
+
+            if (date.getFullYear() !== heatmapYear) {
+                cell.classList.add("heatmap-day-outside");
+                cell.setAttribute("aria-hidden", "true");
+            } else {
+                const count = dayCounts.get(key) || 0;
+                const level = count ? Math.max(1, Math.ceil(count / maxCount * 4)) : 0;
+                cell.classList.add(`heatmap-level-${level}`);
+                if (key === today) cell.classList.add("heatmap-day-today");
+                cell.setAttribute("role", "gridcell");
+                cell.setAttribute("aria-label", `${dateFormat.format(date)}: ${copy.dayCount(count)}`);
+                cell.title = `${dateFormat.format(date)}: ${copy.dayCount(count)}`;
+            }
+            grid.append(cell);
+        }
+    }
+}
+
+document.getElementById("heatmapPreviousYear")?.addEventListener("click", () => {
+    heatmapYear--;
+    renderHabitHeatmap();
+});
+document.getElementById("heatmapNextYear")?.addEventListener("click", () => {
+    if (heatmapYear >= new Date().getFullYear()) return;
+    heatmapYear++;
+    renderHabitHeatmap();
+});
+document.getElementById("heatmapVisibilityToggle")?.addEventListener("click", () => {
+    heatmapCollapsed = !heatmapCollapsed;
+    updateHeatmapVisibility();
+    try {
+        localStorage.setItem("doyourstreak-heatmap-hidden", String(heatmapCollapsed));
+    } catch (error) {
+        console.error("Could not save the activity calendar visibility setting.", error);
+    }
+});
+
 function renderHabits() {
 
     resetExpiredHabits();
+    renderHabitHeatmap();
     habitList.innerHTML = "";
 
     // The companion wakes as soon as the user completes one of today's habits.
@@ -3824,6 +3993,7 @@ function showExercisePage() {
 
     setActiveNav(exerciseNav);
 
+    renderHabitHeatmap();
     window.scrollTo(0, 0);
 }
 
