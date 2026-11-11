@@ -9188,6 +9188,194 @@ body::before {
 #claimDailyTask:not(:disabled):hover { transform: translateY(-1px); }
 #claimDailyTask:disabled { background: #e7e7e7; color: #777; }
 
+.habit-heatmap-card {
+    grid-column: 1 / -1;
+    min-width: 0;
+    margin-bottom: 24px;
+    padding: 20px;
+    overflow: hidden;
+    border: 1.5px solid #dedede;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, .06);
+}
+
+.habit-heatmap-header,
+.heatmap-year-controls,
+.heatmap-summary,
+.heatmap-footer,
+.heatmap-legend {
+    display: flex;
+    align-items: center;
+}
+
+.habit-heatmap-header {
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.habit-heatmap-header small {
+    color: #777;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+}
+
+.habit-heatmap-header h2 {
+    margin: 4px 0;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.habit-heatmap-header p {
+    margin: 0;
+    color: #707070;
+    font-size: 13px;
+}
+
+.heatmap-year-controls {
+    gap: 10px;
+}
+
+.heatmap-year-controls button {
+    width: 34px;
+    height: 34px;
+    border: 1px solid #dedede;
+    border-radius: 10px;
+    background: #fff;
+    color: #242424;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.heatmap-year-controls button:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.heatmap-year-controls .heatmap-visibility-toggle {
+    width: auto;
+    padding: 0 10px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.heatmap-year-controls strong {
+    min-width: 42px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.heatmap-summary {
+    gap: 22px;
+    margin: 18px 0 16px;
+}
+
+.heatmap-summary div {
+    display: grid;
+    gap: 2px;
+}
+
+.heatmap-summary strong {
+    font-size: 20px;
+    font-variant-numeric: tabular-nums;
+}
+
+.heatmap-summary span,
+.heatmap-history-note,
+.heatmap-footer {
+    color: #707070;
+    font-size: 11px;
+}
+
+.heatmap-scroll {
+    overflow-x: auto;
+    padding: 4px 2px 8px;
+    scrollbar-width: thin;
+}
+
+.heatmap-calendar {
+    display: grid;
+    grid-template-columns: 26px max-content;
+    grid-template-rows: 18px max-content;
+    column-gap: 6px;
+    row-gap: 5px;
+    width: max-content;
+    min-width: 100%;
+}
+
+.heatmap-months {
+    display: grid;
+    grid-column: 2;
+    grid-auto-flow: column;
+    gap: 3px;
+    color: #707070;
+    font-size: 10px;
+}
+
+.heatmap-months span { white-space: nowrap; }
+
+.heatmap-weekdays {
+    display: grid;
+    grid-column: 1;
+    grid-row: 2;
+    grid-template-rows: repeat(7, 12px);
+    gap: 3px;
+    color: #777;
+    font-size: 9px;
+    line-height: 12px;
+}
+
+.heatmap-weekdays span {
+    overflow: hidden;
+    text-align: right;
+}
+
+.habit-heatmap {
+    display: grid;
+    grid-column: 2;
+    grid-row: 2;
+    grid-template-rows: repeat(7, 12px);
+    grid-auto-flow: column;
+    gap: 3px;
+    width: max-content;
+}
+
+.heatmap-day {
+    width: 12px;
+    height: 12px;
+    box-sizing: border-box;
+    border-radius: 3px;
+    background: #ebedf0;
+}
+
+.heatmap-level-1 { background: #9be9a8; }
+.heatmap-level-2 { background: #40c463; }
+.heatmap-level-3 { background: #30a14e; }
+.heatmap-level-4 { background: #216e39; }
+.heatmap-day-outside { visibility: hidden; }
+.heatmap-day-today { outline: 1.5px solid #171717; outline-offset: 1px; }
+
+.heatmap-footer {
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.heatmap-history-note { margin: 0; }
+
+.heatmap-legend {
+    flex: 0 0 auto;
+    gap: 4px;
+}
+
+.heatmap-legend i {
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+}
+
 @media (min-width: 950px) {
     #exercisePage.active {
         display: grid !important;
@@ -9199,6 +9387,7 @@ body::before {
 
     #exercisePage > .daily-task-card { grid-column: 1; margin: 0; }
     #exercisePage > .habits-section { grid-column: 2; min-width: 0; }
+    #exercisePage > .habit-heatmap-card { grid-column: 1 / -1; margin: 0 0 4px; }
     #exercisePage .section-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
     #exercisePage .section-header h2 { margin: 3px 0 0; font-size: clamp(25px, 2.5vw, 34px); }
     #exercisePage .habit-list { gap: 11px; }
@@ -9216,6 +9405,15 @@ body::before {
 
 @media (max-width: 600px) {
     #exercisePage { padding: 18px 14px 110px; }
+    .habit-heatmap-card { margin-bottom: 18px; padding: 15px; border-radius: 15px; }
+    .habit-heatmap-header { align-items: flex-start; gap: 8px; }
+    .habit-heatmap-header h2 { font-size: 19px; }
+    .habit-heatmap-header p { max-width: 220px; font-size: 11px; }
+    .heatmap-year-controls { gap: 5px; }
+    .heatmap-year-controls button { width: 30px; height: 30px; }
+    .heatmap-summary { gap: 18px; margin: 15px 0 12px; }
+    .heatmap-summary strong { font-size: 18px; }
+    .heatmap-footer { align-items: flex-start; flex-direction: column; gap: 8px; }
     .daily-task-card { margin: 0 0 25px; padding: 14px; border-radius: 14px; }
     .daily-task-card h3 { font-size: 17px; }
     #exercisePage .section-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 13px; }
@@ -10529,6 +10727,7 @@ body::before {
 }
 
 .dark-mode #exercisePage .daily-task-card,
+.dark-mode #exercisePage .habit-heatmap-card,
 .dark-mode #exercisePage .habit-card,
 .dark-mode #exercisePage .empty-state,
 .dark-mode #exercisePage .feature-panel {
@@ -10541,6 +10740,26 @@ body::before {
 .dark-mode #exercisePage :is(.daily-task-header, .daily-task-card h3, .daily-task-card p, #dailyTaskProgressText, .section-header h2, .section-header small, .habit-name, .habit-streak, .empty-state h3, .empty-state p, .feature-panel-heading h2, .feature-panel-heading small, .feature-panel-actions p, .feature-panel-content, .feature-status, .habit-filter-empty) {
     color: #e1e1e1;
 }
+
+.dark-mode #exercisePage :is(.habit-heatmap-header p, .habit-heatmap-header small, .heatmap-summary span, .heatmap-history-note, .heatmap-months, .heatmap-weekdays, .heatmap-footer) {
+    color: #bdbdbd;
+}
+
+.dark-mode #exercisePage .heatmap-year-controls button {
+    border-color: #555;
+    background: #303030;
+    color: #f2f2f2;
+}
+
+.dark-mode #exercisePage .heatmap-day {
+    background: #343a40;
+}
+
+.dark-mode #exercisePage .heatmap-level-1 { background: #0e4429; }
+.dark-mode #exercisePage .heatmap-level-2 { background: #006d32; }
+.dark-mode #exercisePage .heatmap-level-3 { background: #26a641; }
+.dark-mode #exercisePage .heatmap-level-4 { background: #39d353; }
+.dark-mode #exercisePage .heatmap-day-today { outline-color: #fff; }
 
 .dark-mode #exercisePage .habit-streak,
 .dark-mode #exercisePage .daily-task-card p,
