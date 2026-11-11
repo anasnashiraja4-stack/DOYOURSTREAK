@@ -2228,25 +2228,25 @@ const heatmapTranslations = {
     en: {
         eyebrow: "YEAR IN REVIEW", title: "Activity calendar", description: "Your habit activity, day by day.",
         activeDays: "active days", completions: "habits completed", note: "Activity is recorded from the day tracking began.",
-        less: "Less", more: "More", previous: "Previous year", next: "Next year", hide: "Hide", show: "Show",
+        less: "Less", more: "More", previous: "Previous year", next: "Next year", hide: "Hide calendar", show: "Show calendar",
         dayCount: count => `${count} ${count === 1 ? "habit completed" : "habits completed"}`
     },
     id: {
         eyebrow: "RINGKASAN TAHUNAN", title: "Kalender aktivitas", description: "Aktivitas habit dari hari ke hari.",
         activeDays: "hari aktif", completions: "habit selesai", note: "Aktivitas tercatat sejak pelacakan dimulai.",
-        less: "Sedikit", more: "Banyak", previous: "Tahun sebelumnya", next: "Tahun berikutnya", hide: "Sembunyikan", show: "Tampilkan",
+        less: "Sedikit", more: "Banyak", previous: "Tahun sebelumnya", next: "Tahun berikutnya", hide: "Sembunyikan kalender", show: "Tampilkan kalender",
         dayCount: count => `${count} habit selesai`
     },
     zh: {
         eyebrow: "年度回顾", title: "活动日历", description: "查看每天的习惯完成情况。",
         activeDays: "活跃天数", completions: "已完成习惯", note: "从开始记录之日起显示活动。",
-        less: "少", more: "多", previous: "上一年", next: "下一年", hide: "隐藏", show: "显示",
+        less: "少", more: "多", previous: "上一年", next: "下一年", hide: "隐藏日历", show: "显示日历",
         dayCount: count => `完成 ${count} 个习惯`
     },
     ru: {
         eyebrow: "ИТОГИ ГОДА", title: "Календарь активности", description: "История выполнения привычек по дням.",
         activeDays: "активных дней", completions: "выполнено привычек", note: "Активность записывается с начала отслеживания.",
-        less: "Меньше", more: "Больше", previous: "Предыдущий год", next: "Следующий год", hide: "Скрыть", show: "Показать",
+        less: "Меньше", more: "Больше", previous: "Предыдущий год", next: "Следующий год", hide: "Скрыть календарь", show: "Показать календарь",
         dayCount: count => `Выполнено привычек: ${count}`
     }
 };
@@ -2254,11 +2254,17 @@ const heatmapTranslations = {
 function updateHeatmapVisibility() {
     const content = document.getElementById("heatmapContent");
     const toggle = document.getElementById("heatmapVisibilityToggle");
+    const card = document.querySelector(".habit-heatmap-card");
+    const collapsedSummary = card?.querySelector(".heatmap-collapsed-summary");
     if (content) content.hidden = heatmapCollapsed;
+    card?.classList.toggle("is-collapsed", heatmapCollapsed);
+    collapsedSummary?.setAttribute("aria-hidden", String(!heatmapCollapsed));
     if (toggle) {
         const copy = heatmapTranslations[appLanguage] || heatmapTranslations.en;
         toggle.setAttribute("aria-expanded", String(!heatmapCollapsed));
-        toggle.textContent = heatmapCollapsed ? copy.show : copy.hide;
+        const label = toggle.querySelector(".heatmap-toggle-label");
+        if (label) label.textContent = heatmapCollapsed ? copy.show : copy.hide;
+        toggle.setAttribute("aria-label", heatmapCollapsed ? copy.show : copy.hide);
     }
 }
 
@@ -2314,9 +2320,11 @@ function renderHabitHeatmap() {
 
     setText("heatmapActiveDays", new Intl.NumberFormat(getAppLocale()).format(activeDays));
     setText("heatmapCompletions", new Intl.NumberFormat(getAppLocale()).format(completions));
+    setText("heatmapCollapsedDays", new Intl.NumberFormat(getAppLocale()).format(activeDays));
+    setText("heatmapCollapsedDaysLabel", copy.activeDays);
 
     monthLabels.replaceChildren();
-    monthLabels.style.gridTemplateColumns = `repeat(${weekCount}, 12px)`;
+    monthLabels.style.gridTemplateColumns = `repeat(${weekCount}, var(--heatmap-cell-size))`;
     for (let month = 0; month < 12; month++) {
         const date = new Date(heatmapYear, month, 1);
         const label = document.createElement("span");
@@ -2333,7 +2341,7 @@ function renderHabitHeatmap() {
     }
 
     grid.replaceChildren();
-    grid.style.gridTemplateColumns = `repeat(${weekCount}, 12px)`;
+    grid.style.gridTemplateColumns = `repeat(${weekCount}, var(--heatmap-cell-size))`;
     const maxCount = Math.max(1, ...dayCounts.values());
     const today = getTodayDate();
     const dateFormat = new Intl.DateTimeFormat(getAppLocale(), { dateStyle: "full" });
