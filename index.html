@@ -21,6 +21,10 @@
 
             <div class="landing-logo">
                 <img src="reallogo.png" alt="DOYOURSTREAK">
+                <span class="landing-logo-copy">
+                    <strong>DOYOURSTREAK</strong>
+                    <small>BUILD · PLAY · REPEAT</small>
+                </span>
             </div>
 
             <div class="landing-quick-info">
@@ -1052,49 +1056,67 @@
 
             </section>
 
-            <section class="habit-heatmap-card" aria-labelledby="habitHeatmapTitle">
-                <header class="habit-heatmap-header">
-                    <div class="habit-heatmap-heading">
-                        <small id="habitHeatmapEyebrow">YEAR IN REVIEW</small>
-                        <h2 id="habitHeatmapTitle">Activity calendar</h2>
-                        <p id="habitHeatmapDescription">Your habit activity, day by day.</p>
+            <section id="progressDisclosure" class="progress-disclosure">
+                <button id="progressDisclosureToggle" class="progress-disclosure-toggle" type="button" aria-controls="progressDisclosureContent" aria-expanded="false">
+                    <span class="progress-disclosure-icon" aria-hidden="true"></span>
+                    <span id="progressDisclosureLabel">LIHAT PROGRES</span>
+                </button>
+                <div id="progressDisclosureContent" class="progress-disclosure-content" aria-hidden="true" inert>
+                    <div class="progress-disclosure-inner">
+                        <section class="weekly-summary-card" aria-labelledby="weeklySummaryTitle">
+                            <header class="weekly-summary-header">
+                                <div>
+                                    <small id="weeklySummaryEyebrow">MINGGU INI</small>
+                                    <h2 id="weeklySummaryTitle">Ringkasan mingguan</h2>
+                                    <p id="weeklySummaryRange"></p>
+                                </div>
+                                <div class="weekly-summary-stats">
+                                    <div><strong id="weeklySummaryCompletions">0</strong><span id="weeklySummaryCompletionsLabel">habit selesai</span></div>
+                                    <div><strong id="weeklySummaryActiveDays">0 / 7</strong><span id="weeklySummaryActiveDaysLabel">hari aktif</span></div>
+                                    <div><strong id="weeklySummaryBestDay">—</strong><span id="weeklySummaryBestDayLabel">hari terbaik</span></div>
+                                </div>
+                            </header>
+                            <div id="weeklySummaryChart" class="weekly-summary-chart" role="list" aria-label="Aktivitas habit minggu ini"></div>
+                        </section>
+
+                        <section class="habit-heatmap-card" aria-labelledby="habitHeatmapTitle">
+                            <header class="habit-heatmap-header">
+                                <div class="habit-heatmap-heading">
+                                    <small id="habitHeatmapEyebrow">YEAR IN REVIEW</small>
+                                    <h2 id="habitHeatmapTitle">Activity calendar</h2>
+                                    <p id="habitHeatmapDescription">Your habit activity, day by day.</p>
+                                </div>
+                                <div class="heatmap-year-controls" aria-label="Calendar year">
+                                    <div class="heatmap-year-picker">
+                                        <button id="heatmapPreviousYear" type="button" aria-label="Previous year">‹</button>
+                                        <strong id="heatmapYear"></strong>
+                                        <button id="heatmapNextYear" type="button" aria-label="Next year">›</button>
+                                    </div>
+                                </div>
+                            </header>
+                            <div id="heatmapContent">
+                                <div class="heatmap-summary" aria-live="polite">
+                                    <div><strong id="heatmapActiveDays">0</strong><span id="heatmapActiveDaysLabel">active days</span></div>
+                                    <div><strong id="heatmapCompletions">0</strong><span id="heatmapCompletionsLabel">habits completed</span></div>
+                                </div>
+                                <div class="heatmap-scroll" tabindex="0" aria-label="Scrollable yearly activity calendar">
+                                    <div class="heatmap-calendar">
+                                        <div id="heatmapMonths" class="heatmap-months" aria-hidden="true"></div>
+                                        <div id="heatmapWeekdays" class="heatmap-weekdays" aria-hidden="true"></div>
+                                        <div id="habitHeatmap" class="habit-heatmap" role="grid" aria-label="Habit activity by day"></div>
+                                    </div>
+                                </div>
+                                <footer class="heatmap-footer">
+                                    <p id="heatmapHistoryNote">Activity is recorded from the day tracking began.</p>
+                                    <div class="heatmap-legend" aria-label="Activity legend">
+                                        <span id="heatmapLessLabel">Less</span>
+                                        <i class="heatmap-level-0"></i><i class="heatmap-level-1"></i><i class="heatmap-level-2"></i><i class="heatmap-level-3"></i><i class="heatmap-level-4"></i>
+                                        <span id="heatmapMoreLabel">More</span>
+                                    </div>
+                                </footer>
+                            </div>
+                        </section>
                     </div>
-                    <div class="heatmap-year-controls" aria-label="Calendar year">
-                        <div class="heatmap-year-picker">
-                            <button id="heatmapPreviousYear" type="button" aria-label="Previous year">‹</button>
-                            <strong id="heatmapYear"></strong>
-                            <button id="heatmapNextYear" type="button" aria-label="Next year">›</button>
-                        </div>
-                        <button id="heatmapVisibilityToggle" class="heatmap-visibility-toggle" type="button" aria-controls="heatmapContent" aria-expanded="true">
-                            <span class="heatmap-toggle-icon" aria-hidden="true"></span>
-                            <span class="heatmap-toggle-label">Hide</span>
-                        </button>
-                    </div>
-                    <div class="heatmap-collapsed-summary" aria-hidden="true">
-                        <strong id="heatmapCollapsedDays">0</strong>
-                        <span id="heatmapCollapsedDaysLabel">active days</span>
-                    </div>
-                </header>
-                <div id="heatmapContent">
-                    <div class="heatmap-summary" aria-live="polite">
-                        <div><strong id="heatmapActiveDays">0</strong><span id="heatmapActiveDaysLabel">active days</span></div>
-                        <div><strong id="heatmapCompletions">0</strong><span id="heatmapCompletionsLabel">habits completed</span></div>
-                    </div>
-                    <div class="heatmap-scroll" tabindex="0" aria-label="Scrollable yearly activity calendar">
-                        <div class="heatmap-calendar">
-                            <div id="heatmapMonths" class="heatmap-months" aria-hidden="true"></div>
-                            <div id="heatmapWeekdays" class="heatmap-weekdays" aria-hidden="true"></div>
-                            <div id="habitHeatmap" class="habit-heatmap" role="grid" aria-label="Habit activity by day"></div>
-                        </div>
-                    </div>
-                    <footer class="heatmap-footer">
-                        <p id="heatmapHistoryNote">Activity is recorded from the day tracking began.</p>
-                        <div class="heatmap-legend" aria-label="Activity legend">
-                            <span id="heatmapLessLabel">Less</span>
-                            <i class="heatmap-level-0"></i><i class="heatmap-level-1"></i><i class="heatmap-level-2"></i><i class="heatmap-level-3"></i><i class="heatmap-level-4"></i>
-                            <span id="heatmapMoreLabel">More</span>
-                        </div>
-                    </footer>
                 </div>
             </section>
 

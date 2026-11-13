@@ -1288,6 +1288,7 @@ document.querySelectorAll("[data-language]").forEach(button => {
     button.addEventListener("click", () => {
         setAppLanguage(button.dataset.language);
         updateHeaderClock();
+        renderWeeklySummary();
         renderHabitHeatmap();
         renderCalendar();
         renderQuestBoard();
@@ -2217,56 +2218,189 @@ function createHabit() {
 ===================================================== */
 
 let heatmapYear = new Date().getFullYear();
-let heatmapCollapsed = false;
+let progressDisclosureExpanded = false;
+let progressAnimationFrame = null;
+let progressAnimationTimer = null;
 try {
-    heatmapCollapsed = localStorage.getItem("doyourstreak-heatmap-hidden") === "true";
+    progressDisclosureExpanded = localStorage.getItem("doyourstreak-progress-expanded") === "true";
 } catch (error) {
-    console.error("Could not read the activity calendar visibility setting.", error);
+    console.error("Could not read the progress panel visibility setting.", error);
 }
 
 const heatmapTranslations = {
     en: {
         eyebrow: "YEAR IN REVIEW", title: "Activity calendar", description: "Your habit activity, day by day.",
         activeDays: "active days", completions: "habits completed", note: "Activity is recorded from the day tracking began.",
-        less: "Less", more: "More", previous: "Previous year", next: "Next year", hide: "Hide calendar", show: "Show calendar",
+        less: "Less", more: "More", previous: "Previous year", next: "Next year",
         dayCount: count => `${count} ${count === 1 ? "habit completed" : "habits completed"}`
     },
     id: {
         eyebrow: "RINGKASAN TAHUNAN", title: "Kalender aktivitas", description: "Aktivitas habit dari hari ke hari.",
         activeDays: "hari aktif", completions: "habit selesai", note: "Aktivitas tercatat sejak pelacakan dimulai.",
-        less: "Sedikit", more: "Banyak", previous: "Tahun sebelumnya", next: "Tahun berikutnya", hide: "Sembunyikan kalender", show: "Tampilkan kalender",
+        less: "Sedikit", more: "Banyak", previous: "Tahun sebelumnya", next: "Tahun berikutnya",
         dayCount: count => `${count} habit selesai`
     },
     zh: {
         eyebrow: "年度回顾", title: "活动日历", description: "查看每天的习惯完成情况。",
         activeDays: "活跃天数", completions: "已完成习惯", note: "从开始记录之日起显示活动。",
-        less: "少", more: "多", previous: "上一年", next: "下一年", hide: "隐藏日历", show: "显示日历",
+        less: "少", more: "多", previous: "上一年", next: "下一年",
         dayCount: count => `完成 ${count} 个习惯`
     },
     ru: {
         eyebrow: "ИТОГИ ГОДА", title: "Календарь активности", description: "История выполнения привычек по дням.",
         activeDays: "активных дней", completions: "выполнено привычек", note: "Активность записывается с начала отслеживания.",
-        less: "Меньше", more: "Больше", previous: "Предыдущий год", next: "Следующий год", hide: "Скрыть календарь", show: "Показать календарь",
+        less: "Меньше", more: "Больше", previous: "Предыдущий год", next: "Следующий год",
         dayCount: count => `Выполнено привычек: ${count}`
     }
 };
 
-function updateHeatmapVisibility() {
-    const content = document.getElementById("heatmapContent");
-    const toggle = document.getElementById("heatmapVisibilityToggle");
-    const card = document.querySelector(".habit-heatmap-card");
-    const collapsedSummary = card?.querySelector(".heatmap-collapsed-summary");
-    if (content) content.hidden = heatmapCollapsed;
-    card?.classList.toggle("is-collapsed", heatmapCollapsed);
-    collapsedSummary?.setAttribute("aria-hidden", String(!heatmapCollapsed));
-    if (toggle) {
-        const copy = heatmapTranslations[appLanguage] || heatmapTranslations.en;
-        toggle.setAttribute("aria-expanded", String(!heatmapCollapsed));
-        const label = toggle.querySelector(".heatmap-toggle-label");
-        if (label) label.textContent = heatmapCollapsed ? copy.show : copy.hide;
-        toggle.setAttribute("aria-label", heatmapCollapsed ? copy.show : copy.hide);
+const weeklySummaryTranslations = {
+    en: {
+        eyebrow: "THIS WEEK", title: "Weekly recap", completions: "habits done",
+        activeDays: "active days", bestDay: "best day", noActivity: "No activity yet",
+        showProgress: "SHOW PROGRESS", hideProgress: "HIDE PROGRESS",
+        dayCount: count => `${count} ${count === 1 ? "habit completed" : "habits completed"}`
+    },
+    id: {
+        eyebrow: "MINGGU INI", title: "Ringkasan mingguan", completions: "habit selesai",
+        activeDays: "hari aktif", bestDay: "hari terbaik", noActivity: "Belum ada aktivitas",
+        showProgress: "LIHAT PROGRES", hideProgress: "SEMBUNYIKAN PROGRES",
+        dayCount: count => `${count} habit selesai`
+    },
+    zh: {
+        eyebrow: "本周", title: "每周回顾", completions: "已完成习惯",
+        activeDays: "活跃天数", bestDay: "最佳日期", noActivity: "暂无活动",
+        showProgress: "查看进度", hideProgress: "隐藏进度",
+        dayCount: count => `完成 ${count} 个习惯`
+    },
+    ru: {
+        eyebrow: "ЭТА НЕДЕЛЯ", title: "Итоги недели", completions: "выполнено привычек",
+        activeDays: "активных дней", bestDay: "лучший день", noActivity: "Пока нет активности",
+        showProgress: "ПОКАЗАТЬ ПРОГРЕСС", hideProgress: "СКРЫТЬ ПРОГРЕСС",
+        dayCount: count => `Выполнено привычек: ${count}`
+    }
+};
+
+function renderWeeklySummary() {
+    const chart = document.getElementById("weeklySummaryChart");
+    if (!chart) return;
+
+    const copy = weeklySummaryTranslations[appLanguage] || weeklySummaryTranslations.en;
+    const setText = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value;
+    };
+    setText("weeklySummaryEyebrow", copy.eyebrow);
+    setText("weeklySummaryTitle", copy.title);
+    setText("weeklySummaryCompletionsLabel", copy.completions);
+    setText("weeklySummaryActiveDaysLabel", copy.activeDays);
+    setText("weeklySummaryBestDayLabel", copy.bestDay);
+    const disclosureLabel = document.getElementById("progressDisclosureLabel");
+    if (disclosureLabel) {
+        disclosureLabel.textContent = progressDisclosureExpanded ? copy.hideProgress : copy.showProgress;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (today.getDay() + 6) % 7);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    const locale = getAppLocale();
+    const rangeFormat = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" });
+    setText("weeklySummaryRange", `${rangeFormat.format(monday)} – ${rangeFormat.format(sunday)}`);
+
+    const activity = window.DYSFeatures?.getActivityByDate?.() || {};
+    const dates = Array.from({ length: 7 }, (_, index) => {
+        const date = new Date(monday);
+        date.setDate(monday.getDate() + index);
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        const ids = activity[key]?.habitIds;
+        return { date, count: Array.isArray(ids) ? new Set(ids.map(String)).size : 0 };
+    });
+    const total = dates.reduce((sum, day) => sum + day.count, 0);
+    const activeDays = dates.filter(day => day.count > 0).length;
+    const best = dates.reduce((top, day) => day.count > top.count ? day : top, { count: 0 });
+    const maxCount = Math.max(1, ...dates.map(day => day.count));
+    const weekdayFormat = new Intl.DateTimeFormat(locale, { weekday: "short" });
+    const dateFormat = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" });
+
+    setText("weeklySummaryCompletions", new Intl.NumberFormat(locale).format(total));
+    setText("weeklySummaryActiveDays", `${activeDays} / 7`);
+    setText("weeklySummaryBestDay", best.count ? weekdayFormat.format(best.date) : "—");
+    chart.setAttribute("aria-label", total ? copy.title : copy.noActivity);
+    chart.replaceChildren();
+
+    dates.forEach(({ date, count }, index) => {
+        const item = document.createElement("div");
+        item.className = "weekly-summary-day";
+        item.style.setProperty("--day-index", String(index));
+        item.setAttribute("role", "listitem");
+        item.setAttribute("aria-label", `${weekdayFormat.format(date)} ${dateFormat.format(date)}: ${copy.dayCount(count)}`);
+
+        const amount = document.createElement("span");
+        amount.className = "weekly-summary-day-count";
+        amount.textContent = String(count);
+
+        const track = document.createElement("span");
+        track.className = "weekly-summary-bar-track";
+        track.setAttribute("aria-hidden", "true");
+        const bar = document.createElement("span");
+        bar.className = "weekly-summary-bar";
+        bar.style.height = `${count ? Math.max(12, count / maxCount * 100) : 6}%`;
+        track.append(bar);
+
+        const label = document.createElement("span");
+        label.className = "weekly-summary-day-label";
+        label.textContent = weekdayFormat.format(date);
+        const dayNumber = document.createElement("span");
+        dayNumber.className = "weekly-summary-date";
+        dayNumber.textContent = String(date.getDate());
+
+        item.append(amount, track, label, dayNumber);
+        chart.append(item);
+    });
+}
+
+function setProgressDisclosure(expanded, persist = false, animate = false) {
+    const disclosure = document.getElementById("progressDisclosure");
+    const content = document.getElementById("progressDisclosureContent");
+    const toggle = document.getElementById("progressDisclosureToggle");
+    const label = document.getElementById("progressDisclosureLabel");
+    const copy = weeklySummaryTranslations[appLanguage] || weeklySummaryTranslations.en;
+
+    progressDisclosureExpanded = expanded;
+    disclosure?.classList.toggle("is-expanded", expanded);
+    disclosure?.classList.remove("is-animating");
+    window.cancelAnimationFrame(progressAnimationFrame);
+    window.clearTimeout(progressAnimationTimer);
+    if (content) {
+        content.setAttribute("aria-hidden", String(!expanded));
+        content.inert = !expanded;
+    }
+    if (toggle) toggle.setAttribute("aria-expanded", String(expanded));
+    if (label) label.textContent = expanded ? copy.hideProgress : copy.showProgress;
+
+    if (expanded && animate && disclosure) {
+        progressAnimationFrame = window.requestAnimationFrame(() => {
+            if (!progressDisclosureExpanded) return;
+            disclosure.classList.add("is-animating");
+            progressAnimationTimer = window.setTimeout(() => disclosure.classList.remove("is-animating"), 1200);
+        });
+    }
+
+    if (!persist) return;
+    try {
+        localStorage.setItem("doyourstreak-progress-expanded", String(expanded));
+    } catch (error) {
+        console.error("Could not save the progress panel visibility setting.", error);
     }
 }
+
+document.getElementById("progressDisclosureToggle")?.addEventListener("click", () => {
+    setProgressDisclosure(!progressDisclosureExpanded, true, true);
+});
+setProgressDisclosure(progressDisclosureExpanded);
 
 function renderHabitHeatmap() {
     const grid = document.getElementById("habitHeatmap");
@@ -2287,8 +2421,6 @@ function renderHabitHeatmap() {
     setText("heatmapHistoryNote", copy.note);
     setText("heatmapLessLabel", copy.less);
     setText("heatmapMoreLabel", copy.more);
-    updateHeatmapVisibility();
-
     const yearLabel = document.getElementById("heatmapYear");
     if (yearLabel) yearLabel.textContent = String(heatmapYear);
     const previousButton = document.getElementById("heatmapPreviousYear");
@@ -2320,9 +2452,6 @@ function renderHabitHeatmap() {
 
     setText("heatmapActiveDays", new Intl.NumberFormat(getAppLocale()).format(activeDays));
     setText("heatmapCompletions", new Intl.NumberFormat(getAppLocale()).format(completions));
-    setText("heatmapCollapsedDays", new Intl.NumberFormat(getAppLocale()).format(activeDays));
-    setText("heatmapCollapsedDaysLabel", copy.activeDays);
-
     monthLabels.replaceChildren();
     monthLabels.style.gridTemplateColumns = `repeat(${weekCount}, var(--heatmap-cell-size))`;
     for (let month = 0; month < 12; month++) {
@@ -2354,6 +2483,8 @@ function renderHabitHeatmap() {
             cell.className = "heatmap-day";
             cell.style.gridColumn = String(week + 1);
             cell.style.gridRow = String(weekday + 1);
+            cell.style.setProperty("--heatmap-column", String(week));
+            cell.style.setProperty("--heatmap-row", String(weekday));
 
             if (date.getFullYear() !== heatmapYear) {
                 cell.classList.add("heatmap-day-outside");
@@ -2381,19 +2512,10 @@ document.getElementById("heatmapNextYear")?.addEventListener("click", () => {
     heatmapYear++;
     renderHabitHeatmap();
 });
-document.getElementById("heatmapVisibilityToggle")?.addEventListener("click", () => {
-    heatmapCollapsed = !heatmapCollapsed;
-    updateHeatmapVisibility();
-    try {
-        localStorage.setItem("doyourstreak-heatmap-hidden", String(heatmapCollapsed));
-    } catch (error) {
-        console.error("Could not save the activity calendar visibility setting.", error);
-    }
-});
-
 function renderHabits() {
 
     resetExpiredHabits();
+    renderWeeklySummary();
     renderHabitHeatmap();
     habitList.innerHTML = "";
 
