@@ -41,6 +41,26 @@ let activeProfileId = user?.profileId || null;
 
 const appTranslations = {
     en: {
+        "ARCADE · NEW": "ARCADE · NEW",
+        "NYAWA": "LIVES",
+        "COMBO": "COMBO",
+        "MULAI MAIN": "START",
+        "MULAI ULANG": "RESTART",
+        "◀ KIRI": "◀ LEFT",
+        "KANAN ▶": "RIGHT ▶",
+        "Gerak ke kiri": "Move left",
+        "Gerak ke kanan": "Move right",
+        "Snack Rush: catch food and avoid anomalies": "Snack Rush: catch food and avoid anomalies",
+        "Tangkap makanan, hindari anomali, dan pecahkan rekor!": "Catch food, dodge anomalies, and beat your best!",
+        "Gerakkan Chef Cat, tangkap makanan, dan hindari anomali! Gunakan ← → / A D atau sentuh arena.": "Move Chef Cat, catch food, and dodge anomalies! Use ← → / A D or touch the arena.",
+        "Tangkap makanan untuk skor dan combo. Hati-hati, anomali mengurangi nyawa!": "Catch food to score and build combos. Watch out: anomalies cost a life!",
+        "Gas! Tangkap makanan sebanyak mungkin dan jangan sampai kena anomali.": "Go! Catch as much food as you can without getting hit by an anomaly.",
+        "Aduh, kena anomali! Hindari yang merah.": "Ouch, an anomaly got you! Avoid the red ones.",
+        "Nice! Terus kumpulkan makanan.": "Nice! Keep collecting food.",
+        "COMBO x{combo}! Makin kencang, makin banyak makanan!": "COMBO x{combo}! Keep it going!",
+        "COMBO x{combo}! +20 KOIN!": "COMBO x{combo}! +20 COINS!",
+        "Game selesai! Skor {score}. Tekan MAIN LAGI untuk coba pecahkan rekor.": "Game over! Score: {score}. Press PLAY AGAIN to beat your best.",
+        "CATCH THE GOODIES · DODGE THE GLITCH": "CATCH THE GOODIES · DODGE THE GLITCH",
         "PENCAPAIAN & QUEST": "ACHIEVEMENTS & QUESTS",
         "Pantau progres, raih hadiah, dan bangun rutinitas.": "Track your progress, earn rewards, and build a routine.",
         "PENCAPAIAN": "ACHIEVEMENTS",
@@ -245,6 +265,60 @@ const appTranslations = {
         "Geser capit dan cari 3 karakter di antara 60 anomaly yang berjatuhan.": "Move the claw and find 3 characters among 60 falling anomalies."
     },
     ru: {
+        "Settings": "Настройки",
+        "SETTING": "НАСТРОЙКИ",
+        "More options": "Дополнительные настройки",
+        "Language": "Язык",
+        "Choose the language used throughout the app.": "Выберите язык для всего приложения.",
+        "Choose language": "Выбрать язык",
+        "Appearance": "Оформление",
+        "Customize how the app looks.": "Настройте внешний вид приложения.",
+        "Dark mode": "Тёмная тема",
+        "Use a darker color theme across the app.": "Использовать тёмную тему во всём приложении.",
+        "Profile": "Профиль",
+        "Your current player details.": "Данные текущего игрока.",
+        "Profile photo": "Фото профиля",
+        "Choose a profile photo": "Выбрать фото профиля",
+        "Attach photo": "Добавить фото",
+        "Remove": "Удалить",
+        "Name": "Имя",
+        "Streak": "Серия",
+        "days": "дн.",
+        "Password": "Пароль",
+        "Not saved — secure sign-in is not connected yet.": "Не сохранён — защищённый вход пока не подключён.",
+        "Close more options": "Закрыть настройки",
+        "How to play": "Как играть",
+        "Add a habit, then mark it done to earn XP and build your streak. Your progress is saved in this browser.": "Добавьте привычку и отмечайте её выполнение, чтобы получать XP и поддерживать серию. Прогресс хранится в этом браузере.",
+        "Log out": "Выйти",
+        "Dark mode preference could not be saved.": "Не удалось сохранить настройку тёмной темы.",
+        "Choose an image file to use as your photo.": "Выберите файл изображения для фото.",
+        "Choose an image smaller than 10 MB.": "Выберите изображение размером менее 10 МБ.",
+        "Profile photo saved on this device.": "Фото профиля сохранено на этом устройстве.",
+        "Could not save this photo. Try another image or free up browser storage.": "Не удалось сохранить фото. Попробуйте другое изображение или освободите место в браузере.",
+        "Profile photo removed.": "Фото профиля удалено.",
+        "Could not update your profile. Please try again.": "Не удалось обновить профиль. Попробуйте ещё раз.",
+        "ARCADE · NEW": "АРКАДА · НОВИНКА",
+        "🍕 SNACK RUSH": "🍕 SNACK RUSH",
+        "NYAWA": "ЖИЗНИ",
+        "COMBO": "КОМБО",
+        "MULAI MAIN": "НАЧАТЬ",
+        "MULAI ULANG": "НАЧАТЬ СНОВА",
+        "◀ KIRI": "◀ ВЛЕВО",
+        "KANAN ▶": "ВПРАВО ▶",
+        "Gerak ke kiri": "Двигаться влево",
+        "Gerak ke kanan": "Двигаться вправо",
+        "Snack Rush: catch food and avoid anomalies": "Snack Rush: ловите еду и избегайте аномалий",
+        "← MENU GAME": "← В МЕНЮ ИГР",
+        "Tangkap makanan, hindari anomali, dan pecahkan rekor!": "Ловите еду, избегайте аномалий и побейте рекорд!",
+        "Gerakkan Chef Cat, tangkap makanan, dan hindari anomali! Gunakan ← → / A D atau sentuh arena.": "Управляйте котом-поваром, ловите еду и избегайте аномалий! Используйте ← → / A D или касайтесь игрового поля.",
+        "Tangkap makanan untuk skor dan combo. Hati-hati, anomali mengurangi nyawa!": "Ловите еду, чтобы набирать очки и комбо. Осторожно: аномалии отнимают жизни!",
+        "Gas! Tangkap makanan sebanyak mungkin dan jangan sampai kena anomali.": "Вперёд! Ловите как можно больше еды и не попадитесь аномалии.",
+        "Aduh, kena anomali! Hindari yang merah.": "Ой, аномалия! Избегайте красных объектов.",
+        "Nice! Terus kumpulkan makanan.": "Отлично! Продолжайте собирать еду.",
+        "COMBO x{combo}! Makin kencang, makin banyak makanan!": "КОМБО x{combo}! Чем быстрее, тем больше еды!",
+        "COMBO x{combo}! +20 KOIN!": "КОМБО x{combo}! +20 МОНЕТ!",
+        "Game selesai! Skor {score}. Tekan MAIN LAGI untuk coba pecahkan rekor.": "Игра окончена! Счёт: {score}. Нажмите «ИГРАТЬ СНОВА», чтобы побить рекорд.",
+        "CATCH THE GOODIES · DODGE THE GLITCH": "ЛОВИТЕ УГОЩЕНИЯ · ИЗБЕГАЙТЕ АНОМАЛИЙ",
         "Welcome!": "Добро пожаловать!", "Create your account and start your journey.": "Создайте аккаунт и начните свой путь.",
         "YOUR EMAIL": "ВАША ПОЧТА", "PASSWORD": "ПАРОЛЬ", "CONFIRM PASSWORD": "ПОДТВЕРДИТЕ ПАРОЛЬ", "CONTINUE": "ПРОДОЛЖИТЬ",
         "OR CONTINUE WITH": "ИЛИ ПРОДОЛЖИТЬ С ПОМОЩЬЮ", "Enter your email...": "Введите адрес электронной почты...", "At least 8 characters": "Не менее 8 символов",
@@ -375,10 +449,21 @@ const appTranslations = {
     },
     id: {
         "Settings": "Pengaturan",
+        "SETTING": "PENGATURAN",
+        "Home": "Beranda",
+        "Catalog": "Katalog",
+        "Habit": "Kebiasaan",
+        "Events": "Acara",
+        "Games": "Permainan",
+        "Achievements": "Pencapaian",
         "More options": "Opsi lainnya",
         "Language": "Bahasa",
         "Choose the language used throughout the app.": "Pilih bahasa yang digunakan di seluruh aplikasi.",
         "Choose language": "Pilih bahasa",
+        "Appearance": "Tampilan",
+        "Customize how the app looks.": "Atur tampilan aplikasi.",
+        "Dark mode": "Mode gelap",
+        "Use a darker color theme across the app.": "Gunakan tema gelap di seluruh aplikasi.",
         "Profile": "Profil",
         "Your current player details.": "Detail pemain saat ini.",
         "Profile photo": "Foto profil",
@@ -394,6 +479,35 @@ const appTranslations = {
         "Close more options": "Tutup opsi lainnya",
         "How to play": "Cara bermain",
         "Log out": "Keluar",
+        "Dark mode preference could not be saved.": "Pengaturan mode gelap tidak dapat disimpan.",
+        "Choose an image file to use as your photo.": "Pilih file gambar untuk dijadikan foto.",
+        "Choose an image smaller than 10 MB.": "Pilih gambar berukuran kurang dari 10 MB.",
+        "Profile photo saved on this device.": "Foto profil disimpan di perangkat ini.",
+        "Could not save this photo. Try another image or free up browser storage.": "Foto tidak dapat disimpan. Coba gambar lain atau kosongkan penyimpanan browser.",
+        "Profile photo removed.": "Foto profil dihapus.",
+        "Could not update your profile. Please try again.": "Profil tidak dapat diperbarui. Coba lagi.",
+        "ARCADE · NEW": "ARCADE · BARU",
+        "🍕 SNACK RUSH": "🍕 SNACK RUSH",
+        "NYAWA": "NYAWA",
+        "COMBO": "KOMBO",
+        "MULAI MAIN": "MULAI MAIN",
+        "MULAI ULANG": "MULAI ULANG",
+        "← MENU GAME": "← MENU GAME",
+        "◀ KIRI": "◀ KIRI",
+        "KANAN ▶": "KANAN ▶",
+        "Gerak ke kiri": "Gerak ke kiri",
+        "Gerak ke kanan": "Gerak ke kanan",
+        "Snack Rush: catch food and avoid anomalies": "Snack Rush: tangkap makanan dan hindari anomali",
+        "Tangkap makanan, hindari anomali, dan pecahkan rekor!": "Tangkap makanan, hindari anomali, dan pecahkan rekor!",
+        "Gerakkan Chef Cat, tangkap makanan, dan hindari anomali! Gunakan ← → / A D atau sentuh arena.": "Gerakkan Chef Cat, tangkap makanan, dan hindari anomali! Gunakan ← → / A D atau sentuh arena.",
+        "Tangkap makanan untuk skor dan combo. Hati-hati, anomali mengurangi nyawa!": "Tangkap makanan untuk skor dan combo. Hati-hati, anomali mengurangi nyawa!",
+        "Gas! Tangkap makanan sebanyak mungkin dan jangan sampai kena anomali.": "Gas! Tangkap makanan sebanyak mungkin dan jangan sampai kena anomali.",
+        "Aduh, kena anomali! Hindari yang merah.": "Aduh, kena anomali! Hindari yang merah.",
+        "Nice! Terus kumpulkan makanan.": "Nice! Terus kumpulkan makanan.",
+        "COMBO x{combo}! Makin kencang, makin banyak makanan!": "COMBO x{combo}! Makin kencang, makin banyak makanan!",
+        "COMBO x{combo}! +20 KOIN!": "COMBO x{combo}! +20 KOIN!",
+        "Game selesai! Skor {score}. Tekan MAIN LAGI untuk coba pecahkan rekor.": "Game selesai! Skor {score}. Tekan MAIN LAGI untuk coba pecahkan rekor.",
+        "CATCH THE GOODIES · DODGE THE GLITCH": "TANGKAP MAKANAN · HINDARI ANOMALI",
         "PENCAPAIAN": "PENCAPAIAN",
         "QUEST HARIAN": "QUEST HARIAN",
         "QUEST MINGGUAN": "QUEST MINGGUAN",
@@ -735,10 +849,21 @@ const appTranslations = {
     },
     zh: {
         "Settings": "设置",
+        "SETTING": "设置",
+        "Home": "主页",
+        "Catalog": "目录",
+        "Habit": "习惯",
+        "Events": "活动",
+        "Games": "游戏",
+        "Achievements": "成就",
         "More options": "更多选项",
         "Language": "语言",
         "Choose the language used throughout the app.": "选择整个应用使用的语言。",
         "Choose language": "选择语言",
+        "Appearance": "外观",
+        "Customize how the app looks.": "自定义应用外观。",
+        "Dark mode": "深色模式",
+        "Use a darker color theme across the app.": "在整个应用中使用深色主题。",
         "Profile": "个人资料",
         "Your current player details.": "当前玩家资料。",
         "Profile photo": "个人资料照片",
@@ -754,6 +879,35 @@ const appTranslations = {
         "Close more options": "关闭更多选项",
         "How to play": "玩法说明",
         "Log out": "退出登录",
+        "Dark mode preference could not be saved.": "无法保存深色模式设置。",
+        "Choose an image file to use as your photo.": "请选择图片文件作为头像。",
+        "Choose an image smaller than 10 MB.": "请选择小于 10 MB 的图片。",
+        "Profile photo saved on this device.": "头像已保存在此设备上。",
+        "Could not save this photo. Try another image or free up browser storage.": "无法保存头像。请换一张图片或清理浏览器存储空间。",
+        "Profile photo removed.": "头像已移除。",
+        "Could not update your profile. Please try again.": "无法更新个人资料，请重试。",
+        "ARCADE · NEW": "街机 · 新",
+        "🍕 SNACK RUSH": "🍕 零食冲刺",
+        "NYAWA": "生命",
+        "COMBO": "连击",
+        "MULAI MAIN": "开始游戏",
+        "MULAI ULANG": "重新开始",
+        "← MENU GAME": "← 游戏菜单",
+        "◀ KIRI": "◀ 左",
+        "KANAN ▶": "右 ▶",
+        "Gerak ke kiri": "向左移动",
+        "Gerak ke kanan": "向右移动",
+        "Snack Rush: catch food and avoid anomalies": "Snack Rush：接住食物并躲开异常",
+        "Tangkap makanan, hindari anomali, dan pecahkan rekor!": "接住食物，躲开异常，刷新你的纪录！",
+        "Gerakkan Chef Cat, tangkap makanan, dan hindari anomali! Gunakan ← → / A D atau sentuh arena.": "移动厨师猫，接住食物并躲开异常！使用 ← → / A D 或触摸游戏区域。",
+        "Tangkap makanan untuk skor dan combo. Hati-hati, anomali mengurangi nyawa!": "接住食物获得分数和连击。小心，碰到异常会失去生命！",
+        "Gas! Tangkap makanan sebanyak mungkin dan jangan sampai kena anomali.": "开始！尽可能多接住食物，别被异常击中。",
+        "Aduh, kena anomali! Hindari yang merah.": "糟糕，碰到异常了！躲开红色物体。",
+        "Nice! Terus kumpulkan makanan.": "不错！继续收集食物。",
+        "COMBO x{combo}! Makin kencang, makin banyak makanan!": "连击 x{combo}！继续保持！",
+        "COMBO x{combo}! +20 KOIN!": "连击 x{combo}！+20 金币！",
+        "Game selesai! Skor {score}. Tekan MAIN LAGI untuk coba pecahkan rekor.": "游戏结束！得分：{score}。点击“再玩一次”挑战纪录。",
+        "CATCH THE GOODIES · DODGE THE GLITCH": "接住美食 · 躲开异常",
         "PENCAPAIAN": "成就",
         "QUEST HARIAN": "每日任务",
         "QUEST MINGGUAN": "每周任务",
@@ -1148,7 +1302,6 @@ function translateAppContent(root = document.body) {
     while (walker.nextNode()) textNodes.push(walker.currentNode);
 
     textNodes.forEach(node => {
-        if (node.parentElement?.closest("#settingsPage")) return;
         if (node.parentElement?.closest("#playerName, #headerName")) return;
         if (node.parentElement?.closest("#habitList .habit-name, #habitList .habit-time, #habitList .habit-note-entry, .event-chat-message, #localLeaderboard .leaderboard-player strong")) return;
         if (!originalTextNodes.has(node)) originalTextNodes.set(node, node.textContent);
@@ -5637,6 +5790,9 @@ const backFromClaw = document.getElementById("backFromClaw");
 const openCatBike = document.getElementById("openCatBike");
 const catBikeGame = document.getElementById("catBikeGame");
 const backFromCatBike = document.getElementById("backFromCatBike");
+const openSnackRush = document.getElementById("openSnackRush");
+const snackRushGame = document.getElementById("snackRushGame");
+const backFromSnackRush = document.getElementById("backFromSnackRush");
 
 
 function showGameMenu() {
@@ -5650,6 +5806,7 @@ function showGameMenu() {
     flappyGame?.classList.add("hidden");
     clawGame?.classList.add("hidden");
     catBikeGame?.classList.add("hidden");
+    snackRushGame?.classList.add("hidden");
     clawGame?.closest(".game-page")?.classList.remove("claw-active");
     gamePage?.classList.remove("claw-active");
 
@@ -5657,6 +5814,7 @@ function showGameMenu() {
     stopFlappyGame();
     stopClawGame();
     stopCatBikeGame();
+    stopSnackRushGame();
 
 }
 
@@ -5759,6 +5917,18 @@ openCatBike?.addEventListener("click", () => {
     startCatBikeScreen();
 });
 backFromCatBike?.addEventListener("click", showGameMenu);
+openSnackRush?.addEventListener("click", () => {
+    markGamePlayed("snack-rush");
+    gameMenu?.classList.add("hidden");
+    [fightingGame, dinoGame, flappyGame, clawGame, catBikeGame].forEach(screen => screen?.classList.add("hidden"));
+    snackRushGame?.classList.remove("hidden");
+    stopDinoGame();
+    stopFlappyGame();
+    stopClawGame();
+    stopCatBikeGame();
+    startSnackRushScreen();
+});
+backFromSnackRush?.addEventListener("click", showGameMenu);
 /* =====================================================
    FIGHTING GAME
 ===================================================== */
@@ -7877,6 +8047,289 @@ let catBikeTouchStartX = null;
 catBikeCanvas?.addEventListener("pointerdown", event => { catBikeTouchStartX = event.clientX; });
 catBikeCanvas?.addEventListener("pointerup", event => { if (catBikeTouchStartX === null) return; const delta = event.clientX - catBikeTouchStartX; if (Math.abs(delta) > 24) catBikeSteer(delta < 0 ? -1 : 1); catBikeTouchStartX = null; });
 document.addEventListener("keydown",event=>{if(catBikeGame?.classList.contains("hidden"))return;if(["ArrowLeft","KeyA"].includes(event.code)){event.preventDefault();catBikeSteer(-1);}if(["ArrowRight","KeyD"].includes(event.code)){event.preventDefault();catBikeSteer(1);}});
+
+/* =====================================================
+   SNACK RUSH — catch food, dodge anomalies
+===================================================== */
+const snackRushCanvas = document.getElementById("snackRushCanvas");
+const snackRushCtx = snackRushCanvas?.getContext("2d");
+const snackRushStatus = document.getElementById("snackRushStatus");
+const snackRushScoreLabel = document.getElementById("snackRushScore");
+const snackRushBestLabel = document.getElementById("snackRushBest");
+const snackRushLivesLabel = document.getElementById("snackRushLives");
+const snackRushComboLabel = document.getElementById("snackRushCombo");
+const snackRushStartButton = document.getElementById("startSnackRush");
+const snackRushBestKey = "doyourstreak-snack-rush-best";
+const snackRushChef = new Image();
+snackRushChef.src = "Cheffcat.png";
+const snackRushFoods = ["Buritoscat.png", "KFCcat.png", "Pizzacat.png", "Pizzasaugecat.png"].map(src => {
+    const image = new Image();
+    image.src = src;
+    return image;
+});
+const snackRushAnomaly = new Image();
+snackRushAnomaly.src = "anomalis.png";
+let snackRushBest = Number(localStorage.getItem(snackRushBestKey)) || 0;
+let snackRushScore = 0;
+let snackRushLives = 3;
+let snackRushCombo = 0;
+let snackRushPlayerX = 400;
+let snackRushObjects = [];
+let snackRushFrame = 0;
+let snackRushLast = 0;
+let snackRushSpawn = 0;
+let snackRushRunning = false;
+let snackRushLeftHeld = false;
+let snackRushRightHeld = false;
+let snackRushPointerHeld = false;
+
+if (snackRushBestLabel) snackRushBestLabel.textContent = snackRushBest;
+
+function stopSnackRushGame() {
+    snackRushRunning = false;
+    if (snackRushFrame) cancelAnimationFrame(snackRushFrame);
+    snackRushFrame = 0;
+    snackRushLeftHeld = false;
+    snackRushRightHeld = false;
+    snackRushPointerHeld = false;
+}
+
+function updateSnackRushScore() {
+    if (snackRushScoreLabel) snackRushScoreLabel.textContent = snackRushScore;
+    if (snackRushBestLabel) snackRushBestLabel.textContent = snackRushBest;
+    if (snackRushLivesLabel) snackRushLivesLabel.textContent = "❤️".repeat(snackRushLives) + "🖤".repeat(3 - snackRushLives);
+    if (snackRushComboLabel) snackRushComboLabel.textContent = `x${snackRushCombo}`;
+}
+
+function drawSnackRush() {
+    if (!snackRushCtx || !snackRushCanvas) return;
+    const c = snackRushCtx;
+    const w = snackRushCanvas.width;
+    const h = snackRushCanvas.height;
+    const kitchen = c.createLinearGradient(0, 0, 0, h);
+    kitchen.addColorStop(0, "#26164a");
+    kitchen.addColorStop(.55, "#542864");
+    kitchen.addColorStop(1, "#ed795c");
+    c.fillStyle = kitchen;
+    c.fillRect(0, 0, w, h);
+
+    c.save();
+    c.globalAlpha = .17;
+    for (let x = 0; x < w; x += 100) {
+        c.fillStyle = x % 200 === 0 ? "#ffd56d" : "#b9edff";
+        c.fillRect(x + 16, 54, 68, 172);
+        c.fillStyle = "#26164a";
+        c.fillRect(x + 23, 61, 54, 158);
+    }
+    c.globalAlpha = .11;
+    c.strokeStyle = "#fff";
+    c.lineWidth = 2;
+    for (let y = 280; y < h; y += 42) {
+        c.beginPath();
+        c.moveTo(0, y);
+        c.lineTo(w, y);
+        c.stroke();
+    }
+    c.restore();
+
+    c.fillStyle = "rgba(255, 225, 160, .18)";
+    c.fillRect(0, 374, w, 146);
+    c.fillStyle = "rgba(30, 13, 48, .26)";
+    c.fillRect(0, 374, w, 8);
+
+    for (const item of snackRushObjects) {
+        const image = item.kind === "anomaly" ? snackRushAnomaly : snackRushFoods[item.food];
+        c.save();
+        c.translate(item.x, item.y);
+        c.rotate(Math.sin(item.phase) * .12);
+        c.shadowColor = item.kind === "anomaly" ? "#ff325d" : "#ffe28a";
+        c.shadowBlur = 20;
+        if (image?.complete && image.naturalWidth) {
+            const size = item.kind === "anomaly" ? 78 : 74;
+            c.drawImage(image, -size / 2, -size / 2, size, size);
+        } else {
+            c.fillStyle = item.kind === "anomaly" ? "#ff315d" : "#ffe28a";
+            c.beginPath();
+            c.arc(0, 0, 28, 0, Math.PI * 2);
+            c.fill();
+        }
+        c.restore();
+    }
+
+    c.save();
+    c.shadowColor = "#ffe28a";
+    c.shadowBlur = 24;
+    if (snackRushChef.complete && snackRushChef.naturalWidth) {
+        c.drawImage(snackRushChef, snackRushPlayerX - 60, 386, 120, 124);
+    } else {
+        c.font = "76px sans-serif";
+        c.textAlign = "center";
+        c.fillText("👨‍🍳", snackRushPlayerX, 482);
+    }
+    c.restore();
+
+    if (!snackRushRunning && snackRushScore === 0) {
+        c.save();
+        c.textAlign = "center";
+        c.font = "900 48px 'Baloo 2', sans-serif";
+        c.lineWidth = 7;
+        c.strokeStyle = "#28163f";
+        c.fillStyle = "#fff5cf";
+        c.strokeText("SNACK RUSH!", w / 2, 276);
+        c.fillText("SNACK RUSH!", w / 2, 276);
+        c.font = "700 20px 'Baloo 2', sans-serif";
+        c.fillStyle = "#fff";
+        c.fillText(window.translateAppText("CATCH THE GOODIES · DODGE THE GLITCH"), w / 2, 314);
+        c.restore();
+    }
+}
+
+function startSnackRushScreen() {
+    stopSnackRushGame();
+    snackRushScore = 0;
+    snackRushLives = 3;
+    snackRushCombo = 0;
+    snackRushPlayerX = 400;
+    snackRushObjects = [];
+    snackRushSpawn = 0;
+    updateSnackRushScore();
+    if (snackRushStatus) snackRushStatus.textContent = window.translateAppText("Tangkap makanan untuk skor dan combo. Hati-hati, anomali mengurangi nyawa!");
+    if (snackRushStartButton) snackRushStartButton.textContent = "MULAI MAIN";
+    drawSnackRush();
+}
+
+function startSnackRushGame() {
+    startSnackRushScreen();
+    snackRushRunning = true;
+    snackRushLast = performance.now();
+    if (snackRushStatus) snackRushStatus.textContent = window.translateAppText("Gas! Tangkap makanan sebanyak mungkin dan jangan sampai kena anomali.");
+    if (snackRushStartButton) snackRushStartButton.textContent = "MULAI ULANG";
+    snackRushFrame = requestAnimationFrame(snackRushLoop);
+}
+
+function endSnackRushGame() {
+    stopSnackRushGame();
+    snackRushBest = Math.max(snackRushBest, snackRushScore);
+    localStorage.setItem(snackRushBestKey, String(snackRushBest));
+    updateSnackRushScore();
+    if (snackRushStatus) snackRushStatus.textContent = window.translateAppText(
+        "Game selesai! Skor {score}. Tekan MAIN LAGI untuk coba pecahkan rekor.",
+        { score: snackRushScore }
+    );
+    if (snackRushStartButton) snackRushStartButton.textContent = "MAIN LAGI";
+    drawSnackRush();
+}
+
+function snackRushLoop(now) {
+    if (!snackRushRunning || snackRushGame?.classList.contains("hidden") || !gamePage?.classList.contains("active")) {
+        stopSnackRushGame();
+        return;
+    }
+    const dt = Math.min((now - snackRushLast) / 1000, .05);
+    snackRushLast = now;
+    if (snackRushLeftHeld) snackRushPlayerX -= 430 * dt;
+    if (snackRushRightHeld) snackRushPlayerX += 430 * dt;
+    snackRushPlayerX = Math.max(58, Math.min(snackRushCanvas.width - 58, snackRushPlayerX));
+    snackRushSpawn += dt;
+    const spawnEvery = Math.max(.34, .82 - snackRushScore / 900);
+    if (snackRushSpawn >= spawnEvery) {
+        snackRushSpawn = 0;
+        snackRushObjects.push({
+            x: 42 + Math.random() * (snackRushCanvas.width - 84),
+            y: -48,
+            kind: Math.random() < .22 ? "anomaly" : "food",
+            food: Math.floor(Math.random() * snackRushFoods.length),
+            phase: Math.random() * Math.PI * 2,
+            speed: 170 + Math.random() * 65 + Math.min(snackRushScore * .16, 130)
+        });
+    }
+
+    const playerHitBox = { left: snackRushPlayerX - 39, right: snackRushPlayerX + 39, top: 416, bottom: 488 };
+    const remaining = [];
+    for (const item of snackRushObjects) {
+        item.y += item.speed * dt;
+        item.phase += dt * 3;
+        const caught = Math.abs(item.x - snackRushPlayerX) < 70 && item.y > playerHitBox.top - 20 && item.y < playerHitBox.bottom;
+        if (caught) {
+            if (item.kind === "anomaly") {
+                snackRushLives -= 1;
+                snackRushCombo = 0;
+                if (snackRushStatus) snackRushStatus.textContent = window.translateAppText("Aduh, kena anomali! Hindari yang merah.");
+            } else {
+                snackRushCombo += 1;
+                snackRushScore += 10 + Math.min(snackRushCombo - 1, 10) * 2;
+                if (snackRushCombo % 30 === 0) {
+                    coins += 20;
+                    updateCoins();
+                    if (snackRushStatus) snackRushStatus.textContent = window.translateAppText(
+                        "COMBO x{combo}! +20 KOIN!",
+                        { combo: snackRushCombo }
+                    );
+                } else if (snackRushStatus) {
+                    snackRushStatus.textContent = snackRushCombo > 1
+                        ? window.translateAppText("COMBO x{combo}! Makin kencang, makin banyak makanan!", { combo: snackRushCombo })
+                        : window.translateAppText("Nice! Terus kumpulkan makanan.");
+                }
+            }
+            updateSnackRushScore();
+            if (snackRushLives <= 0) {
+                endSnackRushGame();
+                return;
+            }
+        } else if (item.y < snackRushCanvas.height + 56) {
+            remaining.push(item);
+        }
+    }
+    snackRushObjects = remaining;
+    drawSnackRush();
+    snackRushFrame = requestAnimationFrame(snackRushLoop);
+}
+
+function moveSnackRushPointer(event) {
+    if (!snackRushCanvas || !snackRushRunning) return;
+    const bounds = snackRushCanvas.getBoundingClientRect();
+    snackRushPlayerX = (event.clientX - bounds.left) * (snackRushCanvas.width / bounds.width);
+}
+
+snackRushStartButton?.addEventListener("click", startSnackRushGame);
+document.getElementById("snackRushLeft")?.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    snackRushLeftHeld = true;
+});
+document.getElementById("snackRushRight")?.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    snackRushRightHeld = true;
+});
+window.addEventListener("pointerup", () => {
+    snackRushLeftHeld = false;
+    snackRushRightHeld = false;
+    snackRushPointerHeld = false;
+});
+snackRushCanvas?.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    snackRushPointerHeld = true;
+    moveSnackRushPointer(event);
+});
+snackRushCanvas?.addEventListener("pointermove", event => {
+    if (snackRushPointerHeld) moveSnackRushPointer(event);
+});
+snackRushCanvas?.addEventListener("pointercancel", () => {
+    snackRushPointerHeld = false;
+});
+document.addEventListener("keydown", event => {
+    if (snackRushGame?.classList.contains("hidden")) return;
+    if (event.code === "ArrowLeft" || event.code === "KeyA") {
+        event.preventDefault();
+        snackRushLeftHeld = true;
+    } else if (event.code === "ArrowRight" || event.code === "KeyD") {
+        event.preventDefault();
+        snackRushRightHeld = true;
+    }
+});
+document.addEventListener("keyup", event => {
+    if (event.code === "ArrowLeft" || event.code === "KeyA") snackRushLeftHeld = false;
+    if (event.code === "ArrowRight" || event.code === "KeyD") snackRushRightHeld = false;
+});
 
 /* =====================================================
    CLAW MACHINE

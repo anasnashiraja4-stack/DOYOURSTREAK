@@ -720,6 +720,10 @@
                         <div class="game-card-icon"><img class="cat-bike-game-icon" src="iconcatbike.jpg" alt="Cat riding a motorcycle"></div>
                         <div><small>ENDLESS RIDE</small><h2>CAT BIKE</h2><p>Ride the sunny farm road and dodge cars and trucks!</p></div>
                     </button>
+                    <button id="openSnackRush" class="game-card" type="button">
+                        <div class="game-card-icon"><img class="snack-rush-game-icon" src="Cheffcat.png" alt="Chef cat"></div>
+                        <div><small>ARCADE · NEW</small><h2>SNACK RUSH</h2><p>Tangkap makanan, hindari anomali, dan pecahkan rekor!</p></div>
+                    </button>
                      <!-- Tombol kecil ESP32 -->
                      <div class="esp-connect-controls">
                         <button id="espConnectButton" class="esp-connect-button" type="button">🔌 CONNECT ESP32</button>
@@ -950,6 +954,28 @@
                     <div class="cat-bike-stage"><canvas id="catBikeCanvas" width="450" height="800" aria-label="Cat Bike endless road game"></canvas></div>
                     <p id="catBikeStatus" class="game-status">Four lanes! Swipe or use ← → / A / D. Traffic can come from either end.</p>
                     <div class="cat-bike-controls"><button id="catBikeLeft" class="game-action-button" type="button" aria-label="Steer left">◀ LEFT</button><button id="startCatBike" class="main-button" type="button">START RIDE</button><button id="catBikeRight" class="game-action-button" type="button" aria-label="Steer right">RIGHT ▶</button></div>
+                </div>
+
+                <div id="snackRushGame" class="game-screen hidden">
+                    <div class="game-screen-header">
+                        <button id="backFromSnackRush" class="secondary-button" type="button">← MENU GAME</button>
+                        <h2>🍕 SNACK RUSH</h2>
+                    </div>
+                    <div class="snack-rush-scoreboard" aria-live="polite">
+                        <span>SKOR <strong id="snackRushScore">0</strong></span>
+                        <span>BEST <strong id="snackRushBest">0</strong></span>
+                        <span>NYAWA <strong id="snackRushLives">❤️❤️❤️</strong></span>
+                        <span>COMBO <strong id="snackRushCombo">x0</strong></span>
+                    </div>
+                    <div class="snack-rush-stage">
+                        <canvas id="snackRushCanvas" width="800" height="520" aria-label="Snack Rush: catch food and avoid anomalies"></canvas>
+                    </div>
+                    <p id="snackRushStatus" class="game-status">Gerakkan Chef Cat, tangkap makanan, dan hindari anomali! Gunakan ← → / A D atau sentuh arena.</p>
+                    <div class="snack-rush-controls">
+                        <button id="snackRushLeft" class="game-action-button" type="button" aria-label="Gerak ke kiri">◀ KIRI</button>
+                        <button id="startSnackRush" class="main-button" type="button">MULAI MAIN</button>
+                        <button id="snackRushRight" class="game-action-button" type="button" aria-label="Gerak ke kanan">KANAN ▶</button>
+                    </div>
                 </div>
 
             </section>
