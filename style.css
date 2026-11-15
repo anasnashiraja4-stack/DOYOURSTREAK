@@ -7069,6 +7069,7 @@ body::before {
 }
 
 .game-card-icon .cat-bike-game-icon { display:block; width:100%; height:100%; object-fit:cover; border-radius:14px; }
+.game-card-icon .snack-rush-game-icon { display:block; width:100%; height:100%; object-fit:contain; }
 
 .game-card small {
     font-weight: 900;
@@ -9110,6 +9111,18 @@ body::before {
 #catBikeCanvas { display:block; width:min(100%,450px); height:auto; aspect-ratio:9/16; margin:0 auto; }
 .cat-bike-controls { display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap; margin:14px 0 24px; }
 @media(max-width:560px) { .cat-bike-controls .game-action-button { min-width:105px; padding:12px 10px; } }
+.snack-rush-scoreboard { display:flex; justify-content:center; gap:clamp(12px,4vw,36px); flex-wrap:wrap; margin:10px 0 14px; font-weight:800; }
+.snack-rush-scoreboard strong { margin-left:5px; font-size:20px; }
+.snack-rush-stage { width:min(100%,800px); margin:0 auto; overflow:hidden; border:4px solid #211335; border-radius:20px; background:#26164a; box-shadow:7px 7px 0 #211335; touch-action:none; }
+#snackRushCanvas { display:block; width:100%; height:auto; aspect-ratio:20/13; touch-action:none; }
+.snack-rush-controls { display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap; margin:14px 0 24px; }
+@media(max-width:560px) {
+    .snack-rush-scoreboard { gap:8px 18px; font-size:14px; }
+    .snack-rush-scoreboard strong { font-size:17px; }
+    .snack-rush-controls { gap:9px; }
+    .snack-rush-controls .game-action-button { min-width:100px; padding:12px 10px; }
+    .snack-rush-controls .main-button { min-width:140px; }
+}
 .flappy-controls {
     display: flex;
     justify-content: center;
@@ -12480,5 +12493,118 @@ body::before {
     .download-button::after {
         animation: none !important;
         transition: none !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .bottom-navbar {
+        width: calc(100vw - 16px);
+        height: auto;
+        min-height: 68px;
+        bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+        padding: 6px;
+        gap: 3px;
+    }
+
+    .bottom-nav-image {
+        min-width: 44px;
+        height: 56px;
+        padding: 3px 1px;
+        border-radius: 15px;
+    }
+
+    .bottom-nav-image img {
+        width: 29px;
+        height: 29px;
+        flex-basis: 29px;
+    }
+
+    .bottom-nav-image small {
+        font-size: clamp(6px, 1.9vw, 7.5px);
+        letter-spacing: 0;
+        white-space: nowrap;
+    }
+
+    .settings-language-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .settings-language-option {
+        min-height: 48px;
+        font-size: 14px;
+        touch-action: manipulation;
+    }
+
+    .main-button,
+    .secondary-button,
+    .game-action-button,
+    .settings-avatar-button,
+    .settings-avatar-remove,
+    .settings-logout-button {
+        min-height: 48px;
+        touch-action: manipulation;
+    }
+
+    .cat-bike-controls,
+    .snack-rush-controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr);
+        gap: 8px;
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .cat-bike-controls > button,
+    .snack-rush-controls > button {
+        width: 100%;
+        min-width: 0;
+        min-height: 50px;
+        padding: 10px 4px;
+        font-size: clamp(11px, 3vw, 14px);
+        white-space: nowrap;
+    }
+
+    .cat-bike-controls .main-button,
+    .snack-rush-controls .main-button {
+        min-width: 0;
+        padding: 10px 4px;
+    }
+
+    .tutorial-open-button,
+    .logout-button {
+        min-height: 44px;
+        padding: 6px 5px;
+        font-size: 7.5px;
+        line-height: 1.1;
+        touch-action: manipulation;
+    }
+}
+
+@media (max-width: 380px) {
+    .bottom-navbar {
+        padding: 5px 4px;
+        gap: 2px;
+    }
+
+    .bottom-nav-image {
+        min-width: 40px;
+        height: 54px;
+    }
+
+    .bottom-nav-image img {
+        width: 27px;
+        height: 27px;
+        flex-basis: 27px;
+    }
+
+    .bottom-nav-image small {
+        font-size: 6px;
+    }
+
+    .tutorial-open-button,
+    .logout-button {
+        min-height: 44px;
+        font-size: 7px;
     }
 }
