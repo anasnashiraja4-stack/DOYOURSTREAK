@@ -324,6 +324,21 @@ const appTranslations = {
         "OR CONTINUE WITH": "ИЛИ ПРОДОЛЖИТЬ С ПОМОЩЬЮ", "Enter your email...": "Введите адрес электронной почты...", "At least 8 characters": "Не менее 8 символов",
         "Enter your password again": "Введите пароль ещё раз", "Show": "Показать", "Hide": "Скрыть", "CHARACTER NAME": "ИМЯ ПЕРСОНАЖА",
         "Enter character name...": "Введите имя персонажа...", "START JOURNEY 🚀": "НАЧАТЬ ПУТЬ 🚀", "LOGIN": "ВОЙТИ", "LOG OUT": "ВЫЙТИ",
+        "START YOUR STREAK": "НАЧНИТЕ СВОЮ СЕРИЮ",
+        "BUILD BUDDY": "ВАШ СТРОИТЕЛЬНЫЙ ДРУГ", "Scroll down - I'll show you the loop, one step at a time.": "Прокрутите вниз — я покажу, как всё работает, шаг за шагом.",
+        "Tiny habits are easier to repeat. Pick one and start small.": "Небольшие привычки легче повторять. Выберите одну и начните с малого.",
+        "Mark your habit done to earn XP and keep your streak alive.": "Отмечайте привычку выполненной, чтобы получать XP и продолжать серию.",
+        "Stay consistent to unlock rewards and see your progress grow.": "Будьте последовательны, открывайте награды и следите за прогрессом.",
+        "Current guide step": "Текущий шаг подсказки",
+        "Set up a local player profile": "Создать локальный профиль игрока",
+        "Set up a player profile on this device. The email you enter stays in this browser; online sign-in and sync are not connected yet.": "Создайте профиль игрока на этом устройстве. Введённый адрес электронной почты останется в этом браузере; онлайн-вход и синхронизация пока недоступны.",
+        "GET STARTED": "НАЧАТЬ", "HOW IT WORKS": "КАК ЭТО РАБОТАЕТ", "A SIMPLE DAILY LOOP": "ПРОСТОЙ ЕЖЕДНЕВНЫЙ ЦИКЛ",
+        "Pick a small habit": "Выберите небольшую привычку", "Choose one routine you want to make part of your day.": "Выберите одно занятие, которое хотите добавить в свой день.",
+        "Mark it done": "Отметьте выполнение", "Complete your habit to earn XP and keep your streak going.": "Выполняйте привычку, чтобы получать XP и продолжать серию.",
+        "Grow your routine": "Развивайте привычку", "Build consistency, unlock rewards, and celebrate your progress.": "Становитесь последовательнее, открывайте награды и отмечайте свой прогресс.",
+        "YOUR DATA, CLEARLY": "ВАШИ ДАННЫЕ — ЧЕСТНО", "Your player profile and progress—including the email you enter—are stored only in this browser on this device. Online sign-in and cloud sync are not connected yet. Your password is checked but never saved. Clearing browser data may erase your profile and progress.": "Профиль игрока и прогресс, включая введённый адрес электронной почты, хранятся только в этом браузере на этом устройстве. Онлайн-вход и облачная синхронизация пока недоступны. Пароль проверяется, но не сохраняется. Очистка данных браузера может удалить профиль и прогресс.",
+        "ESP32 is optional. Connect a compatible device from inside the app.": "ESP32 необязателен. Подключите совместимое устройство в приложении.",
+        "No download needed to try the web app.": "Чтобы попробовать веб-приложение, скачивать его не нужно.",
         "BUILD YOUR STREAK": "СОЗДАЙТЕ СЕРИЮ", "MAKE YOUR": "ПРЕВРАТИТЕ", "HABITS A": "ПРИВЫЧКИ В", "GAME.": "ИГРУ.",
         "Build better habits, keep your streak, earn XP and become the best version of yourself.": "Формируйте полезные привычки, поддерживайте серию, получайте XP и становитесь лучше.",
         "DOWNLOAD FOR": "СКАЧАТЬ ДЛЯ", "WINDOWS": "WINDOWS", "ANDROID": "ANDROID", "HOME": "ГЛАВНАЯ", "CATALOG": "КАТАЛОГ",
@@ -670,6 +685,28 @@ const appTranslations = {
         "Your habits": "Kebiasaanmu",
         "Add your first habit": "Tambahkan kebiasaan pertamamu",
         "LOGIN": "MASUK",
+        "GET STARTED": "MULAI",
+        "START YOUR STREAK": "MULAI STREAK-MU",
+        "BUILD BUDDY": "TEMAN KONSTRUKSI",
+        "Scroll down - I'll show you the loop, one step at a time.": "Scroll ke bawah - aku tunjukkan alurnya, satu langkah demi satu langkah.",
+        "Tiny habits are easier to repeat. Pick one and start small.": "Kebiasaan kecil lebih mudah diulang. Pilih satu dan mulai pelan-pelan.",
+        "Mark your habit done to earn XP and keep your streak alive.": "Tandai kebiasaan selesai untuk mendapat XP dan menjaga streak tetap berjalan.",
+        "Stay consistent to unlock rewards and see your progress grow.": "Tetap konsisten untuk membuka hadiah dan melihat progresmu berkembang.",
+        "Current guide step": "Langkah panduan saat ini",
+        "Set up a local player profile": "Buat profil pemain lokal",
+        "Set up a player profile on this device. The email you enter stays in this browser; online sign-in and sync are not connected yet.": "Buat profil pemain di perangkat ini. Email yang kamu masukkan hanya tersimpan di browser ini; login online dan sinkronisasi belum tersedia.",
+        "HOW IT WORKS": "CARA KERJANYA",
+        "A SIMPLE DAILY LOOP": "LANGKAH HARIAN YANG SEDERHANA",
+        "Pick a small habit": "Pilih kebiasaan kecil",
+        "Choose one routine you want to make part of your day.": "Pilih satu rutinitas yang ingin kamu jadikan bagian dari harimu.",
+        "Mark it done": "Tandai selesai",
+        "Complete your habit to earn XP and keep your streak going.": "Selesaikan kebiasaanmu untuk mendapat XP dan menjaga streak tetap berjalan.",
+        "Grow your routine": "Kembangkan rutinitasmu",
+        "Build consistency, unlock rewards, and celebrate your progress.": "Bangun konsistensi, buka hadiah, dan rayakan progresmu.",
+        "YOUR DATA, CLEARLY": "TENTANG DATA KAMU",
+        "Your player profile and progress—including the email you enter—are stored only in this browser on this device. Online sign-in and cloud sync are not connected yet. Your password is checked but never saved. Clearing browser data may erase your profile and progress.": "Profil pemain dan progresmu, termasuk email yang kamu masukkan, hanya tersimpan di browser pada perangkat ini. Login online dan sinkronisasi cloud belum tersedia. Kata sandi hanya diperiksa dan tidak disimpan. Menghapus data browser bisa menghapus profil dan progresmu.",
+        "ESP32 is optional. Connect a compatible device from inside the app.": "ESP32 bersifat opsional. Hubungkan perangkat yang kompatibel dari dalam aplikasi.",
+        "No download needed to try the web app.": "Tidak perlu mengunduh untuk mencoba aplikasi web.",
         "BUILD YOUR STREAK": "BANGUN STREAK-MU",
         "MAKE YOUR": "JADIKAN",
         "HABITS A": "KEBIASAANMU",
@@ -1085,6 +1122,28 @@ const appTranslations = {
         "Your habits": "你的习惯",
         "Add your first habit": "添加你的第一个习惯",
         "LOGIN": "登录",
+        "GET STARTED": "开始使用",
+        "START YOUR STREAK": "开启你的连续打卡",
+        "BUILD BUDDY": "建造伙伴",
+        "Scroll down - I'll show you the loop, one step at a time.": "向下滚动，我会一步一步带你了解流程。",
+        "Tiny habits are easier to repeat. Pick one and start small.": "小习惯更容易坚持。选一个，从小处开始。",
+        "Mark your habit done to earn XP and keep your streak alive.": "完成习惯即可获得 XP 并保持连续记录。",
+        "Stay consistent to unlock rewards and see your progress grow.": "坚持下去即可解锁奖励，并见证自己的进步。",
+        "Current guide step": "当前引导步骤",
+        "Set up a local player profile": "设置本地玩家资料",
+        "Set up a player profile on this device. The email you enter stays in this browser; online sign-in and sync are not connected yet.": "在此设备上创建玩家资料。你输入的邮箱仅保存在此浏览器中；在线登录和同步尚未接入。",
+        "HOW IT WORKS": "使用方式",
+        "A SIMPLE DAILY LOOP": "简单的每日流程",
+        "Pick a small habit": "选择一个小习惯",
+        "Choose one routine you want to make part of your day.": "选择一项你想融入日常生活的习惯。",
+        "Mark it done": "标记为完成",
+        "Complete your habit to earn XP and keep your streak going.": "完成习惯即可获得 XP 并保持连续记录。",
+        "Grow your routine": "逐步养成习惯",
+        "Build consistency, unlock rewards, and celebrate your progress.": "保持坚持，解锁奖励，并为自己的进步喝彩。",
+        "YOUR DATA, CLEARLY": "数据说明",
+        "Your player profile and progress—including the email you enter—are stored only in this browser on this device. Online sign-in and cloud sync are not connected yet. Your password is checked but never saved. Clearing browser data may erase your profile and progress.": "玩家资料和进度（包括你输入的邮箱）仅保存在此设备的此浏览器中。在线登录和云同步尚未接入。密码只会进行检查，不会保存。清除浏览器数据可能会删除资料和进度。",
+        "ESP32 is optional. Connect a compatible device from inside the app.": "ESP32 为可选设备。可在应用内连接兼容设备。",
+        "No download needed to try the web app.": "试用网页版无需下载。",
         "BUILD YOUR STREAK": "坚持打卡",
         "MAKE YOUR": "让你的",
         "HABITS A": "习惯成为",
@@ -1409,6 +1468,7 @@ function setAppLanguage(language) {
         button.setAttribute("aria-pressed", String(button.dataset.language === language));
     });
     translateAppContent();
+    window.updateLandingGuideLanguage?.();
     window.DYSFeatures?.refreshTranslations();
 }
 
@@ -3576,6 +3636,99 @@ loginButton?.addEventListener("click", () => {
 
     }, 100);
 
+});
+
+document.getElementById("heroStartButton")?.addEventListener("click", () => {
+    loginButton?.click();
+});
+
+const landingGuide = document.getElementById("constructionGuide");
+const landingGuideText = document.getElementById("constructionGuideText");
+const landingGuideProgress = document.getElementById("constructionGuideProgress");
+const landingGuideCards = Array.from(document.querySelectorAll(".landing-step-card[data-guide-message]"));
+const landingHowSection = document.getElementById("howItWorks");
+const landingScrollProgressBar = document.getElementById("landingScrollProgressBar");
+let activeLandingGuideStep = 0;
+let landingGuideReactionTimer;
+
+function updateLandingGuideStep(index, react = true) {
+    if (index < 0 || index >= landingGuideCards.length) return;
+    activeLandingGuideStep = index;
+    const activeCard = landingGuideCards[index];
+
+    landingGuideCards.forEach((card, cardIndex) => {
+        card.classList.toggle("is-guide-active", cardIndex === index);
+    });
+
+    if (landingGuideProgress) {
+        landingGuideProgress.textContent = `${String(index + 1).padStart(2, "0")} / ${String(landingGuideCards.length).padStart(2, "0")}`;
+    }
+
+    if (landingGuideText) {
+        landingGuideText.textContent = window.translateAppText(activeCard.dataset.guideMessage);
+    }
+
+    if (!react || !landingGuide) return;
+    landingGuide.classList.remove("is-reacting");
+    window.requestAnimationFrame(() => landingGuide.classList.add("is-reacting"));
+    window.clearTimeout(landingGuideReactionTimer);
+    landingGuideReactionTimer = window.setTimeout(() => {
+        landingGuide.classList.remove("is-reacting");
+    }, 850);
+}
+
+window.updateLandingGuideLanguage = () => {
+    if (landingGuideCards.length) updateLandingGuideStep(activeLandingGuideStep, false);
+};
+window.updateLandingGuideLanguage();
+
+function updateLandingScrollProgress() {
+    const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = scrollableHeight > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollableHeight)) : 0;
+    if (landingScrollProgressBar) landingScrollProgressBar.style.transform = `scaleX(${progress})`;
+
+    if (!landingHowSection || !landingGuideCards.length) return;
+    const sectionScrollRange = landingHowSection.offsetHeight - window.innerHeight;
+    if (sectionScrollRange <= 0) return;
+    const sectionProgress = Math.min(1, Math.max(0, -landingHowSection.getBoundingClientRect().top / sectionScrollRange));
+    const nextStep = Math.min(landingGuideCards.length - 1, Math.floor(sectionProgress * landingGuideCards.length));
+    if (nextStep !== activeLandingGuideStep) updateLandingGuideStep(nextStep);
+}
+
+let landingScrollFrame = 0;
+function scheduleLandingScrollProgress() {
+    if (landingScrollFrame) return;
+    landingScrollFrame = window.requestAnimationFrame(() => {
+        landingScrollFrame = 0;
+        updateLandingScrollProgress();
+    });
+}
+
+window.addEventListener("scroll", scheduleLandingScrollProgress, { passive: true });
+window.addEventListener("resize", scheduleLandingScrollProgress);
+updateLandingScrollProgress();
+
+const landingRevealElements = Array.from(document.querySelectorAll(".landing-scroll-reveal"));
+const reduceLandingMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (!reduceLandingMotion && "IntersectionObserver" in window) {
+    document.documentElement.classList.add("landing-reveal-ready");
+    const landingRevealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+        });
+    }, { threshold: 0.16, rootMargin: "0px 0px -6% 0px" });
+
+    landingRevealElements.forEach(element => landingRevealObserver.observe(element));
+
+} else {
+    landingRevealElements.forEach(element => element.classList.add("is-visible"));
+}
+
+landingGuideCards.forEach((card, index) => {
+    card.addEventListener("pointerenter", () => updateLandingGuideStep(index));
+    card.addEventListener("focusin", () => updateLandingGuideStep(index));
 });
 
 logoutButton?.addEventListener("click", () => {

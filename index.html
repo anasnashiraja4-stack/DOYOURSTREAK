@@ -15,6 +15,9 @@
 
     <!-- ================= LANDING PAGE ================= -->
     <section id="loginScreen" class="landing-page">
+        <div class="landing-scroll-progress" aria-hidden="true">
+            <span id="landingScrollProgressBar"></span>
+        </div>
 
         <!-- NAVBAR -->
         <nav class="landing-navbar">
@@ -28,17 +31,11 @@
             </div>
 
             <div class="landing-quick-info">
-                <span class="landing-player">PLAYER</span>
-                <span class="landing-level">LVL 1</span>
-                <span class="landing-esp-status">ESP OFFLINE</span>
-                <details class="landing-how-to-play">
-                    <summary>HOW TO PLAY</summary>
-                    <p>Log in, add a habit, then mark it done to earn XP and build your streak. Connect ESP in the app.</p>
-                </details>
+                <a class="landing-nav-link" href="#howItWorks">HOW IT WORKS</a>
             </div>
 
             <button id="loginButton" class="login-button">
-                LOGIN
+                GET STARTED
             </button>
 
         </nav>
@@ -65,56 +62,70 @@
                     HABITS A <span>GAME.</span>
                 </h1>
 
-                <p>
-                    Build better habits, keep your streak,
-                    earn XP and become the best version of yourself.
-                </p>
+                <p>Build better habits, keep your streak, earn XP and become the best version of yourself.</p>
 
 
-                <!-- DOWNLOAD BUTTONS -->
-                <div class="download-buttons">
-
-                    <a href="#" class="download-button windows" id="windowsDownload">
-                        <span class="download-icon">
-                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-                                <path fill="#00A4EF" d="M5 10.4 21 8v14H5zM24 7.6l19-2.8V22H24zM5 25h16v14L5 36.6zM24 25h19v17.2l-19-2.8z"/>
-                            </svg>
-                        </span>
-
-                        <div>
-                            <small>DOWNLOAD FOR</small>
-                            <strong>WINDOWS</strong>
-                        </div>
-                    </a>
-
-
-                    <a href="#" class="download-button android" id="androidDownload">
-                        <span class="download-icon">
-                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-                                <g fill="#3DDC84">
-                                    <path d="M13.2 13.6 9.7 7.5a1 1 0 0 1 1.7-1l3.7 6.4a15 15 0 0 1 18 0l3.7-6.4a1 1 0 0 1 1.7 1L35 13.6a14 14 0 0 1 6 11.4H7.2a14 14 0 0 1 6-11.4Z"/>
-                                    <path d="M7.2 27h33.6v9.2a4 4 0 0 1-4 4h-1.6v5.1a2.8 2.8 0 0 1-5.6 0v-5.1H18.4v5.1a2.8 2.8 0 0 1-5.6 0v-5.1h-1.6a4 4 0 0 1-4-4V27Zm-5.4 0a2.8 2.8 0 0 1 5.6 0v8a2.8 2.8 0 0 1-5.6 0v-8Zm38.8 0a2.8 2.8 0 0 1 5.6 0v8a2.8 2.8 0 0 1-5.6 0v-8Z"/>
-                                    <circle cx="16.5" cy="19" r="1.5" fill="#111"/>
-                                    <circle cx="31.5" cy="19" r="1.5" fill="#111"/>
-                                </g>
-                            </svg>
-                        </span>
-
-                        <div>
-                            <small>DOWNLOAD FOR</small>
-                            <strong>ANDROID</strong>
-                        </div>
-                    </a>
-
+                <div class="landing-actions">
+                    <button class="landing-start-button" id="heroStartButton" type="button">
+                        <span>START YOUR STREAK</span>
+                    </button>
+                    <p class="landing-data-note">No download needed to try the web app.</p>
                 </div>
 
             </div>
 
         </main>
 
+        <section class="landing-how-section" id="howItWorks" aria-labelledby="howItWorksTitle">
+            <div class="landing-section-inner">
+                <div class="landing-section-heading landing-scroll-reveal">
+                    <span class="landing-section-kicker">A SIMPLE DAILY LOOP</span>
+                    <h2 id="howItWorksTitle">HOW IT WORKS</h2>
+                </div>
+
+                <aside class="construction-guide landing-scroll-reveal" id="constructionGuide" aria-labelledby="constructionGuideTitle">
+                    <div class="construction-cat-stage">
+                        <span class="construction-cat-orbit" aria-hidden="true"></span>
+                        <img src="constructioncat.png" alt="Construction cat carrying bricks">
+                    </div>
+                    <div class="construction-guide-copy">
+                        <span class="construction-guide-kicker" id="constructionGuideTitle">BUILD BUDDY</span>
+                        <p id="constructionGuideText">Scroll down - I'll show you the loop, one step at a time.</p>
+                    </div>
+                    <span class="construction-guide-progress" id="constructionGuideProgress" aria-label="Current guide step">01 / 03</span>
+                </aside>
+
+                <div class="landing-step-grid">
+                    <article class="landing-step-card landing-scroll-reveal" data-guide-step="01" data-guide-message="Tiny habits are easier to repeat. Pick one and start small.">
+                        <span class="landing-step-number">01</span>
+                        <h3>Pick a small habit</h3>
+                        <p>Choose one routine you want to make part of your day.</p>
+                    </article>
+                    <article class="landing-step-card landing-scroll-reveal" data-guide-step="02" data-guide-message="Mark your habit done to earn XP and keep your streak alive.">
+                        <span class="landing-step-number">02</span>
+                        <h3>Mark it done</h3>
+                        <p>Complete your habit to earn XP and keep your streak going.</p>
+                    </article>
+                    <article class="landing-step-card landing-scroll-reveal" data-guide-step="03" data-guide-message="Stay consistent to unlock rewards and see your progress grow.">
+                        <span class="landing-step-number">03</span>
+                        <h3>Grow your routine</h3>
+                        <p>Build consistency, unlock rewards, and celebrate your progress.</p>
+                    </article>
+                </div>
+
+                <aside class="landing-data-card landing-scroll-reveal" aria-labelledby="landingDataTitle">
+                    <div>
+                        <span class="landing-data-label" id="landingDataTitle">YOUR DATA, CLEARLY</span>
+                        <p>Your player profile and progress—including the email you enter—are stored only in this browser on this device. Online sign-in and cloud sync are not connected yet. Your password is checked but never saved. Clearing browser data may erase your profile and progress.</p>
+                    </div>
+                    <p class="landing-device-note">ESP32 is optional. Connect a compatible device from inside the app.</p>
+                </aside>
+            </div>
+        </section>
+
 
         <!-- LOGIN MODAL -->
-        <div id="loginModal" class="landing-login-modal hidden" role="dialog" aria-modal="true" aria-label="Create your account">
+        <div id="loginModal" class="landing-login-modal hidden" role="dialog" aria-modal="true" aria-label="Set up a local player profile">
 
             <div class="landing-login-card">
 
@@ -135,7 +146,7 @@
 
                     <h2>Welcome!</h2>
 
-                    <p class="login-description">Create your account and start your journey.</p>
+                    <p class="login-description">Set up a player profile on this device. The email you enter stays in this browser; online sign-in and sync are not connected yet.</p>
 
                     <div class="input-group">
 
