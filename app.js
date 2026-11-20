@@ -3731,6 +3731,95 @@ landingGuideCards.forEach((card, index) => {
     card.addEventListener("focusin", () => updateLandingGuideStep(index));
 });
 
+document.querySelectorAll(".landing-team-card").forEach(card => {
+    const memberName = card.querySelector(".landing-team-name")?.textContent.trim();
+    card.addEventListener("click", () => {
+        const isPressed = card.getAttribute("aria-pressed") === "true";
+        card.setAttribute("aria-pressed", String(!isPressed));
+        if (memberName) card.setAttribute("aria-label", `${isPressed ? "Reveal" : "Hide"} ${memberName}'s role`);
+    });
+});
+
+const landingObjectButton = document.getElementById("landingObjectButton");
+const landingObjectImage = document.getElementById("landingObjectImage");
+const landingObjectParticles = landingObjectButton?.querySelector(".landing-object-particles");
+
+if (landingObjectButton && landingObjectImage && landingObjectParticles) {
+    const landingObjects = [
+        { src: "objecthover.png", alt: "Sleepy bear mascot", nextLabel: "Click to switch to the reading bear" },
+        { src: "objecthover2.png", alt: "Bear mascot reading a book", nextLabel: "Click to switch to the sleepy bear" }
+    ];
+    const reducedLandingMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let activeLandingObject = 0;
+    let landingObjectIsBursting = false;
+    let landingObjectBurstTimer = 0;
+    let landingObjectArrivalTimer = 0;
+
+    for (let index = 0; index < 24; index += 1) {
+        const particle = document.createElement("span");
+        const angle = (index / 24) * Math.PI * 2 + (Math.random() - .5) * .28;
+        const distance = 82 + Math.random() * 76;
+        const endX = Math.cos(angle) * distance;
+        const endY = Math.sin(angle) * distance;
+        const particleHue = 34 + (index % 7) * 7;
+
+        particle.className = `landing-object-particle ${index % 3 === 0 ? "is-shard" : "is-spark"}`;
+        particle.style.setProperty("--particle-x-start", `${endX * .24}px`);
+        particle.style.setProperty("--particle-y-start", `${endY * .24}px`);
+        particle.style.setProperty("--particle-x-mid", `${endX * .62}px`);
+        particle.style.setProperty("--particle-y-mid", `${endY * .62}px`);
+        particle.style.setProperty("--particle-x-end", `${endX}px`);
+        particle.style.setProperty("--particle-y-end", `${endY}px`);
+        particle.style.setProperty("--particle-size", `${5 + (index % 4) * 2}px`);
+        particle.style.setProperty("--particle-color", `hsl(${particleHue} 95% 66%)`);
+        particle.style.setProperty("--particle-duration", `${720 + (index % 6) * 45}ms`);
+        particle.style.setProperty("--particle-delay", `${(index % 5) * 16}ms`);
+        landingObjectParticles.appendChild(particle);
+    }
+
+    function showNextLandingObject() {
+        activeLandingObject = (activeLandingObject + 1) % landingObjects.length;
+        const nextObject = landingObjects[activeLandingObject];
+        landingObjectImage.src = nextObject.src;
+        landingObjectImage.alt = nextObject.alt;
+        landingObjectButton.setAttribute("aria-label", nextObject.nextLabel);
+    }
+
+    landingObjectButton.addEventListener("click", () => {
+        if (landingObjectIsBursting) return;
+
+        if (reducedLandingMotion) {
+            showNextLandingObject();
+            return;
+        }
+
+        landingObjectIsBursting = true;
+        landingObjectButton.disabled = true;
+        landingObjectButton.classList.remove("is-arriving");
+        landingObjectButton.classList.add("is-bursting");
+
+        const finishBurst = (event) => {
+            if (event && (event.target !== landingObjectImage || event.animationName !== "landingObjectBurstOut")) return;
+            if (!landingObjectIsBursting) return;
+
+            landingObjectIsBursting = false;
+            window.clearTimeout(landingObjectBurstTimer);
+            landingObjectImage.removeEventListener("animationend", finishBurst);
+            showNextLandingObject();
+            landingObjectButton.classList.remove("is-bursting");
+            landingObjectButton.classList.add("is-arriving");
+            landingObjectButton.disabled = false;
+            window.clearTimeout(landingObjectArrivalTimer);
+            landingObjectArrivalTimer = window.setTimeout(() => {
+                landingObjectButton.classList.remove("is-arriving");
+            }, 720);
+        };
+
+        landingObjectImage.addEventListener("animationend", finishBurst);
+        landingObjectBurstTimer = window.setTimeout(() => finishBurst(), 760);
+    });
+}
+
 logoutButton?.addEventListener("click", () => {
     if (!user) return;
 
